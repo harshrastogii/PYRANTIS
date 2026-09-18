@@ -36,6 +36,635 @@
    "beat_incumbent": false,
    "incumbent_at_run": 0.674,
    "verdict": "REVERT"
+  },
+  {
+   "name": "gb-longmem",
+   "description": "Add 15, 20 and 25 year fire frequency",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation"
+   ],
+   "model": "histgb",
+   "n_features": 43,
+   "seconds": 67.8,
+   "accuracy": 0.7158,
+   "f1_macro": 0.6555,
+   "f1_per_class": {
+    "unburnt": 0.8144,
+    "early": 0.6716,
+    "late": 0.4805
+   },
+   "confusion": [
+    [
+     68336,
+     3172,
+     8382
+    ],
+    [
+     4153,
+     15771,
+     3018
+    ],
+    [
+     15441,
+     5083,
+     14761
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "gb-spatial",
+   "description": "Add district-scale neighbourhood at two scales",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation",
+    "spatial"
+   ],
+   "model": "histgb",
+   "n_features": 55,
+   "seconds": 76.1,
+   "accuracy": 0.7153,
+   "f1_macro": 0.6505,
+   "f1_per_class": {
+    "unburnt": 0.816,
+    "early": 0.668,
+    "late": 0.4673
+   },
+   "confusion": [
+    [
+     68797,
+     3476,
+     7617
+    ],
+    [
+     4273,
+     16149,
+     2520
+    ],
+    [
+     15653,
+     5782,
+     13850
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "gb-growth",
+   "description": "Add wet-season shape and growth index",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation",
+    "spatial",
+    "growth"
+   ],
+   "model": "histgb",
+   "n_features": 61,
+   "seconds": 84.7,
+   "accuracy": 0.7175,
+   "f1_macro": 0.6662,
+   "f1_per_class": {
+    "unburnt": 0.8119,
+    "early": 0.6757,
+    "late": 0.511
+   },
+   "confusion": [
+    [
+     66453,
+     3273,
+     10164
+    ],
+    [
+     3814,
+     15961,
+     3167
+    ],
+    [
+     13535,
+     5064,
+     16686
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "gb-soi",
+   "description": "Add the Southern Oscillation Index",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation",
+    "spatial",
+    "growth",
+    "soi"
+   ],
+   "model": "histgb",
+   "n_features": 62,
+   "seconds": 90.6,
+   "accuracy": 0.7184,
+   "f1_macro": 0.6687,
+   "f1_per_class": {
+    "unburnt": 0.8131,
+    "early": 0.6654,
+    "late": 0.5276
+   },
+   "confusion": [
+    [
+     65703,
+     3626,
+     10561
+    ],
+    [
+     3634,
+     15862,
+     3446
+    ],
+    [
+     12377,
+     5244,
+     17664
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "gb-monthly",
+   "description": "Give the trees the months as separate columns",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation",
+    "spatial",
+    "growth",
+    "monthly"
+   ],
+   "model": "histgb",
+   "n_features": 85,
+   "seconds": 102.4,
+   "accuracy": 0.7073,
+   "f1_macro": 0.6417,
+   "f1_per_class": {
+    "unburnt": 0.8082,
+    "early": 0.6746,
+    "late": 0.4422
+   },
+   "confusion": [
+    [
+     68758,
+     3288,
+     7844
+    ],
+    [
+     4264,
+     15905,
+     2773
+    ],
+    [
+     17240,
+     5016,
+     13029
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "lstm-base",
+   "description": "The incumbent architecture, for a like-for-like line",
+   "blocks": [
+    "base"
+   ],
+   "model": "lstm",
+   "n_features": 36,
+   "seconds": 71.6,
+   "accuracy": 0.706,
+   "f1_macro": 0.6736,
+   "f1_per_class": {
+    "unburnt": 0.7944,
+    "early": 0.685,
+    "late": 0.5416
+   },
+   "confusion": [
+    [
+     60936,
+     2783,
+     16171
+    ],
+    [
+     2709,
+     15821,
+     4412
+    ],
+    [
+     9888,
+     4650,
+     20747
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "lstm-best-static",
+   "description": "Incumbent architecture on whatever features won above",
+   "blocks": [
+    "base"
+   ],
+   "model": "lstm",
+   "n_features": 36,
+   "seconds": 69.9,
+   "accuracy": 0.706,
+   "f1_macro": 0.6736,
+   "f1_per_class": {
+    "unburnt": 0.7944,
+    "early": 0.685,
+    "late": 0.5416
+   },
+   "confusion": [
+    [
+     60936,
+     2783,
+     16171
+    ],
+    [
+     2709,
+     15821,
+     4412
+    ],
+    [
+     9888,
+     4650,
+     20747
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "lstm-weather-seq",
+   "description": "Second recurrent branch reading the wet season month by month",
+   "blocks": [
+    "base"
+   ],
+   "model": "lstm-seq",
+   "n_features": 36,
+   "seconds": 125.3,
+   "accuracy": 0.6813,
+   "f1_macro": 0.6568,
+   "f1_per_class": {
+    "unburnt": 0.7702,
+    "early": 0.6775,
+    "late": 0.5228
+   },
+   "confusion": [
+    [
+     56759,
+     3155,
+     19976
+    ],
+    [
+     2026,
+     16081,
+     4835
+    ],
+    [
+     8722,
+     5297,
+     21266
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "ensemble",
+   "description": "Average the two strongest models that disagree most (lstm-base + lstm-best-static)",
+   "blocks": [
+    "base"
+   ],
+   "model": "ensemble",
+   "n_features": 36,
+   "seconds": 0.1,
+   "accuracy": 0.706,
+   "f1_macro": 0.6736,
+   "f1_per_class": {
+    "unburnt": 0.7944,
+    "early": 0.685,
+    "late": 0.5416
+   },
+   "confusion": [
+    [
+     60936,
+     2783,
+     16171
+    ],
+    [
+     2709,
+     15821,
+     4412
+    ],
+    [
+     9888,
+     4650,
+     20747
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "r2-gb-longmem",
+   "description": "Probe: long memory and elevation",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation"
+   ],
+   "model": "histgb",
+   "n_features": 43,
+   "seconds": 65.5,
+   "accuracy": 0.7158,
+   "f1_macro": 0.6555,
+   "f1_per_class": {
+    "unburnt": 0.8144,
+    "early": 0.6716,
+    "late": 0.4805
+   },
+   "confusion": [
+    [
+     68336,
+     3172,
+     8382
+    ],
+    [
+     4153,
+     15771,
+     3018
+    ],
+    [
+     15441,
+     5083,
+     14761
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "r2-gb-spatial",
+   "description": "Probe: add district-scale neighbourhood",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation",
+    "spatial"
+   ],
+   "model": "histgb",
+   "n_features": 55,
+   "seconds": 75.8,
+   "accuracy": 0.7153,
+   "f1_macro": 0.6505,
+   "f1_per_class": {
+    "unburnt": 0.816,
+    "early": 0.668,
+    "late": 0.4673
+   },
+   "confusion": [
+    [
+     68797,
+     3476,
+     7617
+    ],
+    [
+     4273,
+     16149,
+     2520
+    ],
+    [
+     15653,
+     5782,
+     13850
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "r2-gb-growth",
+   "description": "Probe: add wet-season shape",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation",
+    "growth"
+   ],
+   "model": "histgb",
+   "n_features": 49,
+   "seconds": 71.0,
+   "accuracy": 0.7108,
+   "f1_macro": 0.6553,
+   "f1_per_class": {
+    "unburnt": 0.8085,
+    "early": 0.6635,
+    "late": 0.4938
+   },
+   "confusion": [
+    [
+     66422,
+     3890,
+     9578
+    ],
+    [
+     3965,
+     16104,
+     2873
+    ],
+    [
+     14024,
+     5609,
+     15652
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "r2-gb-soi",
+   "description": "Probe: add the Southern Oscillation Index",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation",
+    "growth",
+    "soi"
+   ],
+   "model": "histgb",
+   "n_features": 50,
+   "seconds": 79.3,
+   "accuracy": 0.707,
+   "f1_macro": 0.6522,
+   "f1_per_class": {
+    "unburnt": 0.8072,
+    "early": 0.6559,
+    "late": 0.4934
+   },
+   "confusion": [
+    [
+     65595,
+     4298,
+     9997
+    ],
+    [
+     3512,
+     16151,
+     3279
+    ],
+    [
+     13526,
+     5857,
+     15902
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "r2-lstm",
+   "description": "The incumbent architecture on the winning features",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation"
+   ],
+   "model": "lstm",
+   "n_features": 43,
+   "seconds": 80.3,
+   "accuracy": 0.7032,
+   "f1_macro": 0.6739,
+   "f1_per_class": {
+    "unburnt": 0.7895,
+    "early": 0.6841,
+    "late": 0.548
+   },
+   "confusion": [
+    [
+     59765,
+     2753,
+     17372
+    ],
+    [
+     2731,
+     15823,
+     4388
+    ],
+    [
+     9010,
+     4743,
+     21532
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "r2-lstm-seq",
+   "description": "Winning features plus a monthly weather branch",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation"
+   ],
+   "model": "lstm-seq",
+   "n_features": 43,
+   "seconds": 90.3,
+   "accuracy": 0.6945,
+   "f1_macro": 0.6643,
+   "f1_per_class": {
+    "unburnt": 0.7833,
+    "early": 0.6817,
+    "late": 0.528
+   },
+   "confusion": [
+    [
+     59515,
+     2951,
+     17424
+    ],
+    [
+     2694,
+     15966,
+     4282
+    ],
+    [
+     9857,
+     4984,
+     20444
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  },
+  {
+   "name": "r2-ensemble",
+   "description": "Average the best tree and the best network (r2-lstm)",
+   "blocks": [
+    "base",
+    "longmem",
+    "elevation"
+   ],
+   "model": "ensemble",
+   "n_features": 43,
+   "seconds": 0.1,
+   "accuracy": 0.7032,
+   "f1_macro": 0.6739,
+   "f1_per_class": {
+    "unburnt": 0.7895,
+    "early": 0.6841,
+    "late": 0.548
+   },
+   "confusion": [
+    [
+     59765,
+     2753,
+     17372
+    ],
+    [
+     2731,
+     15823,
+     4388
+    ],
+    [
+     9010,
+     4743,
+     21532
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
   }
  ]
 }

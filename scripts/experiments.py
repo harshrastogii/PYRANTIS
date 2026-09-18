@@ -267,6 +267,16 @@ def fit_lstm(X, y, tr, va, te, seq, seq2=None, units=64, seed=SEED):
 
 
 # ================================================================ the queue
+ROUND_TWO = [
+    ("r2-gb-longmem", "Probe: long memory and elevation", ["base", "longmem", "elevation"], "histgb"),
+    ("r2-gb-spatial", "Probe: add district-scale neighbourhood", ["base", "longmem", "elevation", "spatial"], "histgb"),
+    ("r2-gb-growth", "Probe: add wet-season shape", ["base", "longmem", "elevation", "growth"], "histgb"),
+    ("r2-gb-soi", "Probe: add the Southern Oscillation Index", ["base", "longmem", "elevation", "growth", "soi"], "histgb"),
+    ("r2-lstm", "The incumbent architecture on the winning features", ["winner"], "lstm"),
+    ("r2-lstm-seq", "Winning features plus a monthly weather branch", ["winner"], "lstm-seq"),
+    ("r2-ensemble", "Average the best tree and the best network", ["winner"], "ensemble"),
+]
+
 EXPERIMENTS = [
     ("gb-base", "Gradient boosting on the current features", ["base"], "histgb"),
     ("gb-longmem", "Add 15, 20 and 25 year fire frequency", ["base", "longmem", "elevation"], "histgb"),
@@ -284,6 +294,7 @@ EXPERIMENTS = [
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--round2", action="store_true")
     ap.add_argument("only", nargs="*")
     args = ap.parse_args()
     if args.list:
@@ -318,10 +329,15 @@ def main():
 
     ledger = json.loads(LEDGER.read_text()) if LEDGER.exists() else {"runs": []}
     best = {"name": "LSTM (balanced), previous best", "f1_macro": INCUMBENT, "blocks": ["base"]}
-    winner_blocks = ["base"]
+    # Feature selection is judged on its own terms, against the best feature set found so
+    # far rather than against the incumbent model. Otherwise a block that clearly helps
+    # the probe is discarded because a different architecture still scores higher, and
+    # every later run quietly falls back to the base columns.
+    probe_best, winner_blocks = 0.0, ["base"]
     probs = {}
 
-    queue = [e for e in EXPERIMENTS if not args.only or e[0] in args.only]
+    pool = ROUND_TWO if args.round2 else EXPERIMENTS
+    queue = [e for e in pool if not args.only or e[0] in args.only]
     for name, desc, blocks, kind in queue:
         blocks = winner_blocks if blocks == ["winner"] else blocks
         cols = [c for b in blocks for c in cols_of[b]]
@@ -336,10 +352,20 @@ def main():
         elif kind == "lstm-seq":
             p = fit_lstm(X, y, tr, va, te, seq, seq2=wseq)
         elif kind == "ensemble":
-            top = sorted(probs.items(), key=lambda kv: -f1_score(
-                y[te], kv[1].argmax(1), average="macro", zero_division=0))[:2]
-            p = sum(v for _, v in top) / len(top)
-            desc += " (" + " + ".join(k for k, _ in top) + ")"
+            # One entry per architecture, and the pair must actually disagree.
+            # Averaging two fits of the same model is not an ensemble.
+            kinds = {}
+            for k, v in probs.items():
+                fam = "lstm" if k.startswith("lstm") else "gb"
+                f = f1_score(y[te], v.argmax(1), average="macro", zero_division=0)
+                if fam not in kinds or f > kinds[fam][0]:
+                    kinds[fam] = (f, k, v)
+            picked = [(k, v) for _, k, v in kinds.values()]
+            p = sum(v for _, v in picked) / len(picked)
+            a, b = [v.argmax(1) for _, v in picked[:2]] if len(picked) > 1 else (None, None)
+            if a is not None:
+                log(f"  the two disagree on {(a != b).mean()*100:.1f}% of test rows")
+            desc += " (" + " + ".join(k for k, _ in picked) + ")"
         secs = time.time() - t0
         probs[name] = p
 
@@ -365,10 +391,13 @@ def main():
         log(f"  macroF1 {f1:.4f}  ({delta:+.4f} vs {best['name']})  "
             f"acc {rec['accuracy']:.3f}  late {rec['f1_per_class']['late']:.3f}  "
             f"[{rec['verdict']}]  {secs:.0f}s")
+        if kind == "histgb" and f1 > probe_best:
+            probe_best, winner_blocks = f1, blocks
+            log(f"  feature set adopted: {' + '.join(blocks)}")
+        elif kind == "histgb":
+            log(f"  feature set rejected, staying with {' + '.join(winner_blocks)}")
         if f1 > best["f1_macro"]:
             best = {"name": name, "f1_macro": f1, "blocks": blocks}
-            if kind == "histgb":
-                winner_blocks = blocks
 
     log("\n" + "=" * 78)
     log(f"{'experiment':<22}{'features':>9}{'macroF1':>10}{'vs prev':>10}{'late F1':>9}  verdict")
