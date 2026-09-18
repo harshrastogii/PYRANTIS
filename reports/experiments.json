@@ -1,0 +1,41 @@
+{
+ "runs": [
+  {
+   "name": "gb-base",
+   "description": "Gradient boosting on the current features",
+   "blocks": [
+    "base"
+   ],
+   "model": "histgb",
+   "n_features": 36,
+   "seconds": 60.6,
+   "accuracy": 0.7043,
+   "f1_macro": 0.6358,
+   "f1_per_class": {
+    "unburnt": 0.8077,
+    "early": 0.6696,
+    "late": 0.43
+   },
+   "confusion": [
+    [
+     69047,
+     3047,
+     7796
+    ],
+    [
+     4426,
+     15648,
+     2868
+    ],
+    [
+     17600,
+     5100,
+     12585
+    ]
+   ],
+   "beat_incumbent": false,
+   "incumbent_at_run": 0.674,
+   "verdict": "REVERT"
+  }
+ ]
+}

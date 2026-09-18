@@ -1,0 +1,54 @@
+{
+ "results": [
+  {
+   "model": "random forest / baseline features",
+   "accuracy": 0.7001,
+   "f1_macro": 0.598,
+   "f1_late": 0.3039,
+   "seconds": 98.9
+  },
+  {
+   "model": "gradient boosting / baseline features",
+   "accuracy": 0.706,
+   "f1_macro": 0.6431,
+   "f1_late": 0.452,
+   "seconds": 62.2
+  },
+  {
+   "model": "random forest / with longer memory and elevation",
+   "accuracy": 0.7042,
+   "f1_macro": 0.6074,
+   "f1_late": 0.3254,
+   "seconds": 147.9
+  },
+  {
+   "model": "gradient boosting / with longer memory and elevation",
+   "accuracy": 0.7162,
+   "f1_macro": 0.6533,
+   "f1_late": 0.4738,
+   "seconds": 79.5
+  },
+  {
+   "model": "LSTM 96 units / with longer memory and elevation",
+   "accuracy": 0.6845,
+   "f1_macro": 0.6603,
+   "f1_late": 0.5315,
+   "seconds": 119.0
+  },
+  {
+   "model": "ensemble: LSTM + gradient boosting",
+   "accuracy": 0.7218,
+   "f1_macro": 0.6743,
+   "f1_late": 0.5251,
+   "seconds": 0.0
+  },
+  {
+   "model": "ensemble: LSTM + gradient boosting + forest",
+   "accuracy": 0.7239,
+   "f1_macro": 0.6671,
+   "f1_late": 0.4971,
+   "seconds": 0.0
+  }
+ ],
+ "previous_best": 0.674
+}

@@ -25,11 +25,40 @@ WHITE = 238          # brightness at or above this counts as background
 SPREAD = 26          # how neutral a pixel must be; the tile's tint is bluer than this
 
 
+def _emit(im: Image.Image) -> None:
+    """Crop to the artwork and write the sizes a browser asks for.
+
+    Square canvases keep their aspect: a letterform cropped tight and then squashed to a
+    square favicon reads as a different mark.
+    """
+    im = im.crop(im.getbbox())
+    w, h = im.size
+    side = max(w, h)
+    square = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    square.paste(im, ((side - w) // 2, (side - h) // 2))
+    print(f"cropped to {w} x {h}, padded to {side} square")
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    square.resize((512, 512), Image.LANCZOS).save(OUT / "pyrantis-logo.png")
+    for s in (180, 96, 48, 32):
+        square.resize((s, s), Image.LANCZOS).save(OUT / f"pyrantis-{s}.png")
+    for f in sorted(OUT.glob("pyrantis*.png")):
+        print(f"  {f.name}  {f.stat().st_size/1000:.0f} kB")
+
+
 def main() -> None:
     assert SRC and SRC.exists(), "pass the path to the logo PNG"
     im = Image.open(SRC).convert("RGBA")
     a = np.array(im)
     rgb = a[..., :3].astype(np.int16)
+
+    # A source that already carries transparency is left alone. Running the white cut on
+    # it would replace a correct alpha channel with a solid one and turn the cut-out
+    # background black.
+    if (a[..., 3] == 0).any():
+        print("source already has a transparent background, keeping it")
+        _emit(im)
+        return
 
     nearly_white = (rgb.min(axis=2) >= WHITE) & (np.ptp(rgb, axis=2) <= SPREAD)
 
@@ -50,16 +79,7 @@ def main() -> None:
     m = Image.fromarray(alpha).filter(ImageFilter.GaussianBlur(0.7))
     im.putalpha(m)
 
-    bbox = im.getbbox()
-    im = im.crop(bbox)
-    print(f"cropped to {im.size[0]} x {im.size[1]}")
-
-    OUT.mkdir(parents=True, exist_ok=True)
-    im.resize((512, 512), Image.LANCZOS).save(OUT / "pyrantis-logo.png")
-    for s in (180, 96, 48, 32):
-        im.resize((s, s), Image.LANCZOS).save(OUT / f"pyrantis-{s}.png")
-    for f in sorted(OUT.glob("pyrantis*.png")):
-        print(f"  {f.name}  {f.stat().st_size/1000:.0f} kB")
+    _emit(im)
 
 
 if __name__ == "__main__":

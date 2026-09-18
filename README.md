@@ -70,7 +70,7 @@ tests/        pipeline tests
 
 ```bash
 uv venv --python 3.12 .venv
-uv pip install --python .venv/bin/python -r requirements.txt
+uv pip install --python .venv/bin/python -r env/requirements.txt
 .venv/bin/python scripts/download_nafi.py      # 26 GeoTIFFs, about 40 MB
 .venv/bin/python scripts/build_grid.py         # cell-by-year labels
 .venv/bin/python scripts/build_features.py     # fire-history features
@@ -126,3 +126,15 @@ wet season, so it could genuinely be run in May.
 The test years are split by time, never at random. Cells are correlated with themselves
 across years and with their neighbours across space, so a random split would report an
 accuracy that would not survive contact with a real season.
+
+## Deploying
+
+The site is served from `_site/`, which is committed, so Cloudflare Workers Builds needs
+no build step: `wrangler.toml` declares the assets directory and the deploy command is
+`npx wrangler deploy`.
+
+Python requirements live under `env/` rather than at the repository root. Cloudflare
+detects a root `requirements.txt` and pip-installs the whole analysis stack, TensorFlow
+included, before every deploy of a static page that needs none of it.
+
+Live at https://pyrantis.harshlabs.workers.dev
