@@ -1,0 +1,437 @@
+{
+  "split": {
+    "train": [
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019
+    ],
+    "val": [
+      2020,
+      2021,
+      2022
+    ],
+    "test": [
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "features": [
+    "freq_3",
+    "freq_5",
+    "freq_10",
+    "late_freq_3",
+    "late_freq_5",
+    "late_freq_10",
+    "yrs_since_burnt",
+    "never_burnt",
+    "yrs_since_late",
+    "never_late",
+    "prev_burnt",
+    "prev_early",
+    "prev_late",
+    "prev_frac_burnt",
+    "prev_frac_early",
+    "prev_frac_late",
+    "prev2_burnt",
+    "nbr_frac_burnt_prev",
+    "nbr_frac_early_prev",
+    "nbr_frac_late_prev",
+    "lon",
+    "lat",
+    "wx_wet_rain",
+    "wx_wet_rain_prev",
+    "wx_dry_rain_prev",
+    "wx_apr_rain",
+    "wx_days_since_rain",
+    "wx_days_since_heavy",
+    "wx_wet_tmax",
+    "wx_wet_vpd",
+    "wx_apr_vpd",
+    "wx_wet_radn",
+    "wx_dry_tmax_prev",
+    "wx_dry_vpd_prev",
+    "wx_wet_rain_anom",
+    "wx_wet_rain_ratio"
+  ],
+  "weather_included": true,
+  "class_order": [
+    "unburnt",
+    "early",
+    "late"
+  ],
+  "results": [
+    {
+      "model": "majority class",
+      "accuracy": 0.5784226416733639,
+      "precision_macro": 0.19280754722445462,
+      "recall_macro": 0.3333333333333333,
+      "f1_macro": 0.244304081979019,
+      "f1_per_class": {
+        "unburnt": 0.7329122459370571,
+        "early": 0.0,
+        "late": 0.0
+      },
+      "confusion": [
+        [
+          79890,
+          0,
+          0
+        ],
+        [
+          22942,
+          0,
+          0
+        ],
+        [
+          35285,
+          0,
+          0
+        ]
+      ],
+      "train_seconds": 0.0
+    },
+    {
+      "model": "same as last year",
+      "accuracy": 0.5673957586683753,
+      "precision_macro": 0.5110037494049813,
+      "recall_macro": 0.5035148265041856,
+      "f1_macro": 0.5063184120860589,
+      "f1_per_class": {
+        "unburnt": 0.6921723198572841,
+        "early": 0.5858230814294083,
+        "late": 0.24095983497148404
+      },
+      "confusion": [
+        [
+          57424,
+          3579,
+          18887
+        ],
+        [
+          6129,
+          13000,
+          3813
+        ],
+        [
+          22481,
+          4861,
+          7943
+        ]
+      ],
+      "train_seconds": 0.0
+    },
+    {
+      "model": "decision tree",
+      "accuracy": 0.6584200351875584,
+      "precision_macro": 0.5935912259265593,
+      "recall_macro": 0.5705278505608263,
+      "f1_macro": 0.5664579573059924,
+      "f1_per_class": {
+        "unburnt": 0.7726387727734355,
+        "early": 0.6440231700895208,
+        "late": 0.2827119290550205
+      },
+      "confusion": [
+        [
+          68851,
+          3398,
+          7641
+        ],
+        [
+          6169,
+          14676,
+          2097
+        ],
+        [
+          23313,
+          4560,
+          7412
+        ]
+      ],
+      "train_seconds": 13.4
+    },
+    {
+      "model": "decision tree (balanced)",
+      "accuracy": 0.6441060839722844,
+      "precision_macro": 0.5889409758527662,
+      "recall_macro": 0.6192498946845585,
+      "f1_macro": 0.600366972190436,
+      "f1_per_class": {
+        "unburnt": 0.751900710429472,
+        "early": 0.6101532933216102,
+        "late": 0.43904691282022584
+      },
+      "confusion": [
+        [
+          57311,
+          6243,
+          16336
+        ],
+        [
+          2819,
+          15961,
+          4162
+        ],
+        [
+          12423,
+          7172,
+          15690
+        ]
+      ],
+      "train_seconds": 13.4
+    },
+    {
+      "model": "random forest",
+      "accuracy": 0.686606283078839,
+      "precision_macro": 0.6585006650513455,
+      "recall_macro": 0.5628126786768214,
+      "f1_macro": 0.5413503939502031,
+      "f1_per_class": {
+        "unburnt": 0.8009316287976813,
+        "early": 0.6891289637632125,
+        "late": 0.13399058928971544
+      },
+      "confusion": [
+        [
+          77374,
+          1644,
+          872
+        ],
+        [
+          6856,
+          14767,
+          1319
+        ],
+        [
+          29090,
+          3504,
+          2691
+        ]
+      ],
+      "train_seconds": 125.8
+    },
+    {
+      "model": "random forest (balanced)",
+      "accuracy": 0.7001093275990645,
+      "precision_macro": 0.6587988930864898,
+      "recall_macro": 0.6033341166700302,
+      "f1_macro": 0.598003043886412,
+      "f1_per_class": {
+        "unburnt": 0.8090882686585159,
+        "early": 0.6809988857573572,
+        "late": 0.3039219772433627
+      },
+      "confusion": [
+        [
+          73820,
+          2770,
+          3300
+        ],
+        [
+          5248,
+          15585,
+          2109
+        ],
+        [
+          23519,
+          4474,
+          7292
+        ]
+      ],
+      "train_seconds": 109.4
+    },
+    {
+      "model": "naive bayes",
+      "accuracy": 0.6294301208395781,
+      "precision_macro": 0.5730549916163699,
+      "recall_macro": 0.5961918145539736,
+      "f1_macro": 0.5825138200197099,
+      "f1_per_class": {
+        "unburnt": 0.735394627735759,
+        "early": 0.6542000357703543,
+        "late": 0.3579467965530161
+      },
+      "confusion": [
+        [
+          58533,
+          4394,
+          16963
+        ],
+        [
+          3947,
+          16460,
+          2535
+        ],
+        [
+          16818,
+          6525,
+          11942
+        ]
+      ],
+      "train_seconds": 0.1
+    },
+    {
+      "model": "naive bayes (balanced)",
+      "accuracy": 0.6227618613204746,
+      "precision_macro": 0.5746875822274197,
+      "recall_macro": 0.6017867861776347,
+      "f1_macro": 0.5859320393226238,
+      "f1_per_class": {
+        "unburnt": 0.7236633516017781,
+        "early": 0.6525345258968853,
+        "late": 0.3815982404692082
+      },
+      "confusion": [
+        [
+          55920,
+          4552,
+          19418
+        ],
+        [
+          3689,
+          16561,
+          2692
+        ],
+        [
+          15048,
+          6704,
+          13533
+        ]
+      ],
+      "train_seconds": 0.1
+    },
+    {
+      "model": "multilayer ANN",
+      "accuracy": 0.6952945690972147,
+      "precision_macro": 0.6621788841567349,
+      "recall_macro": 0.5847669176154987,
+      "f1_macro": 0.5796164536516442,
+      "f1_per_class": {
+        "unburnt": 0.8055835479416266,
+        "early": 0.6888341354456905,
+        "late": 0.24443167756761536
+      },
+      "confusion": [
+        [
+          75544,
+          1719,
+          2627
+        ],
+        [
+          6172,
+          14957,
+          1813
+        ],
+        [
+          25945,
+          3809,
+          5531
+        ]
+      ],
+      "train_seconds": 5.9
+    },
+    {
+      "model": "multilayer ANN (balanced)",
+      "accuracy": 0.6755504391204559,
+      "precision_macro": 0.6466083040114337,
+      "recall_macro": 0.6653443900168067,
+      "f1_macro": 0.6513973219669343,
+      "f1_per_class": {
+        "unburnt": 0.7601484981437732,
+        "early": 0.6714333923901122,
+        "late": 0.5226100753669178
+      },
+      "confusion": [
+        [
+          56308,
+          3317,
+          20265
+        ],
+        [
+          2983,
+          15917,
+          4042
+        ],
+        [
+          8969,
+          5236,
+          21080
+        ]
+      ],
+      "train_seconds": 5.5
+    },
+    {
+      "model": "LSTM",
+      "accuracy": 0.7026434110210908,
+      "precision_macro": 0.6709504662944324,
+      "recall_macro": 0.5979153627606798,
+      "f1_macro": 0.6053700915956987,
+      "f1_per_class": {
+        "unburnt": 0.8097372295289471,
+        "early": 0.6876707167749835,
+        "late": 0.31870232848316526
+      },
+      "confusion": [
+        [
+          74527,
+          1482,
+          3881
+        ],
+        [
+          5735,
+          14602,
+          2605
+        ],
+        [
+          23925,
+          3442,
+          7918
+        ]
+      ],
+      "train_seconds": 199.5
+    },
+    {
+      "model": "LSTM (balanced)",
+      "accuracy": 0.7123091292165338,
+      "precision_macro": 0.670040657330872,
+      "recall_macro": 0.6783649802180705,
+      "f1_macro": 0.6738876863042723,
+      "f1_per_class": {
+        "unburnt": 0.8033638734275677,
+        "early": 0.6847402458349394,
+        "late": 0.5335589396503102
+      },
+      "confusion": [
+        [
+          63001,
+          2820,
+          14069
+        ],
+        [
+          3008,
+          15988,
+          3946
+        ],
+        [
+          10944,
+          4948,
+          19393
+        ]
+      ],
+      "train_seconds": 77.7
+    }
+  ]
+}

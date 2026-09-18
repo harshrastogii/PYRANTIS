@@ -108,8 +108,15 @@ def fig_models(runs: dict) -> None:
     ax.set_xlim(0, max(max(bal.values()), 0.7) + 0.1)
     ax.legend(frameon=False, fontsize=8, ncol=2, loc="lower left",
               bbox_to_anchor=(0, 1.0), columnspacing=1.4)
-    ax.set_title("No model beats a decision tree by much", loc="left",
-                 fontsize=11, weight="bold", pad=34)
+    # Written from the numbers rather than hardcoded: on fire history alone the field is
+    # flat and a decision tree matches the deep models, and a stale title would have
+    # claimed that still held once weather moved the LSTM in front.
+    rank = sorted(((bal[n], n) for n in order), reverse=True)
+    margin = rank[0][0] - rank[1][0]
+    headline = (f"The models finish within {margin:.3f} F1 of each other"
+                if margin < 0.02 else
+                f"{rank[0][1].capitalize()} leads by {margin:.3f} F1")
+    ax.set_title(headline, loc="left", fontsize=11, weight="bold", pad=34)
 
     ax = axes[1]
     best = max(rows, key=lambda r: r["f1_macro"])

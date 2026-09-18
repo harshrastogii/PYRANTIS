@@ -147,7 +147,7 @@
           3372
         ]
       ],
-      "train_seconds": 2.4
+      "train_seconds": 2.5
     },
     {
       "model": "decision tree (balanced)",
@@ -207,7 +207,7 @@
           2791
         ]
       ],
-      "train_seconds": 24.1
+      "train_seconds": 25.2
     },
     {
       "model": "random forest (balanced)",
@@ -237,7 +237,7 @@
           9720
         ]
       ],
-      "train_seconds": 29.7
+      "train_seconds": 31.3
     },
     {
       "model": "naive bayes",
@@ -327,7 +327,7 @@
           1617
         ]
       ],
-      "train_seconds": 4.9
+      "train_seconds": 5.2
     },
     {
       "model": "multilayer ANN (balanced)",
@@ -357,67 +357,67 @@
           13194
         ]
       ],
-      "train_seconds": 5.0
+      "train_seconds": 5.5
     },
     {
       "model": "LSTM",
-      "accuracy": 0.6827037946089185,
-      "precision_macro": 0.646784858250332,
-      "recall_macro": 0.5585624357751658,
-      "f1_macro": 0.5213573074216571,
+      "accuracy": 0.6844486920509423,
+      "precision_macro": 0.6471414338091317,
+      "recall_macro": 0.5616303263246258,
+      "f1_macro": 0.5320556276298919,
       "f1_per_class": {
-        "unburnt": 0.7992920426832405,
-        "early": 0.69229197411738,
-        "late": 0.07248790546435085
+        "unburnt": 0.7995951417004049,
+        "early": 0.695252750281344,
+        "late": 0.10131899090792675
       },
       "confusion": [
         [
-          77676,
-          1699,
-          515
+          77420,
+          1562,
+          908
         ],
         [
-          7040,
-          15246,
-          656
+          6932,
+          15136,
+          874
         ],
         [
-          29756,
-          4158,
-          1371
+          29406,
+          3901,
+          1978
         ]
       ],
-      "train_seconds": 46.9
+      "train_seconds": 58.7
     },
     {
       "model": "LSTM (balanced)",
-      "accuracy": 0.6847310613465395,
-      "precision_macro": 0.6301335377228374,
-      "recall_macro": 0.6350722672923549,
-      "f1_macro": 0.6305445219694529,
+      "accuracy": 0.6959751515019874,
+      "precision_macro": 0.6406769260703985,
+      "recall_macro": 0.6440223680739785,
+      "f1_macro": 0.6394110848534629,
       "f1_per_class": {
-        "unburnt": 0.7881737393179312,
-        "early": 0.6804171011470281,
-        "late": 0.4230427254433993
+        "unburnt": 0.7986059761197648,
+        "early": 0.6806137258967447,
+        "late": 0.43901355254387914
       },
       "confusion": [
         [
-          64700,
-          3060,
-          12130
+          65881,
+          3144,
+          10865
         ],
         [
           3497,
-          16313,
-          3132
+          16413,
+          3032
         ],
         [
-          16090,
-          5635,
-          13560
+          15722,
+          5731,
+          13832
         ]
       ],
-      "train_seconds": 50.9
+      "train_seconds": 65.9
     }
   ]
 }

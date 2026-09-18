@@ -159,6 +159,10 @@ def main() -> None:
     ap.add_argument("--tag", default=None)
     args = ap.parse_args()
 
+    # One tag for every artefact this run writes, so the fire-history and weather runs
+    # never overwrite each other's importances or results.
+    tag = args.tag or ("_weather" if args.weather else "_firehistory")
+
     path = PROC / ("cell_year_features_weather.parquet" if args.weather
                    else "cell_year_features.parquet")
     feat = pd.read_parquet(path).reset_index(drop=True)
@@ -224,7 +228,7 @@ def main() -> None:
             if name == "random forest" and weighted:
                 imp = sorted(zip(features, m.feature_importances_), key=lambda t: -t[1])
                 json.dump({k: float(v) for k, v in imp},
-                          open(PROJ / "reports" / f"feature_importance{args.tag or ''}.json", "w"),
+                          open(PROJ / "reports" / f"feature_importance{tag}.json", "w"),
                           indent=2)
                 log("    top: " + ", ".join(f"{k} {v:.3f}" for k, v in imp[:6]))
 
@@ -268,18 +272,24 @@ def main() -> None:
     log(f"  sequence tensor {seq.shape}, {seq.nbytes / 1e6:.0f} MB")
     Qtr, Qva, Qte = seq[tr], seq[va], seq[te]
 
+    # Two inputs, not one. The recurrent branch reads the year-by-year fire history; the
+    # dense branch reads the same static columns every other model gets, weather included.
+    # Without the second branch the LSTM would be the only model judged blind to weather,
+    # and its score would say more about what it was withheld than about the architecture.
     def lstm():
-        return keras.Sequential([
-            keras.layers.Input((SEQ_LEN, seq.shape[2])),
-            keras.layers.LSTM(64),
-            keras.layers.Dropout(0.2),
-            keras.layers.Dense(32, activation="relu"),
-            keras.layers.Dense(len(CLASSES), activation="softmax"),
-        ])
-    for w in (False, True):
-        fit_nn(lstm, Qtr, Qva, Qte, "LSTM", w, epochs=25)
+        seq_in = keras.layers.Input((SEQ_LEN, seq.shape[2]), name="history")
+        sta_in = keras.layers.Input((len(features),), name="static")
+        h = keras.layers.LSTM(64)(seq_in)
+        h = keras.layers.Dropout(0.2)(h)
+        g = keras.layers.Dense(32, activation="relu")(sta_in)
+        z = keras.layers.Concatenate()([h, g])
+        z = keras.layers.Dense(32, activation="relu")(z)
+        out = keras.layers.Dense(len(CLASSES), activation="softmax")(z)
+        return keras.Model([seq_in, sta_in], out)
 
-    tag = args.tag or ("_weather" if args.weather else "_firehistory")
+    for w in (False, True):
+        fit_nn(lstm, [Qtr, Str], [Qva, Sva], [Qte, Ste], "LSTM", w, epochs=25)
+
     out = PROJ / "reports" / f"results{tag}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     json.dump({
