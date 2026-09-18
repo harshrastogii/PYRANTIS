@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Raw and intermediate data are large and re-downloadable; scripts rebuild them.
+data/raw/
+data/interim/
+data/processed/*.parquet
+*.zip
