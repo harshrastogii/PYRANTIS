@@ -109,6 +109,14 @@ def main() -> int:
         n_valid = blk(inside)
         n_burnt = n_early + n_late
 
+        # The raster already carries the month each pixel was detected as burnt, so the
+        # cell can name its busiest month rather than only which side of 31 July it fell.
+        # "Late" is a category; "most of this cell burnt in August" is something a person
+        # can plan around.
+        per_month = np.stack([blk(burnt & (arr == m)) for m in range(1, 13)])
+        peak_month = per_month.argmax(axis=0) + 1
+        peak_month = np.where(n_burnt > 0, peak_month, 0)
+
         with np.errstate(invalid="ignore", divide="ignore"):
             frac_burnt = np.where(n_valid > 0, n_burnt / n_valid, np.nan)
             frac_early = np.where(n_valid > 0, n_early / n_valid, np.nan)
@@ -133,6 +141,7 @@ def main() -> int:
             "frac_burnt": frac_burnt[keep].astype("float32"),
             "frac_early": frac_early[keep].astype("float32"),
             "frac_late": frac_late[keep].astype("float32"),
+            "peak_month": peak_month[keep].astype("int8"),
             "label": pd.Categorical(label[keep], categories=CLASSES),
         }))
         counts = frames[-1]["label"].value_counts()
