@@ -43,9 +43,10 @@ from pyrantis.schema import RAW, STATE
 OUT = RAW / "silo"
 ENDPOINT = "https://www.longpaddock.qld.gov.au/cgi-bin/silo/DataDrillDataset.php"
 CONTACT = "meetamiyaa@gmail.com"      # Data Drill asks for a contact address
-# The reference tag must be a single token: the site's firewall rejects any
-# comment containing spaces with a generic "Request Rejected" page.
-REF = "PYRANTIS-CDU"
+# The reference tag must be a bare alphanumeric token. A comment containing spaces is
+# blocked by the site firewall with a generic "Request Rejected" page, and one containing
+# punctuation is rejected by the API itself as an invalid value.
+REF = "PYRANTIS"
 
 STEP = 0.5                            # degrees between sampled points
 START, FINISH = "19990101", "20251231"
