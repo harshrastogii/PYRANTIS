@@ -193,9 +193,12 @@ def main() -> None:
     ytr, yva, yte = y_all[tr], y_all[va], y_all[te]
 
     results = []
+    preds: dict[str, np.ndarray] = {}      # test-set predictions, kept for the atlas
 
-    def add(r):
+    def add(r, yhat=None):
         results.append(r)
+        if yhat is not None:
+            preds[r["model"]] = np.asarray(yhat, dtype="int8")
         log(f"  {r['model']:<34} acc {r['accuracy']:.3f}  macro-F1 {r['f1_macro']:.3f}"
             f"  ({r['train_seconds']}s)")
 
@@ -205,7 +208,7 @@ def main() -> None:
     prev = np.zeros(len(feat), dtype=int)
     prev[feat["prev_late"].to_numpy() == 1] = CLASSES.index("late")
     prev[feat["prev_early"].to_numpy() == 1] = CLASSES.index("early")
-    add(score("same as last year", yte, prev[te], 0.0))
+    add(score("same as last year", yte, prev[te], 0.0), prev[te])
 
     log("\nclassical models")
     specs = [
@@ -222,9 +225,10 @@ def main() -> None:
             m = make("balanced" if weighted else None)
             t0 = time.time()
             m.fit(Xtr, ytr)
-            r = score(f"{name}{' (balanced)' if weighted else ''}",
-                      yte, m.predict(Xte), time.time() - t0)
-            add(r)
+            yhat = m.predict(Xte)
+            r = score(f"{name}{' (balanced)' if weighted else ''}", yte, yhat,
+                      time.time() - t0)
+            add(r, yhat)
             if name == "random forest" and weighted:
                 imp = sorted(zip(features, m.feature_importances_), key=lambda t: -t[1])
                 json.dump({k: float(v) for k, v in imp},
@@ -251,8 +255,9 @@ def main() -> None:
         m.fit(Atr, ytr, validation_data=(Ava, yva), epochs=epochs, batch_size=4096,
               verbose=0, class_weight=(cw if weighted else None),
               callbacks=[BestMacroF1(Ava, yva)])
-        add(score(f"{name}{' (balanced)' if weighted else ''}", yte,
-                  m.predict(Ate, verbose=0, batch_size=8192).argmax(1), time.time() - t0))
+        yhat = m.predict(Ate, verbose=0, batch_size=8192).argmax(1)
+        add(score(f"{name}{' (balanced)' if weighted else ''}", yte, yhat,
+                  time.time() - t0), yhat)
 
     log("\nmultilayer ANN")
     def ann():
@@ -299,6 +304,15 @@ def main() -> None:
         "class_order": list(CLASSES),
         "results": results,
     }, open(out, "w"), indent=2)
+
+    # Test-set predictions are kept so the atlas can show what the models actually
+    # returned for 2023-2025 rather than a plausible-looking stand-in.
+    np.savez_compressed(
+        PROJ / "reports" / f"test_predictions{tag}.npz",
+        cell_id=feat.loc[te, "cell_id"].to_numpy(),
+        year=feat.loc[te, "year"].to_numpy(),
+        y_true=yte,
+        **{k.replace(" ", "_"): v for k, v in preds.items()})
 
     log("\n" + "=" * 88)
     log(f"{'model':<34}{'acc':>7}{'mP':>8}{'mR':>8}{'mF1':>8}{'F1 unburnt':>12}"

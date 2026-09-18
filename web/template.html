@@ -1,0 +1,643 @@
+<title>Pyrantis Fire Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  /* Ash ground with a green bias toward the early-burn accent, not a neutral grey. */
+  --ground:#E8EBEA; --panel:#F2F4F3; --ink:#161C1B; --ink-soft:#5A6866;
+  --rule:#C3CBC9; --rule-soft:#D7DDDB;
+  --unburnt:#8FA0A5; --early:#1E7A5F; --late:#D24316;
+  --grid-void:#DFE4E2;
+  --focus:#1E7A5F;
+  --sans:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --measure:64ch;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1211; --panel:#141B19; --ink:#E4EAE8; --ink-soft:#93A29F;
+    --rule:#263230; --rule-soft:#1C2523;
+    --unburnt:#6F8085; --early:#37A67F; --late:#F0592A;
+    --grid-void:#121917;
+    --focus:#37A67F;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1211; --panel:#141B19; --ink:#E4EAE8; --ink-soft:#93A29F;
+  --rule:#263230; --rule-soft:#1C2523;
+  --unburnt:#6F8085; --early:#37A67F; --late:#F0592A;
+  --grid-void:#121917;
+  --focus:#37A67F;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  background:var(--ground); color:var(--ink); font-family:var(--sans);
+  font-size:15px; line-height:1.55; margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding-inline:20px; padding-block:0}
+
+h1,h2,h3{text-wrap:balance; margin:0; font-weight:600; letter-spacing:-0.015em}
+p{margin:0}
+a{color:inherit; text-underline-offset:3px; text-decoration-thickness:1px}
+a:focus-visible,button:focus-visible,input:focus-visible{
+  outline:2px solid var(--focus); outline-offset:3px; border-radius:2px}
+
+/* Uppercase mono micro-labels, the way a map sheet annotates its own margins. */
+.lab{
+  font-family:var(--mono); font-size:10.5px; font-weight:500;
+  letter-spacing:0.13em; text-transform:uppercase; color:var(--ink-soft);
+}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ---------------------------------------------------------------- masthead */
+.masthead{border-bottom:1px solid var(--rule)}
+.masthead .wrap{
+  display:flex; flex-wrap:wrap; gap:18px 28px; align-items:baseline;
+  padding-block:22px 18px;
+}
+.mark{
+  font-family:var(--mono); font-weight:600; font-size:19px;
+  letter-spacing:0.22em; text-transform:uppercase; margin:0;
+}
+.mark span{color:var(--late)}
+.tagline{color:var(--ink-soft); font-size:14px; max-width:46ch; flex:1 1 320px}
+
+/* ------------------------------------------------------------------- atlas */
+.atlas{padding-block:30px 8px}
+.atlas-head{
+  display:flex; flex-wrap:wrap; gap:12px 24px; align-items:flex-end;
+  justify-content:space-between; margin-bottom:18px;
+}
+.atlas-head h2{font-size:21px}
+.atlas-head .sub{color:var(--ink-soft); font-size:13.5px; max-width:52ch; margin-top:4px}
+
+.legend{display:flex; gap:16px; flex-wrap:wrap}
+.legend .item{display:flex; align-items:center; gap:7px}
+.swatch{width:11px; height:11px; border-radius:1px; flex:none}
+.sw-unburnt{background:var(--unburnt)} .sw-early{background:var(--early)}
+.sw-late{background:var(--late)}
+
+.sheets{
+  display:grid; gap:22px;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(220px,300px);
+  align-items:start;
+}
+@media (max-width:940px){ .sheets{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+@media (max-width:620px){ .sheets{grid-template-columns:minmax(0,1fr)} }
+
+.sheet{min-width:0}
+.sheet-title{
+  display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  padding-bottom:7px; margin-bottom:9px; border-bottom:1px solid var(--rule);
+}
+.sheet-title strong{font-size:14px; font-weight:600; letter-spacing:0}
+.plate{position:relative; background:var(--grid-void); border:1px solid var(--rule)}
+.plate canvas{
+  display:block; width:100%; height:auto; image-rendering:pixelated;
+}
+.plate.empty{
+  display:grid; place-items:center; aspect-ratio:181/301; padding:24px; text-align:center;
+}
+.plate.empty p{font-family:var(--mono); font-size:12px; color:var(--ink-soft); line-height:1.7}
+.coords{
+  display:flex; justify-content:space-between; margin-top:6px;
+  font-family:var(--mono); font-size:10px; color:var(--ink-soft);
+}
+.hoverline{
+  margin-top:6px; font-family:var(--mono); font-size:11px; color:var(--ink-soft);
+  min-height:1.5em;
+}
+
+/* ----------------------------------------------------------------- readout */
+.readout{
+  background:var(--panel); border:1px solid var(--rule); padding:16px 16px 18px;
+  display:flex; flex-direction:column; gap:16px;
+}
+@media (max-width:940px){ .readout{grid-column:1 / -1} }
+.readout .year{
+  font-family:var(--mono); font-size:38px; font-weight:600; line-height:1;
+  letter-spacing:-0.02em;
+}
+.readout .yearnote{margin-top:5px; font-size:12px; color:var(--ink-soft)}
+
+.share{display:flex; height:9px; border-radius:1px; overflow:hidden; margin-top:9px}
+.share i{display:block; height:100%}
+.share-rows{display:flex; flex-direction:column; gap:5px; margin-top:11px}
+.share-rows .row{display:flex; align-items:center; gap:8px; font-size:12.5px}
+.share-rows .row .k{flex:1}
+.share-rows .row .v{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+.stat{border-top:1px solid var(--rule-soft); padding-top:13px}
+.stat .big{font-family:var(--mono); font-size:25px; font-weight:600; line-height:1.1}
+.stat .cap{font-size:12px; color:var(--ink-soft); margin-top:3px; line-height:1.5}
+
+/* ---------------------------------------------------------------- scrubber */
+.scrub{margin-top:24px; border-top:1px solid var(--rule); padding-top:16px}
+.scrub-top{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+button.play{
+  font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:0.11em;
+  text-transform:uppercase; padding:8px 15px; cursor:pointer;
+  background:var(--ink); color:var(--ground); border:1px solid var(--ink);
+}
+button.play:hover{background:transparent; color:var(--ink)}
+input[type=range]{
+  flex:1 1 260px; min-width:180px; accent-color:var(--late); height:22px; cursor:pointer;
+}
+.ticks{
+  position:relative; height:26px; margin-top:2px;
+  font-family:var(--mono); font-size:10px; color:var(--ink-soft);
+}
+.ticks .t{position:absolute; transform:translateX(-50%); top:0; text-align:center}
+.ticks .t::before{
+  content:""; display:block; width:1px; height:5px; background:var(--rule);
+  margin:0 auto 3px;
+}
+/* The bracket marks the held-out years: it encodes the split, it is not decoration. */
+.heldout{
+  position:absolute; top:16px; height:9px; border:1px solid var(--late);
+  border-top:none; pointer-events:none;
+}
+.heldout span{
+  position:absolute; top:10px; left:50%; transform:translateX(-50%);
+  white-space:nowrap; color:var(--late); font-size:9.5px; letter-spacing:0.09em;
+}
+
+/* --------------------------------------------------------------- findings */
+.findings{padding-block:52px 10px; border-top:1px solid var(--rule); margin-top:46px}
+.findings h2{font-size:21px}
+.lede{color:var(--ink-soft); max-width:var(--measure); margin-top:8px; font-size:14.5px}
+
+.cols{display:grid; gap:40px; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); margin-top:28px}
+@media (max-width:860px){ .cols{grid-template-columns:minmax(0,1fr); gap:34px} }
+
+/* Bars drawn to one scale, with ticks the bars actually reach. */
+.chart{margin-top:14px}
+.bar-row{display:grid; grid-template-columns:118px minmax(0,1fr) 46px; gap:11px;
+         align-items:center; margin-bottom:7px; font-size:13px}
+.bar-row .name{text-align:right; color:var(--ink)}
+.bar-row.is-base .name, .bar-row.is-base .val{color:var(--ink-soft)}
+.track{position:relative; height:17px; background:var(--rule-soft)}
+.track i{display:block; height:100%; background:var(--early)}
+.bar-row.is-base .track i{background:var(--unburnt)}
+.bar-row .val{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:12.5px}
+.axis{
+  display:grid; grid-template-columns:118px minmax(0,1fr) 46px; gap:11px;
+  margin-top:9px; font-family:var(--mono); font-size:10px; color:var(--ink-soft);
+}
+.axis .marks{display:flex; justify-content:space-between}
+
+/* Confusion: a real matrix, not a heat-map ornament. */
+table.cm{border-collapse:collapse; margin-top:14px; font-size:13px}
+table.cm th{font-weight:500; color:var(--ink-soft); padding:6px 9px; text-align:center}
+table.cm th.side{text-align:right}
+table.cm td{
+  padding:11px 9px; text-align:center; min-width:62px; border:1px solid var(--ground);
+  font-family:var(--mono); font-variant-numeric:tabular-nums;
+}
+.cm-note{margin-top:11px; font-size:12.5px; color:var(--ink-soft); max-width:42ch}
+
+.imp{margin-top:14px; display:flex; flex-direction:column; gap:6px}
+.imp .r{display:grid; grid-template-columns:minmax(0,1fr) 84px; gap:10px;
+        align-items:center; font-size:12.5px}
+.imp .r .n{font-family:var(--mono); font-size:11.5px; overflow:hidden; text-overflow:ellipsis;
+           white-space:nowrap}
+.imp .r .b{height:9px; background:var(--rule-soft)}
+.imp .r .b i{display:block; height:100%; background:var(--unburnt)}
+.imp .r.wx .b i{background:var(--late)}
+.imp-key{margin-top:10px; font-size:12px; color:var(--ink-soft)}
+
+/* ---------------------------------------------------------------- method */
+.method{padding-block:50px 60px; border-top:1px solid var(--rule); margin-top:50px}
+.rules{display:grid; gap:30px; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); margin-top:24px}
+.rule h3{font-size:15px; margin-bottom:7px}
+.rule p{font-size:13.5px; color:var(--ink-soft); max-width:42ch}
+.rule .lab{display:block; margin-bottom:9px}
+
+.sources{margin-top:42px; border-top:1px solid var(--rule-soft); padding-top:20px;
+         font-size:13px; color:var(--ink-soft); max-width:var(--measure)}
+.sources p + p{margin-top:9px}
+footer{border-top:1px solid var(--rule)}
+footer .wrap{padding-block:18px 26px; display:flex; flex-wrap:wrap; gap:8px 24px;
+             justify-content:space-between; font-size:12px; color:var(--ink-soft)}
+
+@media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <h1 class="mark">Pyran<span>tis</span></h1>
+    <p class="tagline">Which parts of the Northern Territory will burn, and whether the
+      fire arrives before or after the end of July &mdash; forecast from the wet season
+      that precedes it.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="atlas">
+    <div class="atlas-head">
+      <div>
+        <h2>The fire year, cell by cell</h2>
+        <p class="sub">Every square is 0.05&deg; of the Territory, about 5&nbsp;km across,
+          classified from NAFI satellite burnt-area mapping.</p>
+      </div>
+      <div class="legend">
+        <span class="item"><i class="swatch sw-unburnt"></i><span class="lab">Unburnt</span></span>
+        <span class="item"><i class="swatch sw-early"></i><span class="lab">Early &mdash; to 31 Jul</span></span>
+        <span class="item"><i class="swatch sw-late"></i><span class="lab">Late &mdash; after 31 Jul</span></span>
+      </div>
+    </div>
+
+    <div class="sheets">
+      <div class="sheet">
+        <div class="sheet-title"><strong>Observed</strong><span class="lab">NAFI</span></div>
+        <div class="plate"><canvas id="c-obs"></canvas></div>
+        <div class="coords"><span id="lon-l"></span><span id="lon-r"></span></div>
+        <div class="hoverline" id="hover">Point at the map to read a cell.</div>
+      </div>
+
+      <div class="sheet">
+        <div class="sheet-title"><strong>Model</strong><span class="lab" id="model-name"></span></div>
+        <div class="plate" id="plate-pred"><canvas id="c-pred"></canvas></div>
+        <div class="plate empty" id="plate-empty" hidden><p id="empty-msg"></p></div>
+        <div class="coords"><span id="lon-l2"></span><span id="lon-r2"></span></div>
+        <div class="hoverline" id="hover2">&nbsp;</div>
+      </div>
+
+      <aside class="readout">
+        <div>
+          <div class="year num" id="r-year">&mdash;</div>
+          <div class="yearnote" id="r-yearnote"></div>
+          <div class="share" id="r-share"></div>
+          <div class="share-rows" id="r-rows"></div>
+        </div>
+        <div class="stat">
+          <div class="big" id="r-agree">&mdash;</div>
+          <div class="cap" id="r-agreecap"></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="scrub">
+      <div class="scrub-top">
+        <button class="play" id="play" type="button" aria-label="Play through the years">Play</button>
+        <input type="range" id="slider" min="0" max="1" step="1" value="0"
+               aria-label="Year" />
+      </div>
+      <div class="ticks" id="ticks"></div>
+    </div>
+  </section>
+
+  <section class="findings">
+    <h2>What the models could do with it</h2>
+    <p class="lede">Trained on 2005&ndash;2019, tuned on 2020&ndash;2022, scored once on
+      2023&ndash;2025. Split by year rather than at random, because a cell resembles
+      itself from one year to the next and a random split would report an accuracy no
+      real season would repeat.</p>
+
+    <div class="cols">
+      <div>
+        <span class="lab">Macro-averaged F1 on the held-out years</span>
+        <div class="chart" id="chart"></div>
+        <p class="cm-note" id="chart-note"></p>
+      </div>
+
+      <div>
+        <span class="lab">Where <span id="cm-model"></span> goes wrong</span>
+        <table class="cm" id="cm"></table>
+        <p class="cm-note" id="cm-note"></p>
+      </div>
+    </div>
+
+    <div class="cols" style="margin-top:44px">
+      <div>
+        <span class="lab">What the forest leans on</span>
+        <div class="imp" id="imp"></div>
+        <p class="imp-key">Weather in orange, fire history in slate. The strongest single
+          predictor is not fire history at all.</p>
+      </div>
+      <div>
+        <span class="lab">Why that follows</span>
+        <p class="lede" style="margin-top:12px">A wet growing season builds the grass that
+          will carry a fire months later, and how thirsty the air has been decides how
+          early that grass cures enough to burn. Vapour pressure deficit and wet-season
+          rainfall outrank every record of where fire has been before.</p>
+        <p class="lede" style="margin-top:14px">On fire history alone the whole field was
+          flat: a single decision tree matched the LSTM to three decimal places. The
+          sequence model only earns its place once it can also see the wet season.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="method">
+    <h2>How it is kept honest</h2>
+    <div class="rules">
+      <div class="rule">
+        <span class="lab">Rule one</span>
+        <h3>Nothing sees the year it predicts</h3>
+        <p>Fire-history features come from the same table as the label, so an off-by-one
+          would let a model read the answer. Two tests check it: sampled features are
+          recomputed from the raw record, and a year&rsquo;s labels are scrambled to
+          confirm not one of its features moves.</p>
+      </div>
+      <div class="rule">
+        <span class="lab">Rule two</span>
+        <h3>Weather stops at 30 April</h3>
+        <p>The fire season runs May to October. August weather would describe the fire
+          rather than anticipate it. Everything the model uses is known by the end of the
+          wet season, so it could genuinely be run in May.</p>
+      </div>
+      <div class="rule">
+        <span class="lab">Stated limit</span>
+        <h3>The month is approximate</h3>
+        <p>NAFI assigns each burnt pixel the month covering most of the interval in which
+          it was detected. Close to the July boundary that attribution is imprecise, which
+          is a real limit on the early/late split rather than one worth hiding.</p>
+      </div>
+    </div>
+
+    <div class="sources">
+      <p><strong>Burnt area.</strong> North Australia and Rangelands Fire Information
+        (NAFI), Charles Darwin University &mdash; 250&nbsp;m fire-scar mapping, 2000&ndash;2025,
+        used with permission.</p>
+      <p><strong>Weather.</strong> SILO Data Drill, Queensland Department of Environment,
+        Science and Innovation, from Bureau of Meteorology observations, licensed
+        CC&nbsp;BY&nbsp;4.0.</p>
+      <p>The 31&nbsp;July cut-off is the northern-Australian savanna burning convention;
+        NAFI publishes its own &ldquo;fire frequency after July 31&rdquo; layer on the
+        same basis.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>PYRANTIS &mdash; PRT565, Charles Darwin University</span>
+    <span class="num" id="foot-counts"></span>
+  </div>
+</footer>
+
+<script id="atlas-data" type="application/json">__ATLAS_DATA__</script>
+<script>
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("atlas-data").textContent);
+  var G = D.grid, YEARS = D.years, CLASSES = D.classes;
+  var HELD = D.split.test;
+
+  var obsCanvas = document.getElementById("c-obs");
+  var predCanvas = document.getElementById("c-pred");
+  [obsCanvas, predCanvas].forEach(function (c) { c.width = G.cols; c.height = G.rows; });
+
+  function palette() {
+    var s = getComputedStyle(document.documentElement);
+    function rgb(name) {
+      var v = s.getPropertyValue(name).trim();
+      var m = v.match(/^#([0-9a-f]{6})$/i);
+      if (m) {
+        var n = parseInt(m[1], 16);
+        return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+      }
+      var p = v.match(/\d+/g) || [128, 128, 128];
+      return [+p[0], +p[1], +p[2]];
+    }
+    return { 0: rgb("--unburnt"), 1: rgb("--early"), 2: rgb("--late"),
+             void: rgb("--grid-void") };
+  }
+
+  function paint(canvas, str) {
+    var ctx = canvas.getContext("2d");
+    var img = ctx.createImageData(G.cols, G.rows);
+    var px = img.data, pal = palette(), i, c, col;
+    for (i = 0; i < G.cols * G.rows; i++) {
+      c = str.charCodeAt(i);
+      col = (c === 48) ? pal[0] : (c === 49) ? pal[1] : (c === 50) ? pal[2] : pal.void;
+      px[i * 4] = col[0]; px[i * 4 + 1] = col[1]; px[i * 4 + 2] = col[2];
+      px[i * 4 + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  var idx = Math.max(0, YEARS.indexOf(HELD[HELD.length - 2]));   // open on a held-out year
+
+  function fmtLon(v) { return v.toFixed(1) + "\u00b0E"; }
+  function fmtLat(v) { return Math.abs(v).toFixed(1) + "\u00b0S"; }
+
+  function render() {
+    var year = YEARS[idx], ys = String(year);
+    var obs = D.observed[ys], pred = D.predicted[ys];
+
+    paint(obsCanvas, obs);
+
+    var plateP = document.getElementById("plate-pred");
+    var plateE = document.getElementById("plate-empty");
+    if (pred) {
+      plateP.hidden = false; plateE.hidden = true;
+      paint(predCanvas, pred);
+    } else {
+      plateP.hidden = true; plateE.hidden = false;
+      document.getElementById("empty-msg").textContent =
+        "The model forecasts only " + HELD[0] + "\u2013" + HELD[HELD.length - 1] +
+        ". Earlier years trained and tuned it, so its output there would flatter it.";
+    }
+
+    document.getElementById("r-year").textContent = year;
+    var held = pred ? "held out from training" :
+      (year >= D.split.val[0] && year <= D.split.val[D.split.val.length - 1])
+        ? "used for tuning" : (year >= D.split.train[0] ? "used for training"
+        : "before the modelling window");
+    document.getElementById("r-yearnote").textContent = held;
+
+    var a = D.annual[ys];
+    var share = document.getElementById("r-share");
+    var rows = document.getElementById("r-rows");
+    share.textContent = ""; rows.textContent = "";
+    CLASSES.forEach(function (c) {
+      var i = document.createElement("i");
+      i.style.width = a[c] + "%";
+      i.style.background = "var(--" + c + ")";
+      share.appendChild(i);
+
+      var r = document.createElement("div"); r.className = "row";
+      var sw = document.createElement("i"); sw.className = "swatch sw-" + c;
+      var k = document.createElement("span"); k.className = "k"; k.textContent = c;
+      var v = document.createElement("span"); v.className = "v";
+      v.textContent = a[c].toFixed(1) + "%";
+      r.appendChild(sw); r.appendChild(k); r.appendChild(v);
+      rows.appendChild(r);
+    });
+
+    var acc = D.accuracyByYear[ys];
+    document.getElementById("r-agree").textContent = acc ? acc.toFixed(1) + "%" : "\u2014";
+    document.getElementById("r-agreecap").textContent = acc
+      ? "of cells classified correctly in " + year + ", against 33% for a coin with three sides."
+      : "Agreement is only reported for the held-out years.";
+
+    document.getElementById("slider").value = idx;
+  }
+
+  // --------------------------------------------------------------- hovering
+  function attachHover(canvas, which, target) {
+    canvas.addEventListener("pointermove", function (e) {
+      var r = canvas.getBoundingClientRect();
+      var col = Math.floor((e.clientX - r.left) / r.width * G.cols);
+      var row = Math.floor((e.clientY - r.top) / r.height * G.rows);
+      if (col < 0 || row < 0 || col >= G.cols || row >= G.rows) return;
+      var ys = String(YEARS[idx]);
+      var str = which === "obs" ? D.observed[ys] : D.predicted[ys];
+      if (!str) { target.textContent = "\u00a0"; return; }
+      var ch = str[row * G.cols + col];
+      var lat = G.latTop - row * G.cell, lon = G.lonLeft + col * G.cell;
+      target.textContent = ch === G.outside
+        ? "outside the Territory"
+        : fmtLat(lat) + "  " + fmtLon(lon) + "   \u2014   " + CLASSES[+ch];
+    });
+    canvas.addEventListener("pointerleave", function () {
+      target.textContent = which === "obs" ? "Point at the map to read a cell." : "\u00a0";
+    });
+  }
+  attachHover(obsCanvas, "obs", document.getElementById("hover"));
+  attachHover(predCanvas, "pred", document.getElementById("hover2"));
+
+  // -------------------------------------------------------------- scrubbing
+  var slider = document.getElementById("slider");
+  slider.min = 0; slider.max = YEARS.length - 1; slider.value = idx;
+  slider.addEventListener("input", function () { idx = +slider.value; stop(); render(); });
+
+  var timer = null, playBtn = document.getElementById("play");
+  function stop() { if (timer) { clearInterval(timer); timer = null; playBtn.textContent = "Play"; } }
+  playBtn.addEventListener("click", function () {
+    if (timer) { stop(); return; }
+    playBtn.textContent = "Pause";
+    timer = setInterval(function () {
+      idx = (idx + 1) % YEARS.length; render();
+    }, 620);
+  });
+
+  // Ticks every five years, plus a bracket over the held-out span.
+  var ticks = document.getElementById("ticks");
+  YEARS.forEach(function (y, i) {
+    if (y % 5 !== 0) return;
+    var t = document.createElement("span");
+    t.className = "t"; t.textContent = y;
+    var at = i / (YEARS.length - 1);
+    t.style.left = (at * 100) + "%";
+    if (i === 0) { t.style.transform = "translateX(-2px)"; }
+    else if (i === YEARS.length - 1) { t.style.transform = "translateX(calc(-100% + 2px))"; }
+    ticks.appendChild(t);
+  });
+  var h0 = YEARS.indexOf(HELD[0]), h1 = YEARS.indexOf(HELD[HELD.length - 1]);
+  if (h0 >= 0 && h1 >= 0) {
+    var br = document.createElement("span");
+    br.className = "heldout";
+    br.style.left = (h0 / (YEARS.length - 1) * 100) + "%";
+    br.style.width = ((h1 - h0) / (YEARS.length - 1) * 100) + "%";
+    var s = document.createElement("span"); s.textContent = "HELD OUT";
+    br.appendChild(s); ticks.appendChild(br);
+  }
+
+  // ---------------------------------------------------------------- charts
+  var balanced = D.models.filter(function (m) { return m.model.indexOf("(balanced)") > -1; });
+  var bases = D.models.filter(function (m) {
+    return m.model === "same as last year" || m.model === "majority class";
+  });
+  var chartRows = balanced.concat(bases).sort(function (a, b) { return b.f1_macro - a.f1_macro; });
+  var SCALE = 0.8;
+
+  var chart = document.getElementById("chart");
+  chartRows.forEach(function (m) {
+    var isBase = bases.indexOf(m) > -1;
+    var row = document.createElement("div");
+    row.className = "bar-row" + (isBase ? " is-base" : "");
+    var name = document.createElement("div");
+    name.className = "name";
+    name.textContent = m.model.replace(" (balanced)", "");
+    var track = document.createElement("div"); track.className = "track";
+    var fill = document.createElement("i");
+    fill.style.width = (m.f1_macro / SCALE * 100) + "%";
+    track.appendChild(fill);
+    var val = document.createElement("div");
+    val.className = "val"; val.textContent = m.f1_macro.toFixed(3);
+    row.appendChild(name); row.appendChild(track); row.appendChild(val);
+    chart.appendChild(row);
+  });
+  var axis = document.createElement("div");
+  axis.className = "axis";
+  axis.innerHTML = '<span></span><span class="marks"><span>0.0</span><span>0.2</span>' +
+                   '<span>0.4</span><span>0.6</span><span>0.8</span></span><span></span>';
+  chart.appendChild(axis);
+
+  var best = balanced.reduce(function (a, b) { return b.f1_macro > a.f1_macro ? b : a; });
+  document.getElementById("model-name").textContent = D.predModel;
+  document.getElementById("cm-model").textContent = D.predModel;
+  document.getElementById("chart-note").textContent =
+    "Every model is class-weighted. Left unweighted they buy accuracy by barely calling " +
+    "late-season fire at all \u2014 the " + D.predModel + " scores " +
+    D.models.filter(function (m) { return m.model === D.predModel; })[0]
+      .f1_per_class.late.toFixed(3) + " on that class without weighting, against " +
+    best.f1_per_class.late.toFixed(3) + " with it.";
+
+  // Confusion, row-normalised: what happens to each true class.
+  var cm = document.getElementById("cm");
+  var head = "<tr><th></th><th colspan='3' class='lab'>Predicted</th></tr><tr><th></th>";
+  CLASSES.forEach(function (c) { head += "<th>" + c + "</th>"; });
+  head += "</tr>";
+  var body = "";
+  best.confusion.forEach(function (r, i) {
+    var tot = r.reduce(function (a, b) { return a + b; }, 0);
+    body += "<tr><th class='side'>" + CLASSES[i] + "</th>";
+    r.forEach(function (v, j) {
+      var pct = tot ? v / tot * 100 : 0;
+      var alpha = Math.max(0.06, Math.min(0.92, pct / 100));
+      body += "<td style=\"background:color-mix(in srgb, var(--" + CLASSES[j] +
+              ") " + (alpha * 100).toFixed(0) + "%, transparent)\">" +
+              pct.toFixed(0) + "</td>";
+    });
+    body += "</tr>";
+  });
+  cm.innerHTML = head + body;
+  var lateRow = best.confusion[2];
+  var lateTot = lateRow.reduce(function (a, b) { return a + b; }, 0);
+  document.getElementById("cm-note").textContent =
+    "Rows sum to 100%. The costly error is the bottom-left corner: " +
+    (lateRow[0] / lateTot * 100).toFixed(0) + "% of country that actually burnt late is " +
+    "called unburnt, and a late-season fire missed is the one with consequences.";
+
+  var imp = document.getElementById("imp");
+  var maxImp = D.importance[0][1];
+  D.importance.forEach(function (p) {
+    var r = document.createElement("div");
+    r.className = "r" + (p[0].indexOf("wx_") === 0 ? " wx" : "");
+    var n = document.createElement("div"); n.className = "n"; n.textContent = p[0];
+    var b = document.createElement("div"); b.className = "b";
+    var f = document.createElement("i"); f.style.width = (p[1] / maxImp * 100) + "%";
+    b.appendChild(f);
+    r.appendChild(n); r.appendChild(b);
+    imp.appendChild(r);
+  });
+
+  document.getElementById("lon-l").textContent = fmtLon(G.lonLeft);
+  document.getElementById("lon-r").textContent = fmtLon(G.lonLeft + G.cols * G.cell);
+  document.getElementById("lon-l2").textContent = fmtLon(G.lonLeft);
+  document.getElementById("lon-r2").textContent = fmtLon(G.lonLeft + G.cols * G.cell);
+  document.getElementById("foot-counts").textContent =
+    D.nCells.toLocaleString() + " cells \u00b7 " + D.nRows.toLocaleString() +
+    " cell-years \u00b7 2000\u20132025";
+
+  // Repaint when the viewer's theme changes, since the canvas holds baked pixels.
+  function repaint() { render(); }
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", repaint);
+  }
+  new MutationObserver(repaint).observe(document.documentElement,
+    { attributes: true, attributeFilter: ["data-theme"] });
+
+  render();
+})();
+</script>

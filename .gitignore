@@ -10,3 +10,6 @@ data/raw/
 data/interim/
 data/processed/*.parquet
 *.zip
+
+# The atlas page is generated from the template plus the exported results
+web/index.html
