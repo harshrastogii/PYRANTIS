@@ -21,6 +21,7 @@ address with each request, which is what the username field carries.
 
 from __future__ import annotations
 
+import datetime as _dt
 import os
 import ssl
 import sys
@@ -40,7 +41,7 @@ sys.path.insert(0, str(ROOT))
 
 from pyrantis.schema import RAW, STATE
 
-OUT = RAW / "silo"
+OUT = RAW / os.environ.get("SILO_DIR", "silo")
 ENDPOINT = "https://www.longpaddock.qld.gov.au/cgi-bin/silo/DataDrillDataset.php"
 # Data Drill asks for a contact address with every request. It is read from the
 # environment rather than written here so that a personal address does not travel with a
@@ -53,7 +54,10 @@ CONTACT = os.environ.get("SILO_CONTACT", "")
 REF = "PYRANTIS"
 
 STEP = 0.5                            # degrees between sampled points
-START, FINISH = "19990101", "20251231"
+START = "19990101"
+# Runs to the present so the current wet season is available for a live forecast.
+# SILO keeps serving interpolated values up to within a few days of today.
+FINISH = os.environ.get("SILO_FINISH", _dt.date.today().strftime("%Y%m%d"))
 
 WORKERS = 4                           # polite concurrency against a public service
 RETRIES = 3

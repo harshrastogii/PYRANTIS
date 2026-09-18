@@ -67,6 +67,57 @@ def neighbour_mean(a: np.ndarray) -> np.ndarray:
         return np.where(cnt > 0, tot / cnt, np.nan)
 
 
+def features_at(t, burnt, early, late, frac_burnt, frac_early, frac_late):
+    """Every feature for target year index t, from years strictly before it.
+
+    Pulled out of the yearly loop so the forecast path computes the same numbers the
+    training path does. A second implementation would drift, and the drift would be
+    silent: the forecast has no label to check itself against.
+    """
+    # Everything below slices [:t] -- strictly years before the target year.
+    past_burnt = burnt[:t]
+    past_late = late[:t]
+
+    f = {}
+    f["hist_years"] = float(t)
+
+    for w in WINDOWS:
+        win = past_burnt[max(0, t - w):t]
+        f[f"freq_{w}"] = np.nansum(win, axis=0) / win.shape[0]
+        winl = past_late[max(0, t - w):t]
+        f[f"late_freq_{w}"] = np.nansum(winl, axis=0) / winl.shape[0]
+
+    # Time since the last fire of each kind. argmax on the reversed stack finds the
+    # most recent year; where a cell has never burnt, argmax returns 0 on an
+    # all-zero column, so the never-burnt case is handled explicitly.
+    for name, stack in (("burnt", past_burnt), ("late", past_late)):
+        ever = np.nansum(stack, axis=0) > 0
+        rev = np.nan_to_num(stack[::-1], nan=0.0) > 0
+        since = rev.argmax(axis=0) + 1.0
+        # Cells that never burnt get "longer ago than the record goes", plus a flag
+        # so the models can tell that apart from a genuine long interval.
+        f[f"yrs_since_{name}"] = np.where(ever, since, float(t) + 1.0)
+        f[f"never_{name}"] = (~ever).astype("f4")
+
+    # Last year's state, the single strongest fire-history signal: a place that
+    # burnt last year has little fuel left to carry a fire this year.
+    f["prev_burnt"] = burnt[t - 1]
+    f["prev_early"] = early[t - 1]
+    f["prev_late"] = late[t - 1]
+    f["prev_frac_burnt"] = frac_burnt[t - 1]
+    f["prev_frac_early"] = frac_early[t - 1]
+    f["prev_frac_late"] = frac_late[t - 1]
+    f["prev2_burnt"] = burnt[t - 2]
+
+    # What the surrounding country did last year. Fire spreads across cells, and
+    # burning programmes are run over whole districts, not single 5 km squares.
+    f["nbr_frac_burnt_prev"] = neighbour_mean(frac_burnt[t - 1])
+    f["nbr_frac_early_prev"] = neighbour_mean(frac_early[t - 1])
+    f["nbr_frac_late_prev"] = neighbour_mean(frac_late[t - 1])
+
+    return f
+
+
 def main() -> None:
     df = pd.read_parquet(LABELS)
     years = np.sort(df["year"].unique())
@@ -89,47 +140,8 @@ def main() -> None:
         if t < MIN_HISTORY_YEARS:
             continue  # too little history for the windows to mean anything
 
-        # Everything below slices [:t] -- strictly years before the target year.
-        past_burnt = burnt[:t]
-        past_late = late[:t]
-
-        f = {}
-        f["hist_years"] = float(t)
-
-        for w in WINDOWS:
-            win = past_burnt[max(0, t - w):t]
-            f[f"freq_{w}"] = np.nansum(win, axis=0) / win.shape[0]
-            winl = past_late[max(0, t - w):t]
-            f[f"late_freq_{w}"] = np.nansum(winl, axis=0) / winl.shape[0]
-
-        # Time since the last fire of each kind. argmax on the reversed stack finds the
-        # most recent year; where a cell has never burnt, argmax returns 0 on an
-        # all-zero column, so the never-burnt case is handled explicitly.
-        for name, stack in (("burnt", past_burnt), ("late", past_late)):
-            ever = np.nansum(stack, axis=0) > 0
-            rev = np.nan_to_num(stack[::-1], nan=0.0) > 0
-            since = rev.argmax(axis=0) + 1.0
-            # Cells that never burnt get "longer ago than the record goes", plus a flag
-            # so the models can tell that apart from a genuine long interval.
-            f[f"yrs_since_{name}"] = np.where(ever, since, float(t) + 1.0)
-            f[f"never_{name}"] = (~ever).astype("f4")
-
-        # Last year's state, the single strongest fire-history signal: a place that
-        # burnt last year has little fuel left to carry a fire this year.
-        f["prev_burnt"] = burnt[t - 1]
-        f["prev_early"] = early[t - 1]
-        f["prev_late"] = late[t - 1]
-        f["prev_frac_burnt"] = frac_burnt[t - 1]
-        f["prev_frac_early"] = frac_early[t - 1]
-        f["prev_frac_late"] = frac_late[t - 1]
-        f["prev2_burnt"] = burnt[t - 2]
-
-        # What the surrounding country did last year. Fire spreads across cells, and
-        # burning programmes are run over whole districts, not single 5 km squares.
-        f["nbr_frac_burnt_prev"] = neighbour_mean(frac_burnt[t - 1])
-        f["nbr_frac_early_prev"] = neighbour_mean(frac_early[t - 1])
-        f["nbr_frac_late_prev"] = neighbour_mean(frac_late[t - 1])
-
+        f = features_at(t, burnt, early, late,
+                        frac_burnt, frac_early, frac_late)
         rr, cc = np.where(inside)
         out = pd.DataFrame({"row": rr, "col": cc, "year": year})
         for k, v in f.items():

@@ -30,6 +30,7 @@ cells linearly, falling back to nearest-neighbour outside the convex hull of the
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from pathlib import Path
@@ -43,7 +44,7 @@ sys.path.insert(0, str(ROOT))
 
 from pyrantis.schema import MIN_HISTORY_YEARS, PROC, RAW
 
-SILO = RAW / "silo"
+SILO = RAW / os.environ.get("SILO_DIR", "silo")
 OUT = PROC / "cell_year_features_weather.parquet"
 
 COLS = ["date", "doy", "date2", "tmax", "smx", "tmin", "smn", "rain", "srn",
