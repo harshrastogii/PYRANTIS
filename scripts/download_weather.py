@@ -21,7 +21,7 @@ address with each request, which is what the username field carries.
 
 from __future__ import annotations
 
-import io
+import os
 import ssl
 import sys
 import time
@@ -42,7 +42,11 @@ from pyrantis.schema import RAW, STATE
 
 OUT = RAW / "silo"
 ENDPOINT = "https://www.longpaddock.qld.gov.au/cgi-bin/silo/DataDrillDataset.php"
-CONTACT = "meetamiyaa@gmail.com"      # Data Drill asks for a contact address
+# Data Drill asks for a contact address with every request. It is read from the
+# environment rather than written here so that a personal address does not travel with a
+# public repository; SILO still gets a real contact, it just is not published alongside
+# the code.
+CONTACT = os.environ.get("SILO_CONTACT", "")
 # The reference tag must be a bare alphanumeric token. A comment containing spaces is
 # blocked by the site firewall with a generic "Request Rejected" page, and one containing
 # punctuation is rejected by the API itself as an invalid value.
@@ -104,6 +108,11 @@ def fetch(lat: float, lon: float) -> str:
 
 
 def main() -> None:
+    if not CONTACT or "@" not in CONTACT:
+        raise SystemExit(
+            "Set SILO_CONTACT to an email address before running, for example:\n"
+            "  SILO_CONTACT=you@example.com .venv/bin/python scripts/download_weather.py\n"
+            "SILO's Data Drill requires a contact address with each request.")
     OUT.mkdir(parents=True, exist_ok=True)
     pts = nt_points()
     print(f"{len(pts)} sample points across the {STATE} at {STEP} degree spacing",
