@@ -83,6 +83,26 @@ def main() -> None:
                 for y, g in pred.groupby("year", observed=True)}
 
     imp = list(json.load(open(PROJ / "reports" / "feature_importance_weather.json")).items())
+    recur = json.load(open(PROJ / "reports" / "recurrence.json"))
+
+    # The forecast year: a grid like any other, plus the model's confidence per cell so
+    # the page can show where it is sure and where it is guessing.
+    fpath = sorted((PROJ / "reports").glob("forecast_*.npz"))
+    fc_grid, fc_meta, fc_conf = {}, {}, {}
+    if fpath:
+        fz = np.load(fpath[-1])
+        fyear = int(fpath[-1].stem.split("_")[1])
+        fdf = pd.DataFrame({"row": fz["row"], "col": fz["col"],
+                            "ch": [str(v) for v in fz["pred"]], "year": fyear})
+        fc_grid = grid_strings(fdf, "ch", r0, r1, c0, c1)
+        conf = fz["prob"].max(axis=1)
+        # Confidence banded into four steps: a continuous ramp would be unreadable at
+        # one pixel per cell.
+        band = np.clip((conf - 0.34) / (1.0 - 0.34) * 4, 0, 3.999).astype(int)
+        cdf = pd.DataFrame({"row": fz["row"], "col": fz["col"],
+                            "ch": [str(v) for v in band], "year": fyear})
+        fc_conf = grid_strings(cdf, "ch", r0, r1, c0, c1)
+        fc_meta = json.load(open(PROJ / "reports" / f"forecast_{fyear}.json"))
 
     data = {
         "grid": {"rows": r1 - r0 + 1, "cols": c1 - c0 + 1, "cell": CELL_DEG,
@@ -100,6 +120,8 @@ def main() -> None:
         "importance": [[k, round(v, 4)] for k, v in imp[:12]],
         "nCells": int(lab["cell_id"].nunique()),
         "nRows": int(len(lab)),
+        "recurrence": recur,
+        "forecast": {"grid": fc_grid, "confidence": fc_conf, **fc_meta},
     }
 
     blob = json.dumps(data, separators=(",", ":"))
