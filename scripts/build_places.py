@@ -26,6 +26,11 @@ from pyrantis.schema import CELL_DEG, CLASSES, INTERIM, ROOT as PROJ
 
 # Towns, communities and landmarks across the Territory, spread so that every region has
 # something recognisable in it. Coordinates are the settlement centres.
+# The towns a reader is most likely to look for. They keep their label when the map gets
+# crowded; the smaller communities give way first.
+MAJOR = {"Darwin", "Palmerston", "Katherine", "Tennant Creek", "Alice Springs",
+         "Nhulunbuy", "Jabiru", "Yulara", "Borroloola", "Wadeye", "Maningrida"}
+
 PLACES = [
     ("Darwin", -12.4634, 130.8456), ("Palmerston", -12.4861, 130.9833),
     ("Humpty Doo", -12.5833, 131.1333), ("Batchelor", -13.0500, 131.0333),
@@ -49,6 +54,11 @@ PLACES = [
     ("Borroloola", -16.0714, 136.3064), ("Wurrumiyanga", -11.7614, 130.6231),
     ("Pirlangimpi", -11.4000, 130.4167),
 ]
+
+
+def _mode(g: pd.DataFrame, label: str) -> int:
+    m = g.loc[(g["label"] == label) & (g["peak_month"] > 0), "peak_month"]
+    return int(m.mode().iloc[0]) if len(m) else 0
 
 
 def sentence(rec: dict) -> str:
@@ -100,10 +110,15 @@ def main() -> None:
         rec = {
             "name": name, "lat": round(lat, 4), "lon": round(lon, 4),
             "cell_id": int(near["cell_id"]), "row": int(near["row"]), "col": int(near["col"]),
+            "major": name in MAJOR,
             "years_on_record": int(len(g)),
             "times_burnt": int(len(burnt)),
             "times_late": int((g["label"] == "late").sum()),
             "usual_month": int(months.mode().iloc[0]) if len(months) else 0,
+            # Split by season, so a forecast of "early" can name the month this place
+            # usually burns in the early window rather than its overall busiest month.
+            "usual_month_early": _mode(g, "early"),
+            "usual_month_late": _mode(g, "late"),
             "last_burnt": int(burnt["year"].max()) if len(burnt) else None,
             "history": "".join(str(CLASSES.index(v)) for v in g["label"]),
         }

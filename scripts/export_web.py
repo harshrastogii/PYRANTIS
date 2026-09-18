@@ -25,7 +25,9 @@ sys.path.insert(0, str(ROOT))
 from pyrantis.schema import CELL_DEG, CLASSES, INTERIM, ROOT as PROJ
 
 TEMPLATE = PROJ / "web" / "template.html"
-OUT = PROJ / "web" / "index.html"
+SITE = PROJ / "_site"
+OUT = SITE / "index.html"
+ASSETS = PROJ / "web" / "assets"
 OUTSIDE = "."                      # grid positions beyond the Territory
 
 
@@ -84,6 +86,16 @@ def main() -> None:
 
     imp = list(json.load(open(PROJ / "reports" / "feature_importance_weather.json")).items())
     recur = json.load(open(PROJ / "reports" / "recurrence.json"))
+    places = json.load(open(PROJ / "reports" / "places.json"))
+
+    # When the Territory burns, as a share of every burnt cell-year. The raster carried
+    # this all along; only the early/late split was being kept.
+    burnt = lab[lab["label"] != "unburnt"]
+    mc = burnt["peak_month"][burnt["peak_month"] > 0].value_counts(normalize=True) * 100
+    months = {str(m): round(float(mc.get(m, 0.0)), 1) for m in range(1, 13)}
+
+    wf_path = PROJ / "reports" / "walk_forward.json"
+    walk = json.load(open(wf_path)) if wf_path.exists() else None
 
     # The forecast year: a grid like any other, plus the model's confidence per cell so
     # the page can show where it is sure and where it is guessing.
@@ -121,13 +133,27 @@ def main() -> None:
         "nCells": int(lab["cell_id"].nunique()),
         "nRows": int(len(lab)),
         "recurrence": recur,
+        "places": places["places"],
+        "months": months,
+        "walk": walk,
         "forecast": {"grid": fc_grid, "confidence": fc_conf, **fc_meta},
     }
 
     blob = json.dumps(data, separators=(",", ":"))
     html = TEMPLATE.read_text()
     assert "__ATLAS_DATA__" in html, "template is missing the data placeholder"
+    # MapLibre's stylesheet is inlined rather than linked: the page then has no external
+    # CSS dependency and renders the same wherever it is hosted.
+    css = (PROJ / "web" / "vendor" / "maplibre-gl.css").read_text()
+    html = html.replace("__MAPLIBRE_CSS__", css)
+    SITE.mkdir(parents=True, exist_ok=True)
     OUT.write_text(html.replace("__ATLAS_DATA__", blob))
+
+    # Assets travel with the build so the committed _site is self-contained and
+    # Cloudflare needs no build step.
+    import shutil
+    if ASSETS.exists():
+        shutil.copytree(ASSETS, SITE / "assets", dirs_exist_ok=True)
 
     print(f"wrote {OUT.relative_to(PROJ)}  {OUT.stat().st_size / 1e6:.2f} MB")
     print(f"  grid {data['grid']['rows']} x {data['grid']['cols']}, "

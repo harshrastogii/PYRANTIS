@@ -1,0 +1,15 @@
+# PYRANTIS is a static site. The build under _site/ is committed and served directly, so
+# Cloudflare Workers Builds needs no build step of its own -- `npx wrangler deploy`
+# publishes the directory as a static-asset Worker.
+#
+# Declaring [assets] is what makes that work. A `pages_build_output_dir` key is read only
+# by Pages, and a Worker project configured that way fails with "Missing entry-point to
+# Worker script or to assets directory".
+name = "pyrantis"
+compatibility_date = "2026-09-18"
+
+[assets]
+directory = "./_site"
+# No SPA fallback. The app switches views in the page rather than routing on the path, so
+# there are no deep paths to rewrite, and a fallback would answer every mistyped URL with
+# the whole app and a 200 instead of a 404.
