@@ -1,0 +1,17 @@
+{
+  "year": 2026,
+  "share": {
+    "unburnt": 58.1,
+    "early": 17.3,
+    "late": 24.5
+  },
+  "long_run_share": {
+    "unburnt": 67.5,
+    "early": 14.0,
+    "late": 18.5
+  },
+  "n_cells": 46039,
+  "mean_confidence": 0.687,
+  "trained_through": 2023,
+  "note": "No published fire scars exist for this year; this forecast is unverified."
+}
