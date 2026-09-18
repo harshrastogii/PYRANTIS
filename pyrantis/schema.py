@@ -42,3 +42,18 @@ MIN_VALID_FRACTION = 0.50
 MIN_BURNT_FRACTION = 0.05
 
 FIRST_YEAR, LAST_YEAR = 2000, 2025
+
+# ------------------------------------------------------------------ history
+# Fire-history features count back over a window of previous years. The first years of
+# the record have no such window, so they are excluded from modelling rather than
+# padded with zeros, which would tell the models that 2000 had never burnt before.
+MIN_HISTORY_YEARS = 5                   # modelling starts in 2005
+
+# -------------------------------------------------------------------- paths
+from pathlib import Path as _Path       # noqa: E402
+
+ROOT = _Path(__file__).resolve().parent.parent
+RAW = ROOT / "data" / "raw"
+INTERIM = ROOT / "data" / "interim"
+PROC = ROOT / "data" / "processed"
+FIGURES = ROOT / "reports" / "figures"
