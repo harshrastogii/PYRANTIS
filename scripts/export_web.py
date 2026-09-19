@@ -22,7 +22,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from pyrantis.schema import CELL_DEG, CLASSES, INTERIM, ROOT as PROJ
+from pyrantis.schema import CELL_DEG, CLASSES, INTERIM, PROC, ROOT as PROJ
 
 TEMPLATE = PROJ / "web" / "template.html"
 SITE = PROJ / "_site"
@@ -84,6 +84,54 @@ def main() -> None:
     per_year = {str(int(y)): round(float((g["ch"] == g["truth"]).mean() * 100), 1)
                 for y, g in pred.groupby("year", observed=True)}
 
+    # ---------------------------------------------------------------- the facts
+    # Every number the page's prose quotes is computed here and handed to the page, so a
+    # sentence cannot quietly go stale when the collectors bring in another year. Two of
+    # them were already wrong when they were typed by hand: the wet season was the second
+    # wettest rather than the third, and 2020 was the lightest fire year but not the
+    # driest wet season, which was 2019.
+    mw = pd.read_parquet(PROC / "weather_monthly.parquet")
+    mw["wet_rain"] = mw[[f"m{k}_rain" for k in range(6)]].sum(axis=1)
+    wet = mw.groupby("year")["wet_rain"].mean()
+    clim_years = [y for y in range(2005, 2020) if y in wet.index]
+    wet_clim = float(wet.loc[clim_years].mean())
+    fy = int(wet.index.max())
+    span = wet.loc[2005:fy]
+
+    burnt_share = {int(y): round(float((g["label"] != "unburnt").mean() * 100), 1)
+                   for y, g in lab.groupby("year", observed=True)}
+    paired = [y for y in span.index if int(y) in burnt_share]
+    corr = float(np.corrcoef(span.loc[paired],
+                             [burnt_share[int(y)] for y in paired])[0, 1])
+    wettest = int(span.loc[paired].idxmax())
+
+    ndvi_all = pd.read_parquet(PROC / "ndvi.parquet")
+    apr = ndvi_all.groupby("year")["ndvi_apr"].mean()
+
+    facts = {
+        "year": fy,
+        "wetRain": round(float(wet.loc[fy])),
+        "wetClim": round(wet_clim),
+        "wetPct": round((float(wet.loc[fy]) / wet_clim - 1) * 100),
+        "wetRank": int((span > wet.loc[fy]).sum()) + 1,
+        "wetOf": int(len(span)),
+        "wetFrom": int(span.index.min()),
+        "ndvi": round(float(apr.loc[fy]), 3),
+        "ndviRank": int((apr > apr.loc[fy]).sum()) + 1,
+        "ndviOf": int(len(apr)),
+        "ndviFrom": int(apr.index.min()),
+        "rainFireCorr": round(corr, 2),
+        "wettestYear": wettest,
+        "wettestRain": round(float(wet.loc[wettest])),
+        "wettestBurnt": burnt_share[wettest],
+        "biggestFireYear": int(max(burnt_share, key=burnt_share.get)),
+        "biggestFireShare": max(burnt_share.values()),
+    }
+    print(f"  facts: {fy} wet {facts['wetRain']}mm ({facts['wetPct']:+d}%), "
+          f"rank {facts['wetRank']}/{facts['wetOf']}; greenness rank "
+          f"{facts['ndviRank']}/{facts['ndviOf']}; rain-fire correlation "
+          f"{facts['rainFireCorr']}")
+
     imp = list(json.load(open(PROJ / "reports" / "feature_importance_full.json")).items())
     recur = json.load(open(PROJ / "reports" / "recurrence.json"))
     places = json.load(open(PROJ / "reports" / "places.json"))
@@ -142,6 +190,7 @@ def main() -> None:
         "nCells": int(lab["cell_id"].nunique()),
         "nRows": int(len(lab)),
         "recurrence": recur,
+        "facts": facts,
         "places": places["places"],
         "months": months,
         "walk": walk,

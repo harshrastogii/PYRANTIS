@@ -104,6 +104,23 @@ nav.tabs button[aria-selected="true"]{background:#fff;color:var(--ink);box-shado
 #mapwrap{position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--stroke);
   box-shadow:var(--shadow);background:#e8edf2}
 #map{width:100%;height:min(64vh,580px);min-height:360px}
+/* The map depends on a basemap fetched from another service. When that is slow or
+   unavailable the page used to sit there looking broken: picking a town updated the text
+   and the map never moved, with nothing to say why. */
+.map-state{
+  position:absolute; inset:0; z-index:3; display:grid; place-items:center;
+  background:rgba(240,243,246,.94); backdrop-filter:blur(3px);
+  padding:24px; text-align:center; transition:opacity .3s var(--ease);
+}
+.map-state p{max-width:34ch; font-size:13.5px; color:var(--muted); line-height:1.6}
+.map-state strong{display:block; color:var(--ink); font-size:15px; margin-bottom:6px}
+.map-state .spin{
+  width:22px; height:22px; margin:0 auto 12px; border-radius:50%;
+  border:2px solid var(--stroke-hi); border-top-color:var(--accent);
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.map-state .spin{animation:none}}
 .maplibregl-ctrl-group{border-radius:var(--r-sm)!important;box-shadow:var(--shadow-sm)!important}
 .maplibregl-ctrl-attrib{font-size:10px;background:rgba(255,255,255,.72)!important}
 /* The map has a rounded corner, and the default control margin puts the scale bar's own
@@ -218,7 +235,13 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
           <button class="btn" id="locate" type="button">Where I am</button>
           <button class="btn" id="whole" type="button">Whole Territory</button>
         </div>
-        <div id="mapwrap"><div id="map"></div></div>
+        <div id="mapwrap"><div id="map"></div>
+          <div class="map-state" id="map-state">
+            <p><span class="spin" id="map-spin"></span>
+              <strong id="map-state-head">Loading the map</strong>
+              <span id="map-state-body">The figures beside it are ready already.</span></p>
+          </div>
+        </div>
         <div class="legend">
           <span class="key"><i style="background:var(--unburnt)"></i>We expect no fire</span>
           <span class="key"><i style="background:var(--early)"></i>Fire before August</span>
@@ -523,12 +546,11 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   });
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-left");
-  window.__map = map;   // handle for inspecting the map from the console
   map.dragRotate.disable();
   map.touchZoomRotate.disableRotation();
 
   var mapReady = false, currentLayer = "forecast", recIdx = YEARS.length - 1;
-  var currentView = "outlook", recPick = null;
+  var currentView = "outlook", recPick = null, mapFailed = false;
   var pinned = false;                      // true once the reader picks a place or square
 
   function fitAll(instant) {
@@ -592,8 +614,36 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
                "circle-stroke-color": css("--accent"), "circle-stroke-width": 3 } });
 
     mapReady = true;
+    setMapState(null);
     fitAll();
   });
+
+  // If the basemap never arrives, say so rather than leaving a blank box and controls
+  // that appear to do nothing. Everything in the panels is already computed and correct.
+  function setMapState(kind) {
+    var el = $("map-state");
+    if (!el) return;
+    if (kind === null) { el.hidden = true; return; }
+    el.hidden = false;
+    $("map-spin").hidden = (kind !== "loading");
+    if (kind === "loading") {
+      $("map-state-head").textContent = "Loading the map";
+      $("map-state-body").textContent = "The figures beside it are ready already.";
+    } else {
+      $("map-state-head").textContent = "The map could not load";
+      $("map-state-body").textContent = "Everything beside it is still correct, and " +
+        "picking a town still works. The background map comes from another service; " +
+        "refreshing usually fixes it.";
+    }
+  }
+
+  map.on("error", function (e) {
+    // A single missing tile is not worth a message; a style that never arrives is.
+    if (!mapReady) { mapFailed = true; setMapState("failed"); }
+  });
+  setTimeout(function () {
+    if (!mapReady) { mapFailed = true; setMapState("failed"); }
+  }, 15000);
 
   map.on("click", function (e) {
     var col = Math.floor((e.lngLat.lng - W) / G.cell);
@@ -764,7 +814,9 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     $("v-conf-bar").style.width = (c * 100) + "%";
 
     drawStrip($("v-strip"), p.history, YEARS[YEARS.length - 1]);
-    $("map-note").textContent = p.name + " is circled on the map.";
+    $("map-note").textContent = mapReady
+      ? p.name + " is circled on the map."
+      : "The map has not loaded, but the figures for " + p.name + " are correct.";
 
     pinned = true;
     markPick(p.lon, p.lat);
@@ -888,14 +940,38 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     sel.value = ""; pinned = false; territorySummary(); fitAll();
   });
 
-  $("v-why").textContent =
-    "There is more grass standing in the Territory than in any year since 2000. " +
-    "Satellites measure how green the ground is, and this April it read higher than any " +
-    "April on record, higher even than 2011, when two thirds of the Territory burned. " +
-    "That grass is the fuel. The wet season behind it delivered 764 mm, 45 per cent above " +
-    "the 2005 to 2019 average and the third wettest in 22 years. The link runs backwards " +
-    "too: 2020 had the driest wet season of the period and the lightest fire year on " +
-    "record, 15.9 per cent.";
+  // Written from figures the export computes, never typed. Two hand-written claims here
+  // were already wrong: the wet season is the second wettest, not the third, and 2020 was
+  // the lightest fire year but not the driest wet season, which was 2019.
+  var F = D.facts || null;
+  function ordinal(k) {
+    var names = ["", "highest", "second highest", "third highest", "fourth highest",
+                 "fifth highest"];
+    return names[k] || (k + "th highest");
+  }
+  function whyText() {
+    if (!F) return "";
+    var grass = F.ndviRank === 1
+      ? "There is more grass standing in the Territory than in any year since " +
+        F.ndviFrom + ". Satellites measure how green the ground is, and this April read " +
+        F.ndvi.toFixed(2) + ", the highest April on record."
+      : "Satellites measure how green the ground is. This April read " + F.ndvi.toFixed(2) +
+        ", the " + ordinal(F.ndviRank) + " April of the " + F.ndviOf + " on record.";
+
+    var rain = " That grass is the fuel. The wet season behind it delivered " +
+      F.wetRain + " mm, " + Math.abs(F.wetPct) + " per cent " +
+      (F.wetPct >= 0 ? "above" : "below") + " the 2005 to 2019 average and the " +
+      (F.wetRank === 1 ? "wettest" : ordinal(F.wetRank).replace("highest", "wettest")) +
+      " in " + F.wetOf + " years.";
+
+    var link = " Wetter wet seasons are followed by bigger fire years right through the " +
+      "record. The wettest of all, " + F.wettestYear + " at " + F.wettestRain + " mm, was " +
+      "followed by " + F.wettestBurnt.toFixed(0) + " per cent of the Territory burning, " +
+      "the most in " + F.wetOf + " years.";
+
+    return grass + rain + link;
+  }
+  $("v-why").textContent = whyText();
 
   $("v-caveat").textContent =
     "Nobody can check this forecast yet. The satellite record for " + FCYEAR + " is not " +
