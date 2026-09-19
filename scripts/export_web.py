@@ -60,13 +60,13 @@ def main() -> None:
         v = g["label"].value_counts(normalize=True) * 100
         annual[str(int(year))] = {c: round(float(v.get(c, 0.0)), 1) for c in CLASSES}
 
-    res = json.load(open(PROJ / "reports" / "results_weather.json"))
+    res = json.load(open(PROJ / "reports" / "results_full.json"))
     res_fh = json.load(open(PROJ / "reports" / "results_firehistory.json"))
 
     best = max((r for r in res["results"] if "(balanced)" in r["model"]),
                key=lambda r: r["f1_macro"])
 
-    npz = np.load(PROJ / "reports" / "test_predictions_weather.npz")
+    npz = np.load(PROJ / "reports" / "test_predictions_full.npz")
     key = best["model"].replace(" ", "_")
     pred = pd.DataFrame({
         "cell_id": npz["cell_id"], "year": npz["year"],
@@ -84,7 +84,7 @@ def main() -> None:
     per_year = {str(int(y)): round(float((g["ch"] == g["truth"]).mean() * 100), 1)
                 for y, g in pred.groupby("year", observed=True)}
 
-    imp = list(json.load(open(PROJ / "reports" / "feature_importance_weather.json")).items())
+    imp = list(json.load(open(PROJ / "reports" / "feature_importance_full.json")).items())
     recur = json.load(open(PROJ / "reports" / "recurrence.json"))
     places = json.load(open(PROJ / "reports" / "places.json"))
 

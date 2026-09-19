@@ -31,7 +31,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import (HistGradientBoostingClassifier,
+                              RandomForestClassifier)
 from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score,
                              precision_score, recall_score)
 from sklearn.naive_bayes import GaussianNB
@@ -64,6 +65,13 @@ FIRE_FEATURES = [
     "nbr_frac_burnt_prev", "nbr_frac_early_prev", "nbr_frac_late_prev",
     "lon", "lat",
 ]
+EXTRA_PREFIXES = ("wx_", "ndvi_")
+EXTRA_NAMED = ["elevation", "freq_15", "freq_20", "freq_25",
+               "late_freq_15", "late_freq_20", "late_freq_25"]
+# The per-cell climatologies are constants that would work as a cell identifier rather
+# than as evidence about a year, so they stay out.
+EXTRA_EXCLUDE = ("ndvi_apr_clim", "ndvi_wet_max_clim")
+
 FORBIDDEN = {"frac_burnt", "frac_early", "frac_late", "label"}
 
 
@@ -156,24 +164,35 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--weather", action="store_true",
                     help="include the SILO weather features")
+    ap.add_argument("--full", action="store_true",
+                    help="weather plus greenness, elevation and longer fire memory")
     ap.add_argument("--tag", default=None)
     args = ap.parse_args()
 
     # One tag for every artefact this run writes, so the fire-history and weather runs
     # never overwrite each other's importances or results.
-    tag = args.tag or ("_weather" if args.weather else "_firehistory")
+    tag = args.tag or ("_full" if args.full else
+                       "_weather" if args.weather else "_firehistory")
 
-    path = PROC / ("cell_year_features_weather.parquet" if args.weather
-                   else "cell_year_features.parquet")
+    path = PROC / ("cell_year_features_full.parquet" if args.full else
+                   "cell_year_features_weather.parquet" if args.weather else
+                   "cell_year_features.parquet")
     feat = pd.read_parquet(path).reset_index(drop=True)
     labels = pd.read_parquet(INTERIM / "cell_year_labels.parquet")
 
     features = list(FIRE_FEATURES)
-    if args.weather:
+    if args.weather or args.full:
         wx = [c for c in feat.columns if c.startswith("wx_")]
         assert wx, "no weather columns found in the feature table"
         features += wx
         log(f"including {len(wx)} weather features")
+    if args.full:
+        extra = [c for c in feat.columns
+                 if (c.startswith("ndvi_") and c not in EXTRA_EXCLUDE)
+                 or c in EXTRA_NAMED]
+        assert extra, "no greenness columns found; run build_full_features.py first"
+        features += extra
+        log(f"including {len(extra)} greenness, elevation and long-memory features")
 
     assert not (set(features) & FORBIDDEN), "a target-year column is in the feature list"
     missing = [f for f in features if f not in feat.columns]
@@ -219,6 +238,10 @@ def main() -> None:
             class_weight=("balanced_subsample" if w else None), random_state=SEED)),
         ("naive bayes", lambda w: GaussianNB(
             priors=(np.full(len(CLASSES), 1 / len(CLASSES)) if w else None))),
+        ("gradient boosting", lambda w: HistGradientBoostingClassifier(
+            max_iter=500, learning_rate=0.07, max_leaf_nodes=63, l2_regularization=1.0,
+            min_samples_leaf=40, early_stopping=False,
+            class_weight=("balanced" if w else None), random_state=SEED)),
     ]
     for name, make in specs:
         for weighted in (False, True):

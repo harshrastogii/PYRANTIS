@@ -1,0 +1,511 @@
+{
+  "split": {
+    "train": [
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019
+    ],
+    "val": [
+      2020,
+      2021,
+      2022
+    ],
+    "test": [
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "features": [
+    "freq_3",
+    "freq_5",
+    "freq_10",
+    "late_freq_3",
+    "late_freq_5",
+    "late_freq_10",
+    "yrs_since_burnt",
+    "never_burnt",
+    "yrs_since_late",
+    "never_late",
+    "prev_burnt",
+    "prev_early",
+    "prev_late",
+    "prev_frac_burnt",
+    "prev_frac_early",
+    "prev_frac_late",
+    "prev2_burnt",
+    "nbr_frac_burnt_prev",
+    "nbr_frac_early_prev",
+    "nbr_frac_late_prev",
+    "lon",
+    "lat",
+    "wx_wet_rain",
+    "wx_wet_rain_prev",
+    "wx_dry_rain_prev",
+    "wx_apr_rain",
+    "wx_days_since_rain",
+    "wx_days_since_heavy",
+    "wx_wet_tmax",
+    "wx_wet_vpd",
+    "wx_apr_vpd",
+    "wx_wet_radn",
+    "wx_dry_tmax_prev",
+    "wx_dry_vpd_prev",
+    "wx_wet_rain_anom",
+    "wx_wet_rain_ratio",
+    "freq_15",
+    "late_freq_15",
+    "freq_20",
+    "late_freq_20",
+    "freq_25",
+    "late_freq_25",
+    "elevation",
+    "ndvi_apr",
+    "ndvi_wet_mean",
+    "ndvi_wet_max",
+    "ndvi_wet_min",
+    "ndvi_apr_anom",
+    "ndvi_peak_anom",
+    "ndvi_greenup"
+  ],
+  "weather_included": false,
+  "class_order": [
+    "unburnt",
+    "early",
+    "late"
+  ],
+  "results": [
+    {
+      "model": "majority class",
+      "accuracy": 0.5784226416733639,
+      "precision_macro": 0.19280754722445462,
+      "recall_macro": 0.3333333333333333,
+      "f1_macro": 0.244304081979019,
+      "f1_per_class": {
+        "unburnt": 0.7329122459370571,
+        "early": 0.0,
+        "late": 0.0
+      },
+      "confusion": [
+        [
+          79890,
+          0,
+          0
+        ],
+        [
+          22942,
+          0,
+          0
+        ],
+        [
+          35285,
+          0,
+          0
+        ]
+      ],
+      "train_seconds": 0.0
+    },
+    {
+      "model": "same as last year",
+      "accuracy": 0.5673957586683753,
+      "precision_macro": 0.5110037494049813,
+      "recall_macro": 0.5035148265041856,
+      "f1_macro": 0.5063184120860589,
+      "f1_per_class": {
+        "unburnt": 0.6921723198572841,
+        "early": 0.5858230814294083,
+        "late": 0.24095983497148404
+      },
+      "confusion": [
+        [
+          57424,
+          3579,
+          18887
+        ],
+        [
+          6129,
+          13000,
+          3813
+        ],
+        [
+          22481,
+          4861,
+          7943
+        ]
+      ],
+      "train_seconds": 0.0
+    },
+    {
+      "model": "decision tree",
+      "accuracy": 0.6561900417761752,
+      "precision_macro": 0.5770786277218706,
+      "recall_macro": 0.573786886004801,
+      "f1_macro": 0.5657018166985659,
+      "f1_per_class": {
+        "unburnt": 0.7820261929850971,
+        "early": 0.6071271815236702,
+        "late": 0.3079520755869304
+      },
+      "confusion": [
+        [
+          67535,
+          3735,
+          8620
+        ],
+        [
+          5224,
+          14524,
+          3194
+        ],
+        [
+          20069,
+          6644,
+          8572
+        ]
+      ],
+      "train_seconds": 18.8
+    },
+    {
+      "model": "decision tree (balanced)",
+      "accuracy": 0.6282282412737027,
+      "precision_macro": 0.5975510528554487,
+      "recall_macro": 0.6323882010935361,
+      "f1_macro": 0.603535941207442,
+      "f1_per_class": {
+        "unburnt": 0.7185945362026324,
+        "early": 0.5968802569200183,
+        "late": 0.49513303049967555
+      },
+      "confusion": [
+        [
+          50556,
+          6832,
+          22502
+        ],
+        [
+          2504,
+          15612,
+          4826
+        ],
+        [
+          7758,
+          6926,
+          20601
+        ]
+      ],
+      "train_seconds": 19.1
+    },
+    {
+      "model": "random forest",
+      "accuracy": 0.7052571370649522,
+      "precision_macro": 0.690904083821347,
+      "recall_macro": 0.5926654270502063,
+      "f1_macro": 0.5922976298256819,
+      "f1_per_class": {
+        "unburnt": 0.8120761856174139,
+        "early": 0.692216238897825,
+        "late": 0.27260046496180673
+      },
+      "confusion": [
+        [
+          76405,
+          1607,
+          1878
+        ],
+        [
+          6249,
+          14847,
+          1846
+        ],
+        [
+          25628,
+          3501,
+          6156
+        ]
+      ],
+      "train_seconds": 122.2
+    },
+    {
+      "model": "random forest (balanced)",
+      "accuracy": 0.7271805787846536,
+      "precision_macro": 0.68759625987974,
+      "recall_macro": 0.6510351449241045,
+      "f1_macro": 0.6597554834141613,
+      "f1_per_class": {
+        "unburnt": 0.8243349344171439,
+        "early": 0.6873115800673878,
+        "late": 0.4676199357579525
+      },
+      "confusion": [
+        [
+          71394,
+          2495,
+          6001
+        ],
+        [
+          4358,
+          15503,
+          3081
+        ],
+        [
+          17574,
+          4172,
+          13539
+        ]
+      ],
+      "train_seconds": 132.4
+    },
+    {
+      "model": "naive bayes",
+      "accuracy": 0.6475234764728455,
+      "precision_macro": 0.5916529676652185,
+      "recall_macro": 0.6126746965851148,
+      "f1_macro": 0.6001940410102143,
+      "f1_per_class": {
+        "unburnt": 0.7521865889212828,
+        "early": 0.662057113167203,
+        "late": 0.3863384209421572
+      },
+      "confusion": [
+        [
+          59985,
+          4004,
+          15901
+        ],
+        [
+          3749,
+          16565,
+          2628
+        ],
+        [
+          15871,
+          6530,
+          12884
+        ]
+      ],
+      "train_seconds": 0.2
+    },
+    {
+      "model": "naive bayes (balanced)",
+      "accuracy": 0.6440771230188898,
+      "precision_macro": 0.5917162646867612,
+      "recall_macro": 0.6157859745754708,
+      "f1_macro": 0.6018361569068559,
+      "f1_per_class": {
+        "unburnt": 0.746413494049552,
+        "early": 0.6606699628680923,
+        "late": 0.39842501380292333
+      },
+      "confusion": [
+        [
+          58611,
+          4142,
+          17137
+        ],
+        [
+          3613,
+          16636,
+          2693
+        ],
+        [
+          14933,
+          6641,
+          13711
+        ]
+      ],
+      "train_seconds": 0.2
+    },
+    {
+      "model": "gradient boosting",
+      "accuracy": 0.724139678678222,
+      "precision_macro": 0.6933356688002301,
+      "recall_macro": 0.631623200863135,
+      "f1_macro": 0.6438179812295955,
+      "f1_per_class": {
+        "unburnt": 0.8249582035640198,
+        "early": 0.6865328458761583,
+        "late": 0.41996289424860855
+      },
+      "confusion": [
+        [
+          73769,
+          1822,
+          4299
+        ],
+        [
+          5015,
+          14929,
+          2998
+        ],
+        [
+          20169,
+          3798,
+          11318
+        ]
+      ],
+      "train_seconds": 96.7
+    },
+    {
+      "model": "gradient boosting (balanced)",
+      "accuracy": 0.7248637025130867,
+      "precision_macro": 0.679442216745341,
+      "recall_macro": 0.689652721631299,
+      "f1_macro": 0.6842284189101626,
+      "f1_per_class": {
+        "unburnt": 0.8160981013867136,
+        "early": 0.6837371123085408,
+        "late": 0.5528500430352333
+      },
+      "confusion": [
+        [
+          64089,
+          3186,
+          12615
+        ],
+        [
+          2605,
+          16115,
+          4222
+        ],
+        [
+          10478,
+          4895,
+          19912
+        ]
+      ],
+      "train_seconds": 95.0
+    },
+    {
+      "model": "multilayer ANN",
+      "accuracy": 0.7223223788527118,
+      "precision_macro": 0.687983823903107,
+      "recall_macro": 0.6391770896449369,
+      "f1_macro": 0.6539259943546979,
+      "f1_per_class": {
+        "unburnt": 0.8216805828187504,
+        "early": 0.6913643569896484,
+        "late": 0.4487330432556949
+      },
+      "confusion": [
+        [
+          71789,
+          1598,
+          6503
+        ],
+        [
+          4447,
+          14827,
+          3668
+        ],
+        [
+          18611,
+          3525,
+          13149
+        ]
+      ],
+      "train_seconds": 6.3
+    },
+    {
+      "model": "multilayer ANN (balanced)",
+      "accuracy": 0.6784030930298225,
+      "precision_macro": 0.6698608885575016,
+      "recall_macro": 0.6950444924160811,
+      "f1_macro": 0.6671641052061177,
+      "f1_per_class": {
+        "unburnt": 0.7524706731636889,
+        "early": 0.6930219997091634,
+        "late": 0.5559996427455008
+      },
+      "confusion": [
+        [
+          52118,
+          3276,
+          24496
+        ],
+        [
+          1372,
+          16680,
+          4890
+        ],
+        [
+          5145,
+          5239,
+          24901
+        ]
+      ],
+      "train_seconds": 15.1
+    },
+    {
+      "model": "LSTM",
+      "accuracy": 0.7378092486804666,
+      "precision_macro": 0.7058015983972554,
+      "recall_macro": 0.6563447138747976,
+      "f1_macro": 0.6722397256461807,
+      "f1_per_class": {
+        "unburnt": 0.8334177215189873,
+        "early": 0.692062754212667,
+        "late": 0.49123870120688784
+      },
+      "confusion": [
+        [
+          72424,
+          1507,
+          5959
+        ],
+        [
+          4481,
+          14888,
+          3573
+        ],
+        [
+          17005,
+          3688,
+          14592
+        ]
+      ],
+      "train_seconds": 92.0
+    },
+    {
+      "model": "LSTM (balanced)",
+      "accuracy": 0.6919930204102319,
+      "precision_macro": 0.6786037277879043,
+      "recall_macro": 0.6869506348917384,
+      "f1_macro": 0.6732683090945306,
+      "f1_per_class": {
+        "unburnt": 0.7717518263309582,
+        "early": 0.6866321565839462,
+        "late": 0.5614209443686875
+      },
+      "confusion": [
+        [
+          55832,
+          2441,
+          21617
+        ],
+        [
+          2148,
+          15453,
+          5341
+        ],
+        [
+          6819,
+          4175,
+          24291
+        ]
+      ],
+      "train_seconds": 77.0
+    }
+  ]
+}

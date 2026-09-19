@@ -19,7 +19,7 @@
    "history": "11111111111111111111211111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.901,
+   "confidence": 0.9,
    "summary": "This area burns almost every year, usually around June. It has burned in 26 of the last 26 years."
   },
   {
@@ -39,8 +39,8 @@
    "last_burnt": 2024,
    "history": "00000000000200000000000120",
    "forecast_year": 2026,
-   "forecast": "unburnt",
-   "confidence": 0.681,
+   "forecast": "late",
+   "confidence": 0.502,
    "summary": "This area burns rarely, usually around June. It has burned in 3 of the last 26 years."
   },
   {
@@ -61,7 +61,7 @@
    "history": "02100200000000220020022202",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.662,
+   "confidence": 0.856,
    "summary": "This area burns every few years, usually around September. It has burned in 10 of the last 26 years."
   },
   {
@@ -82,7 +82,7 @@
    "history": "01000000000200000000020200",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.79,
+   "confidence": 0.821,
    "summary": "This area burns rarely, usually around June. It has burned in 4 of the last 26 years."
   },
   {
@@ -103,7 +103,7 @@
    "history": "11111111111111111111111111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.944,
+   "confidence": 0.958,
    "summary": "This area burns almost every year, usually around June. It has burned in 26 of the last 26 years."
   },
   {
@@ -124,7 +124,7 @@
    "history": "11111211122111111111111111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.898,
+   "confidence": 0.806,
    "summary": "This area burns almost every year, usually around June. It has burned in 26 of the last 26 years."
   },
   {
@@ -145,7 +145,7 @@
    "history": "22002000000020000000000020",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.449,
+   "confidence": 0.618,
    "summary": "This area burns rarely, usually around August. It has burned in 5 of the last 26 years."
   },
   {
@@ -166,7 +166,7 @@
    "history": "10000101000010011110002100",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.505,
+   "confidence": 0.38,
    "summary": "This area burns every few years, usually around May. It has burned in 10 of the last 26 years."
   },
   {
@@ -186,8 +186,8 @@
    "last_burnt": 2025,
    "history": "22022020222020020000000022",
    "forecast_year": 2026,
-   "forecast": "unburnt",
-   "confidence": 0.482,
+   "forecast": "late",
+   "confidence": 0.81,
    "summary": "This area burns in most years, usually around October. It has burned in 12 of the last 26 years."
   },
   {
@@ -208,7 +208,7 @@
    "history": "02200202000202210022202212",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.609,
+   "confidence": 0.898,
    "summary": "This area burns in most years, usually around August. It has burned in 15 of the last 26 years."
   },
   {
@@ -228,8 +228,8 @@
    "last_burnt": 2025,
    "history": "21122121221222222222222222",
    "forecast_year": 2026,
-   "forecast": "early",
-   "confidence": 0.65,
+   "forecast": "late",
+   "confidence": 0.689,
    "summary": "This area burns almost every year, usually around October. It has burned in 26 of the last 26 years."
   },
   {
@@ -250,7 +250,7 @@
    "history": "00100000000100000000000200",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.856,
+   "confidence": 0.787,
    "summary": "This area burns rarely, usually around May. It has burned in 3 of the last 26 years."
   },
   {
@@ -271,7 +271,7 @@
    "history": "11111111111111111111212111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.806,
+   "confidence": 0.837,
    "summary": "This area burns almost every year, usually around June. It has burned in 26 of the last 26 years."
   },
   {
@@ -292,7 +292,7 @@
    "history": "11111111111121111111111111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.926,
+   "confidence": 0.934,
    "summary": "This area burns almost every year, usually around June. It has burned in 26 of the last 26 years."
   },
   {
@@ -313,7 +313,7 @@
    "history": "02200022020020020000000222",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.525,
+   "confidence": 0.692,
    "summary": "This area burns every few years, usually around October. It has burned in 10 of the last 26 years."
   },
   {
@@ -334,7 +334,7 @@
    "history": "02200000000000000011000000",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.628,
+   "confidence": 0.963,
    "summary": "This area burns rarely, usually around March. It has burned in 4 of the last 26 years."
   },
   {
@@ -355,7 +355,7 @@
    "history": "21020202201110201022001111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.78,
+   "confidence": 0.774,
    "summary": "This area burns in most years, usually around June. It has burned in 17 of the last 26 years."
   },
   {
@@ -376,7 +376,7 @@
    "history": "00200000000001000000000000",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.528,
+   "confidence": 0.59,
    "summary": "This area burns rarely, usually around January. It has burned in 2 of the last 26 years."
   },
   {
@@ -397,7 +397,7 @@
    "history": "02100000000200020200000000",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.492,
+   "confidence": 0.791,
    "summary": "This area burns rarely, usually around December. It has burned in 5 of the last 26 years."
   },
   {
@@ -418,7 +418,7 @@
    "history": "22221122022211221200021222",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.679,
+   "confidence": 0.661,
    "summary": "This area burns almost every year, usually around August. It has burned in 22 of the last 26 years."
   },
   {
@@ -439,7 +439,7 @@
    "history": "12111022220220122120010001",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.449,
+   "confidence": 0.661,
    "summary": "This area burns in most years, usually around September. It has burned in 18 of the last 26 years."
   },
   {
@@ -460,7 +460,7 @@
    "history": "22222012222222222222022222",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.732,
+   "confidence": 0.846,
    "summary": "This area burns almost every year, usually around September. It has burned in 24 of the last 26 years."
   },
   {
@@ -481,7 +481,7 @@
    "history": "12001200101112020022000212",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.485,
+   "confidence": 0.579,
    "summary": "This area burns in most years, usually around June. It has burned in 15 of the last 26 years."
   },
   {
@@ -502,7 +502,7 @@
    "history": "02101000001101021001012121",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.626,
+   "confidence": 0.513,
    "summary": "This area burns in most years, usually around July. It has burned in 14 of the last 26 years."
   },
   {
@@ -523,7 +523,7 @@
    "history": "21102122211110110120011111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.835,
+   "confidence": 0.729,
    "summary": "This area burns almost every year, usually around May. It has burned in 21 of the last 26 years."
   },
   {
@@ -544,7 +544,7 @@
    "history": "00200022020202000022202222",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.823,
+   "confidence": 0.867,
    "summary": "This area burns in most years, usually around September. It has burned in 13 of the last 26 years."
   },
   {
@@ -564,8 +564,8 @@
    "last_burnt": 2021,
    "history": "02000200020020010000020000",
    "forecast_year": 2026,
-   "forecast": "unburnt",
-   "confidence": 0.609,
+   "forecast": "late",
+   "confidence": 0.486,
    "summary": "This area burns every few years, usually around September. It has burned in 6 of the last 26 years."
   },
   {
@@ -586,7 +586,7 @@
    "history": "12112121111112211000111121",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.736,
+   "confidence": 0.768,
    "summary": "This area burns almost every year, usually around June. It has burned in 23 of the last 26 years."
   },
   {
@@ -606,8 +606,8 @@
    "last_burnt": 2025,
    "history": "00000000000200000010001202",
    "forecast_year": 2026,
-   "forecast": "unburnt",
-   "confidence": 0.458,
+   "forecast": "late",
+   "confidence": 0.613,
    "summary": "This area burns rarely, usually around April. It has burned in 5 of the last 26 years."
   },
   {
@@ -628,7 +628,7 @@
    "history": "11111111111111111111111111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.946,
+   "confidence": 0.968,
    "summary": "This area burns almost every year, usually around May. It has burned in 26 of the last 26 years."
   },
   {
@@ -649,7 +649,7 @@
    "history": "11111112212111111111112111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.777,
+   "confidence": 0.659,
    "summary": "This area burns almost every year, usually around June. It has burned in 26 of the last 26 years."
   },
   {
@@ -670,7 +670,7 @@
    "history": "22222122222122211111111111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.891,
+   "confidence": 0.796,
    "summary": "This area burns almost every year, usually around July. It has burned in 26 of the last 26 years."
   },
   {
@@ -691,7 +691,7 @@
    "history": "00000000000000000000000200",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.856,
+   "confidence": 0.926,
    "summary": "This area burns rarely, usually around December. It has burned in 1 of the last 26 years."
   },
   {
@@ -711,8 +711,8 @@
    "last_burnt": 2025,
    "history": "02200000002001000000000022",
    "forecast_year": 2026,
-   "forecast": "unburnt",
-   "confidence": 0.472,
+   "forecast": "late",
+   "confidence": 0.79,
    "summary": "This area burns every few years, usually around August. It has burned in 6 of the last 26 years."
   },
   {
@@ -733,7 +733,7 @@
    "history": "00000000000000000000020000",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.67,
+   "confidence": 0.709,
    "summary": "This area burns rarely, usually around September. It has burned in 1 of the last 26 years."
   },
   {
@@ -753,8 +753,8 @@
    "last_burnt": 2025,
    "history": "00112210011112022222201121",
    "forecast_year": 2026,
-   "forecast": "early",
-   "confidence": 0.594,
+   "forecast": "late",
+   "confidence": 0.623,
    "summary": "This area burns almost every year, usually around August. It has burned in 20 of the last 26 years."
   },
   {
@@ -775,7 +775,7 @@
    "history": "21111112212111111111111112",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.849,
+   "confidence": 0.851,
    "summary": "This area burns almost every year, usually around June. It has burned in 26 of the last 26 years."
   },
   {
@@ -796,7 +796,7 @@
    "history": "11111111112111111111111111",
    "forecast_year": 2026,
    "forecast": "early",
-   "confidence": 0.882,
+   "confidence": 0.873,
    "summary": "This area burns almost every year, usually around June. It has burned in 26 of the last 26 years."
   },
   {
@@ -817,7 +817,7 @@
    "history": "00000220020000000220202220",
    "forecast_year": 2026,
    "forecast": "late",
-   "confidence": 0.824,
+   "confidence": 0.85,
    "summary": "This area burns every few years, usually around September. It has burned in 9 of the last 26 years."
   },
   {
@@ -837,8 +837,8 @@
    "last_burnt": 2025,
    "history": "20100000000210000100001021",
    "forecast_year": 2026,
-   "forecast": "early",
-   "confidence": 0.472,
+   "forecast": "late",
+   "confidence": 0.81,
    "summary": "This area burns every few years, usually around July. It has burned in 8 of the last 26 years."
   },
   {
@@ -859,7 +859,7 @@
    "history": "00200000000000000002000000",
    "forecast_year": 2026,
    "forecast": "unburnt",
-   "confidence": 0.829,
+   "confidence": 0.956,
    "summary": "This area burns rarely, usually around September. It has burned in 2 of the last 26 years."
   }
  ]

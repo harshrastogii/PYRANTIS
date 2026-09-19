@@ -22,15 +22,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.interpolate import griddata
-from sklearn.preprocessing import StandardScaler
-from sklearn.utils.class_weight import compute_class_weight
+from sklearn.ensemble import HistGradientBoostingClassifier
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from pyrantis.schema import CLASSES, INTERIM, PROC, RAW, ROOT as PROJ
 from scripts.build_features import features_at, to_grid, neighbour_mean
-from scripts.train_models import (FIRE_FEATURES, SEQ_LEN, build_sequences, BestMacroF1)
+from scripts.train_models import (FIRE_FEATURES, EXTRA_EXCLUDE, EXTRA_NAMED)
 
 SEED = 42
 TARGET = int(os.environ.get("FORECAST_YEAR", 2026))
@@ -124,62 +123,54 @@ def main() -> None:
 
     fc = fc.merge(weather_for(TARGET, fc[["cell_id", "lon", "lat"]]), on="cell_id")
 
-    train = pd.read_parquet(PROC / "cell_year_features_weather.parquet")
-    features = FIRE_FEATURES + [c for c in train.columns if c.startswith("wx_")]
+    train = pd.read_parquet(PROC / "cell_year_features_full.parquet")
+    features = (FIRE_FEATURES
+                + [c for c in train.columns if c.startswith("wx_")]
+                + [c for c in train.columns
+                   if (c.startswith("ndvi_") and c not in EXTRA_EXCLUDE)
+                   or c in EXTRA_NAMED])
+
+    # The forecast year needs the same long-memory columns the training table carries,
+    # computed the same way: windows ending the year before the target.
+    l = lab["label"].to_numpy()
+    for w in (15, 20, 25):
+        t = len(years)
+        lo = max(0, t - w)
+        n = t - lo
+        fc[f"freq_{w}"] = np.nansum(burnt[lo:t], axis=0)[fc["row"], fc["col"]] / n
+        fc[f"late_freq_{w}"] = np.nansum(late[lo:t], axis=0)[fc["row"], fc["col"]] / n
+
+    # Elevation and greenness are per-cell lookups; greenness for the forecast year is
+    # already in the table Earth Engine wrote, since it only reads up to 30 April.
+    static = (train[["cell_id", "elevation"]].drop_duplicates("cell_id"))
+    fc = fc.merge(static, on="cell_id", how="left")
+
+    ndvi = pd.read_parquet(PROC / "ndvi.parquet")
+    ncols = [c for c in features if c.startswith("ndvi_")]
+    fc = fc.merge(ndvi[["cell_id", "year"] + ncols], on=["cell_id", "year"], how="left")
+
     missing = [c for c in features if c not in fc.columns]
     assert not missing, f"forecast is missing {missing}"
+    gaps = fc[features].isna().mean().max()
+    print(f"{len(features)} features, worst column {gaps*100:.2f}% missing", flush=True)
 
     y = train["label"].map({c: i for i, c in enumerate(CLASSES)}).to_numpy()
-    # Operationally you would use every labelled year. The last two are kept back only
-    # to decide when to stop training, never to report a score.
-    tr = (train["year"] <= years[-1] - 2).to_numpy()
-    va = (train["year"] > years[-1] - 2).to_numpy()
-
+    # Every labelled year is used. There is no held-out year to protect here: the score
+    # this forecast is reported against was measured elsewhere, on 2023-2025, by a model
+    # that never saw them.
     X = train[features].to_numpy("float32")
-    scaler = StandardScaler().fit(X[tr])
-    Str, Sva = scaler.transform(X[tr]), scaler.transform(X[va])
-    Sfc = scaler.transform(fc[features].to_numpy("float32")).astype("float32")
 
-    seq = build_sequences(lab, train)
-    Qtr, Qva = seq[tr], seq[va]
-
-    # The forecast year's sequence is the ten years up to and including last year.
-    yidx = {yy: i for i, yy in enumerate(years)}
-    chan = np.full((len(years), nrow, ncol, 6), np.nan, dtype="float32")
-    yi = lab["year"].map(yidx).to_numpy()
-    r, c = lab["row"].to_numpy(), lab["col"].to_numpy()
-    for k, col in enumerate(("frac_burnt", "frac_early", "frac_late")):
-        chan[yi, r, c, k] = lab[col].to_numpy()
-    for k, cls in enumerate(CLASSES):
-        chan[yi, r, c, 3 + k] = (l == cls).astype("f4")
-    Qfc = np.zeros((len(fc), SEQ_LEN, 6), dtype="float32")
-    for pos in range(SEQ_LEN):
-        src = len(years) - (SEQ_LEN - pos)
-        Qfc[:, pos] = chan[src, fc["row"].to_numpy(), fc["col"].to_numpy()]
-    Qfc = np.nan_to_num(Qfc, nan=0.0)
-
-    import tensorflow as tf
-    from tensorflow import keras
-    tf.keras.utils.set_random_seed(SEED)
-
-    seq_in = keras.layers.Input((SEQ_LEN, 6), name="history")
-    sta_in = keras.layers.Input((len(features),), name="static")
-    h = keras.layers.Dropout(0.2)(keras.layers.LSTM(64)(seq_in))
-    g = keras.layers.Dense(32, activation="relu")(sta_in)
-    z = keras.layers.Dense(32, activation="relu")(keras.layers.Concatenate()([h, g]))
-    model = keras.Model([seq_in, sta_in], keras.layers.Dense(3, activation="softmax")(z))
-    model.compile(optimizer="adam", loss="sparse_categorical_crossentropy",
-                  metrics=["accuracy"])
-
-    cw = dict(enumerate(compute_class_weight("balanced",
-                                             classes=np.arange(3), y=y[tr])))
     t0 = time.time()
-    model.fit([Qtr, Str], y[tr], validation_data=([Qva, Sva], y[va]),
-              epochs=25, batch_size=4096, verbose=0, class_weight=cw,
-              callbacks=[BestMacroF1([Qva, Sva], y[va])])
-    print(f"trained on {tr.sum():,} cell-years in {time.time() - t0:.0f}s")
+    model = HistGradientBoostingClassifier(
+        max_iter=500, learning_rate=0.07, max_leaf_nodes=63, l2_regularization=1.0,
+        min_samples_leaf=40, early_stopping=False, class_weight="balanced",
+        random_state=SEED)
+    model.fit(X, y)
+    print(f"trained gradient boosting on {len(X):,} cell-years in "
+          f"{time.time() - t0:.0f}s", flush=True)
 
-    prob = model.predict([Qfc, Sfc], verbose=0, batch_size=8192)
+    Xfc = fc[features].to_numpy("float32")
+    prob = model.predict_proba(Xfc)
     pred = prob.argmax(1)
 
     fc["pred"] = pred
@@ -196,7 +187,8 @@ def main() -> None:
     json.dump({"year": TARGET, "share": share, "long_run_share": hist,
                "n_cells": int(len(fc)),
                "mean_confidence": round(float(prob.max(1).mean()), 3),
-               "trained_through": int(years[-1] - 2),
+               "model": "gradient boosting (balanced)",
+               "trained_through": int(years[-1]),
                "note": "No published fire scars exist for this year; this forecast is "
                        "unverified."},
               open(PROJ / "reports" / f"forecast_{TARGET}.json", "w"), indent=2)
