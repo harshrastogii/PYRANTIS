@@ -106,6 +106,15 @@ nav.tabs button[aria-selected="true"]{background:#fff;color:var(--ink);box-shado
 #map{width:100%;height:min(64vh,580px);min-height:360px}
 .maplibregl-ctrl-group{border-radius:var(--r-sm)!important;box-shadow:var(--shadow-sm)!important}
 .maplibregl-ctrl-attrib{font-size:10px;background:rgba(255,255,255,.72)!important}
+/* The map has a rounded corner, and the default control margin puts the scale bar's own
+   box across it, which cropped the left edge. These clear the curve and restyle the bar
+   to belong to the page rather than to MapLibre's defaults. */
+.maplibregl-ctrl-bottom-left{margin:0 0 4px 6px}
+.maplibregl-ctrl-bottom-left .maplibregl-ctrl{margin:0 0 8px 10px}
+.maplibregl-ctrl-scale{
+  background:rgba(255,255,255,.82); backdrop-filter:blur(6px);
+  border:1px solid var(--stroke); border-top:none; border-radius:0 0 4px 4px;
+  color:var(--muted); font:500 10.5px/1.5 var(--mono); padding:1px 6px 2px}
 
 /* ------------------------------------------------------------------- pieces */
 .picker{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
@@ -206,6 +215,7 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
         <div class="picker">
           <label for="place">Pick a place</label>
           <select id="place"></select>
+          <button class="btn" id="locate" type="button">Where I am</button>
           <button class="btn" id="whole" type="button">Whole Territory</button>
         </div>
         <div id="mapwrap"><div id="map"></div></div>
@@ -223,6 +233,7 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
             <span class="dot" id="v-dot"></span>
             <div style="min-width:0">
               <h2 id="v-place">Northern Territory</h2>
+              <p class="small" id="v-season" style="margin-top:4px;color:var(--muted)"></p>
               <p class="headline" id="v-headline"></p>
             </div>
           </div>
@@ -282,6 +293,21 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
           <p class="lede small" style="margin-top:6px" id="rec-role"></p>
           <div class="facts" id="rec-facts"></div>
         </div>
+        <div class="panel pad">
+          <h3 id="rec-cell-title">Click the map</h3>
+          <div id="rec-cell-empty" class="empty-inspect small" style="margin-top:8px;color:var(--dim)">
+            Pick any square to see what burned there this year, what the model said, and
+            every year it has burned since 2000.
+          </div>
+          <div id="rec-cell-body" hidden>
+            <p class="num dim" style="font-size:12px;margin-top:2px" id="rec-cell-coord"></p>
+            <div class="facts" id="rec-cell-facts"></div>
+            <p class="small muted" style="margin-top:14px">Every year since 2000</p>
+            <div class="strip" id="rec-cell-strip"></div>
+            <div class="striplab"><span>2000</span><span id="rec-cell-end"></span></div>
+          </div>
+        </div>
+
         <div class="panel pad detail">
           <h3>How this year was used</h3>
           <p class="lede small" style="margin-top:8px" id="rec-split"></p>
@@ -436,6 +462,25 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   var $ = function (id) { return document.getElementById(id); };
   var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // The page has to know what month it is. A forecast that says "fire before the end of
+  // July" reads as a prediction in April and as a stale claim in September, and the
+  // difference matters more than any wording.
+  function season() {
+    var d = new Date(), m = d.getMonth() + 1, y = d.getFullYear();
+    var endLate = new Date(y, 9, 31);                 // end of October
+    var weeksLeft = Math.max(0, Math.round((endLate - d) / 6048e5));
+    if (m >= 5 && m <= 7)
+      return { phase: "early", year: y, weeksLeft: weeksLeft,
+               note: "The early burning window is open now and closes on 31 July." };
+    if (m >= 8 && m <= 10)
+      return { phase: "late", year: y, weeksLeft: weeksLeft,
+               note: "The early burning window closed on 31 July. The late season is "
+                     + "running now, with about " + weeksLeft + " weeks to go." };
+    return { phase: "wet", year: (m >= 11 ? y + 1 : y), weeksLeft: 0,
+             note: "The wet season is on. The next fire season opens in May." };
+  }
+  var SEASON = season();
+
   var MONTHS = ["", "January", "February", "March", "April", "May", "June", "July",
                 "August", "September", "October", "November", "December"];
   var PLAIN = { unburnt: "no fire", early: "fire before August", late: "fire after July" };
@@ -466,27 +511,29 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   // The exported latTop/lonLeft are cell centres, so the image edge sits half a cell out.
   var half = G.cell / 2;
   var W = G.lonLeft - half, N = G.latTop + half;
-  var E = W + G.cols * G.cell, S = N - G.rows * G.cell;
-  var CORNERS = [[W, N], [E, N], [E, S], [W, S]];
+  var E = W + G.cols * G.cell, MAP_S = N - G.rows * G.cell;
+  var CORNERS = [[W, N], [E, N], [E, MAP_S], [W, MAP_S]];
 
   // --------------------------------------------------------------------- map
   var map = new maplibregl.Map({
     container: "map",
     style: "https://api.maptiler.com/maps/dataviz-light/style.json?key=WBLnSvimIk9ssjlbmo5X",
-    bounds: [[W, S], [E, N]], fitBoundsOptions: { padding: 24 },
+    bounds: [[W, MAP_S], [E, N]], fitBoundsOptions: { padding: 24 },
     attributionControl: { compact: true }
   });
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-left");
+  window.__map = map;   // handle for inspecting the map from the console
   map.dragRotate.disable();
   map.touchZoomRotate.disableRotation();
 
   var mapReady = false, currentLayer = "forecast", recIdx = YEARS.length - 1;
+  var currentView = "outlook", recPick = null;
   var pinned = false;                      // true once the reader picks a place or square
 
   function fitAll(instant) {
     if (!mapReady || pinned) return;
-    map.fitBounds([[W, S], [E, N]], { padding: 22, duration: (instant || REDUCED) ? 0 : 600 });
+    map.fitBounds([[W, MAP_S], [E, N]], { padding: 22, duration: (instant || REDUCED) ? 0 : 600 });
   }
 
   function currentGrid() {
@@ -553,7 +600,8 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     var row = Math.floor((N - e.lngLat.lat) / G.cell);
     if (col < 0 || row < 0 || col >= G.cols || row >= G.rows) return;
     if (D.observed[String(YEARS[0])][row * G.cols + col] === G.outside) return;
-    selectCell(row, col, null);
+    if (currentView === "record") selectCellRecord(row, col);
+    else selectCell(row, col, null);
   });
   map.on("mouseenter", "place-dot", function () { map.getCanvas().style.cursor = "pointer"; });
   map.on("mouseleave", "place-dot", function () { map.getCanvas().style.cursor = ""; });
@@ -565,11 +613,29 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
 
   function markPick(lon, lat) {
     if (!mapReady) return;
-    map.getSource("pick").setData({ type: "FeatureCollection", features: [
-      { type: "Feature", geometry: { type: "Point", coordinates: [lon, lat] }, properties: {} }] });
+    // Passing nulls used to build a Point with null coordinates, which threw inside
+    // MapLibre and killed the rest of the click handler. That is why Whole Territory
+    // changed the panel but left the map zoomed in: the fitBounds after it never ran.
+    var features = (lon === null || lat === null || !isFinite(lon) || !isFinite(lat))
+      ? [] : [{ type: "Feature", geometry: { type: "Point", coordinates: [lon, lat] },
+                properties: {} }];
+    map.getSource("pick").setData({ type: "FeatureCollection", features: features });
   }
 
   // ------------------------------------------------------------- plain words
+  // One printable character per cell, spanning the range a three-way choice can occupy.
+  function confAt(i) {
+    var g = FC.confExact && FC.confExact[String(FCYEAR)];
+    if (!g) return null;
+    var ch = g.charCodeAt(i);
+    if (!(ch >= 33 && ch <= 122)) return null;
+    return FC.confLo + (ch - 33) / 89 * (FC.confHi - FC.confLo);
+  }
+
+  // The Territory lies entirely south and east, so the hemisphere letters are fixed.
+  function fmtLat(v) { return Math.abs(v).toFixed(2) + "\u00b0S"; }
+  function fmtLon(v) { return v.toFixed(2) + "\u00b0E"; }
+
   function confWords(c) {
     if (c >= 0.8) return "very confident";
     if (c >= 0.65) return "fairly confident";
@@ -583,26 +649,75 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     r.appendChild(a); r.appendChild(b); host.appendChild(r);
   }
 
-  function drawStrip(host, hist, endYear) {
+  function drawStripInto(host, hist) {
     host.textContent = "";
     for (var i = 0; i < hist.length; i++) {
       var ch = hist[i], b = document.createElement("i");
-      b.style.background = (ch === "." ) ? "rgba(24,42,64,.09)" : "var(--" + CLS[+ch] + ")";
+      b.style.background = (ch === ".") ? "rgba(24,42,64,.09)" : "var(--" + CLS[+ch] + ")";
       b.title = YEARS[i] + ": " + (ch === "." ? "no data" : PLAIN[CLS[+ch]]);
       host.appendChild(b);
     }
+  }
+
+  function drawStrip(host, hist, endYear) {
+    drawStripInto(host, hist);
     $("v-strip-end").textContent = endYear;
+  }
+
+  // The record map used to accept clicks and do nothing visible with them, because the
+  // panel it updated belonged to the other view.
+  function selectCellRecord(row, col) {
+    var i = row * G.cols + col, ys = String(YEARS[recIdx]);
+    var obs = D.observed[ys][i], pred = D.predicted[ys] ? D.predicted[ys][i] : null;
+    if (obs === G.outside) return;
+
+    pinned = true;
+    recPick = [row, col];
+    markPick(W + (col + 0.5) * G.cell, N - (row + 0.5) * G.cell);
+    $("rec-cell-empty").hidden = true;
+    $("rec-cell-body").hidden = false;
+    $("rec-cell-title").textContent = "This square in " + YEARS[recIdx];
+    $("rec-cell-coord").textContent =
+      fmtLat(N - row * G.cell) + "   " + fmtLon(W + col * G.cell);
+
+    var hist = YEARS.map(function (y) { return D.observed[String(y)][i]; }).join("");
+    var burns = 0, lates = 0, last = null;
+    for (var k = 0; k < hist.length; k++) {
+      if (hist[k] === "1" || hist[k] === "2") { burns++; last = YEARS[k]; }
+      if (hist[k] === "2") lates++;
+    }
+
+    var f = $("rec-cell-facts"); f.textContent = "";
+    fact(f, "What happened", PLAIN[CLS[+obs]]);
+    if (pred !== null && pred >= "0" && pred <= "2") {
+      fact(f, "What the model said", PLAIN[CLS[+pred]]);
+      fact(f, "Right or wrong", pred === obs ? "Right" : "Wrong");
+    } else {
+      fact(f, "What the model said", "this year was not a test");
+    }
+    fact(f, "Burned in", burns + " of the last " + YEARS.length + " years");
+    fact(f, "Fires after July", String(lates));
+    fact(f, "Last burned", last ? String(last) : "not since 2000");
+
+    drawStripInto($("rec-cell-strip"), hist);
+    $("rec-cell-end").textContent = YEARS[YEARS.length - 1];
   }
 
   function territorySummary() {
     var s = FC.share, h = FC.long_run_share;
     var burnt = s.early + s.late, hb = h.early + h.late;
     $("v-place").textContent = "Northern Territory";
+    $("v-season").textContent = SEASON.note;
     $("v-dot").style.background = burnt > hb ? "var(--late)" : "var(--unburnt)";
     $("v-headline").innerHTML =
       "We expect <b>" + burnt.toFixed(0) + "% of the Territory to burn in " + FCYEAR +
       "</b>. Across the last 26 years the average was " + hb.toFixed(0) + "%, so this is " +
-      (burnt > hb ? "a heavier year than usual" : "a lighter year than usual") + ".";
+      (burnt > hb ? "a heavier year than usual" : "a lighter year than usual") + ". " +
+      (SEASON.phase === "late"
+        ? "Most of what is left to burn will burn after July."
+        : SEASON.phase === "early"
+          ? "The cool burning window is open now."
+          : "The season opens in May.");
     var f = $("v-facts"); f.textContent = "";
     fact(f, "Expected to burn before August", s.early.toFixed(0) + "% of the Territory");
     fact(f, "Expected to burn after July", s.late.toFixed(0) + "% of the Territory");
@@ -633,14 +748,8 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     var month = cls === "early" ? p.usual_month_early : cls === "late" ? p.usual_month_late : 0;
     var when = month ? " Going on past years, the most likely month is <b>" + MONTHS[month] + "</b>." : "";
 
-    if (cls === "unburnt") {
-      $("v-headline").innerHTML = "We do not expect " + p.name + " to burn in " + FCYEAR +
-        ". " + p.summary;
-    } else {
-      $("v-headline").innerHTML = "We expect fire around <b>" + p.name + "</b> in " + FCYEAR +
-        ", <b>" + (cls === "early" ? "before the end of July" : "after July") + "</b>." + when +
-        " " + p.summary;
-    }
+    $("v-season").textContent = SEASON.note;
+    $("v-headline").innerHTML = headlineFor(p.name, cls, month, p.summary);
 
     var f = $("v-facts"); f.textContent = "";
     fact(f, "Burned in", p.times_burnt + " of the last " + p.years_on_record + " years");
@@ -665,6 +774,42 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     }
   }
 
+  // What a forecast means depends on the date. Before August, a call of "early" is a
+  // prediction; after it, the window has closed and nobody can check it yet, because this
+  // year's satellite maps are not published until the season ends.
+  function headlineFor(name, cls, month, tail) {
+    var when = month ? " Going on past years, the likeliest month is <b>" + MONTHS[month] +
+      "</b>." : "";
+    var who = name ? "<b>" + name + "</b>" : "this square";
+    tail = tail ? " " + tail : "";
+
+    if (cls === "unburnt") {
+      if (SEASON.phase === "late")
+        return "We did not expect " + who + " to burn this year, and about " +
+          SEASON.weeksLeft + " weeks of the season are left to run." + tail;
+      return "We do not expect " + who + " to burn in " + FCYEAR + "." + tail;
+    }
+    if (cls === "early") {
+      if (SEASON.phase === "late")
+        return "We expected fire around " + who + " <b>before the end of July</b>." + when +
+          " That window has closed. This year's satellite maps are not published yet, so " +
+          "nobody can say yet whether it burned." + tail;
+      if (SEASON.phase === "wet")
+        return "When the season opens in May, we expect fire around " + who +
+          " <b>before the end of July</b>." + when + tail;
+      return "We expect fire around " + who + " <b>before the end of July</b>, and that " +
+        "window is open now." + when + tail;
+    }
+    if (SEASON.phase === "late")
+      return "We expect fire around " + who + " <b>after July</b>, and that window is open " +
+        "now with about " + SEASON.weeksLeft + " weeks to go." + when + tail;
+    if (SEASON.phase === "early")
+      return "We expect fire around " + who + " <b>after July</b>, once the country dries " +
+        "out further." + when + tail;
+    return "When the season opens, we expect fire around " + who + " <b>after July</b>." +
+      when + tail;
+  }
+
   function selectCell(row, col, name) {
     var i = row * G.cols + col;
     var hist = YEARS.map(function (y) { return D.observed[String(y)][i]; }).join("");
@@ -676,22 +821,27 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     var fch = FC.grid && FC.grid[String(FCYEAR)] ? FC.grid[String(FCYEAR)][i] : ".";
     var cls = (fch >= "0" && fch <= "2") ? CLS[+fch] : "unburnt";
 
-    $("v-place").textContent = name || (Math.abs(N - row * G.cell).toFixed(2) + "\u00b0S " +
-      (W + col * G.cell).toFixed(2) + "\u00b0E");
+    $("v-place").textContent = name ||
+      (fmtLat(N - row * G.cell) + " " + fmtLon(W + col * G.cell));
     $("v-dot").style.background = "var(--" + cls + ")";
     $("v-strip-wrap").hidden = false;
-    $("v-headline").innerHTML = cls === "unburnt"
-      ? "We do not expect this square to burn in " + FCYEAR + "."
-      : "We expect this square to burn <b>" +
-        (cls === "early" ? "before the end of July" : "after July") + "</b> in " + FCYEAR + ".";
+    $("v-season").textContent = SEASON.note;
+    $("v-headline").innerHTML = headlineFor(name, cls, 0, "");
 
     var f = $("v-facts"); f.textContent = "";
     fact(f, "Burned in", burns + " of the last " + YEARS.length + " years");
     fact(f, "Fires after July", String(lates));
     fact(f, "Last burned", last ? String(last) : "not since 2000");
     fact(f, FCYEAR + " outlook", PLAIN[cls]);
-    $("v-conf-label").textContent = "Pick a named town for a confidence figure.";
-    $("v-conf-bar").style.width = "0%";
+    var cc = confAt(i);
+    if (cc === null) {
+      $("v-conf-label").textContent = "No forecast for this square.";
+      $("v-conf-bar").style.width = "0%";
+    } else {
+      $("v-conf-label").textContent = "The model is " + confWords(cc) + " about this, " +
+        (cc * 100).toFixed(0) + " out of 100.";
+      $("v-conf-bar").style.width = (cc * 100) + "%";
+    }
     drawStrip($("v-strip"), hist, YEARS[YEARS.length - 1]);
     $("map-note").textContent = "Showing one 5 km square.";
     pinned = true;
@@ -703,6 +853,37 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   sel.firstChild.disabled = true;
   PLACES.forEach(function (p, i) { sel.appendChild(new Option(p.name, String(i))); });
   sel.addEventListener("change", function () { if (sel.value !== "") choosePlace(+sel.value); });
+  $("locate").addEventListener("click", function () {
+    var btn = $("locate");
+    if (!navigator.geolocation) {
+      $("map-note").textContent = "This browser will not share a location.";
+      return;
+    }
+    btn.textContent = "Finding you"; btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      btn.textContent = "Where I am"; btn.disabled = false;
+      var lon = pos.coords.longitude, lat = pos.coords.latitude;
+      var col = Math.floor((lon - W) / G.cell), row = Math.floor((N - lat) / G.cell);
+      var out = col < 0 || row < 0 || col >= G.cols || row >= G.rows ||
+                D.observed[String(YEARS[0])][row * G.cols + col] === G.outside;
+      if (out) {
+        // Outside the Territory the model has nothing to say, and saying something anyway
+        // would be worse than admitting it.
+        $("map-note").textContent = "You are outside the Northern Territory, so there is " +
+          "no forecast for where you are. Pick a town from the list instead.";
+        pinned = false; territorySummary(); fitAll();
+        return;
+      }
+      sel.value = "";
+      selectCell(row, col, "Where you are");
+      map.flyTo({ center: [lon, lat], zoom: 7.2, speed: 1.1 });
+      $("map-note").textContent = "Showing the 5 km square you are standing in.";
+    }, function () {
+      btn.textContent = "Where I am"; btn.disabled = false;
+      $("map-note").textContent = "Location was not shared, so nothing has changed.";
+    }, { timeout: 12000, maximumAge: 300000 });
+  });
+
   $("whole").addEventListener("click", function () {
     sel.value = ""; pinned = false; territorySummary(); fitAll();
   });
@@ -759,6 +940,7 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   }
   recSlider.addEventListener("input", function () {
     recIdx = +recSlider.value; stopPlay(); drawRecord();
+    if (recPick) selectCellRecord(recPick[0], recPick[1]);
   });
   $("rec-layer").addEventListener("change", drawRecord);
   function stopPlay() {
@@ -775,6 +957,7 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
 
   // ------------------------------------------------------------------ views
   function setView(v) {
+    currentView = v;
     Array.prototype.forEach.call(document.querySelectorAll("nav.tabs button"), function (t) {
       t.setAttribute("aria-selected", String(t.dataset.view === v));
     });
@@ -880,22 +1063,23 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     return { k: k + (k === "1" ? " year" : " years"), v: gh[k] / gtot * 100, colour: "var(--unburnt)" };
   }), { scale: 60 });
 
-  var S = R.suppression, regions = Object.keys(S).filter(function (k) { return k !== "all"; });
-  var top = S[regions[0]];
+  var SUPP = R.suppression;
+  var regions = Object.keys(SUPP).filter(function (k) { return k !== "all"; });
+  var top = SUPP[regions[0]];
   $("pt-supp-answer").textContent =
     "In the Top End, yes. Country burned early sees a fire after July " + top.after_early +
     "% of the time the next year, against " + top.after_unburnt + "% for country left alone.";
-  var items = [{ k: "Whole Territory, burned early", v: S.all.after_early, colour: "var(--early)" },
-               { k: "Whole Territory, left alone", v: S.all.after_unburnt, colour: "var(--unburnt)" }];
+  var items = [{ k: "Whole Territory, burned early", v: SUPP.all.after_early, colour: "var(--early)" },
+               { k: "Whole Territory, left alone", v: SUPP.all.after_unburnt, colour: "var(--unburnt)" }];
   regions.forEach(function (r) {
     var short = r.split(" (")[0];
-    items.push({ k: short + ", burned early", v: S[r].after_early, colour: "var(--early)" });
-    items.push({ k: short + ", left alone", v: S[r].after_unburnt, colour: "var(--unburnt)" });
+    items.push({ k: short + ", burned early", v: SUPP[r].after_early, colour: "var(--early)" });
+    items.push({ k: short + ", left alone", v: SUPP[r].after_unburnt, colour: "var(--unburnt)" });
   });
   bars($("pt-supp"), items, { scale: 40 });
   $("pt-supp-note").textContent =
-    "Add the whole Territory together and early burning looks worse, " + S.all.after_early +
-    "% against " + S.all.after_unburnt + "%. That total is misleading. Early burning happens " +
+    "Add the whole Territory together and early burning looks worse, " + SUPP.all.after_early +
+    "% against " + SUPP.all.after_unburnt + "%. That total is misleading. Early burning happens " +
     "in the north where fire is common anyway, while the country left alone is mostly desert " +
     "that rarely burns. Comparing like with like reverses the answer. These are patterns we " +
     "observed, not a controlled experiment.";

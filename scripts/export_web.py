@@ -100,7 +100,7 @@ def main() -> None:
     # The forecast year: a grid like any other, plus the model's confidence per cell so
     # the page can show where it is sure and where it is guessing.
     fpath = sorted((PROJ / "reports").glob("forecast_*.npz"))
-    fc_grid, fc_meta, fc_conf = {}, {}, {}
+    fc_grid, fc_meta, fc_conf, fc_exact = {}, {}, {}, {}
     if fpath:
         fz = np.load(fpath[-1])
         fyear = int(fpath[-1].stem.split("_")[1])
@@ -108,12 +108,21 @@ def main() -> None:
                             "ch": [str(v) for v in fz["pred"]], "year": fyear})
         fc_grid = grid_strings(fdf, "ch", r0, r1, c0, c1)
         conf = fz["prob"].max(axis=1)
-        # Confidence banded into four steps: a continuous ramp would be unreadable at
-        # one pixel per cell.
+        # Four bands for the map, where a continuous ramp would be unreadable at one
+        # pixel per cell.
         band = np.clip((conf - 0.34) / (1.0 - 0.34) * 4, 0, 3.999).astype(int)
         cdf = pd.DataFrame({"row": fz["row"], "col": fz["col"],
                             "ch": [str(v) for v in band], "year": fyear})
         fc_conf = grid_strings(cdf, "ch", r0, r1, c0, c1)
+
+        # And the exact figure for every cell, so clicking anywhere gives a real number
+        # rather than being told to pick a town. One printable character per cell across
+        # the range a three-way choice can occupy, which is about one point of precision.
+        lo, hi = 1 / 3, 1.0
+        lvl = np.clip((conf - lo) / (hi - lo) * 89, 0, 89).round().astype(int) + 33
+        edf = pd.DataFrame({"row": fz["row"], "col": fz["col"],
+                            "ch": [chr(v) for v in lvl], "year": fyear})
+        fc_exact = grid_strings(edf, "ch", r0, r1, c0, c1)
         fc_meta = json.load(open(PROJ / "reports" / f"forecast_{fyear}.json"))
 
     data = {
@@ -136,7 +145,9 @@ def main() -> None:
         "places": places["places"],
         "months": months,
         "walk": walk,
-        "forecast": {"grid": fc_grid, "confidence": fc_conf, **fc_meta},
+        "forecast": {"grid": fc_grid, "confidence": fc_conf,
+                     "confExact": fc_exact, "confLo": 1 / 3, "confHi": 1.0,
+                     **fc_meta},
     }
 
     blob = json.dumps(data, separators=(",", ":"))
