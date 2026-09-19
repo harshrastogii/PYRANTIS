@@ -238,6 +238,11 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
           </div>
         </div>
 
+        <div class="panel pad">
+          <h3>Why we think so</h3>
+          <p class="lede" style="margin-top:8px; font-size:14.5px" id="v-why"></p>
+        </div>
+
         <div class="note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.2v.1"/></svg>
           <span id="v-caveat"></span>
@@ -701,6 +706,15 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   $("whole").addEventListener("click", function () {
     sel.value = ""; pinned = false; territorySummary(); fitAll();
   });
+
+  $("v-why").textContent =
+    "There is more grass standing in the Territory than in any year since 2000. " +
+    "Satellites measure how green the ground is, and this April it read higher than any " +
+    "April on record, higher even than 2011, when two thirds of the Territory burned. " +
+    "That grass is the fuel. The wet season behind it delivered 764 mm, 45 per cent above " +
+    "the 2005 to 2019 average and the third wettest in 22 years. The link runs backwards " +
+    "too: 2020 had the driest wet season of the period and the lightest fire year on " +
+    "record, 15.9 per cent.";
 
   $("v-caveat").textContent =
     "Nobody can check this forecast yet. The satellite record for " + FCYEAR + " is not " +
