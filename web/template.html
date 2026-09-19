@@ -128,10 +128,14 @@ nav.tabs button[aria-selected="true"]{background:#fff;color:var(--ink);box-shado
    to belong to the page rather than to MapLibre's defaults. */
 .maplibregl-ctrl-bottom-left{margin:0 0 4px 6px}
 .maplibregl-ctrl-bottom-left .maplibregl-ctrl{margin:0 0 8px 10px}
+/* MapLibre draws its scale as a bracket, open at the top, which is the cartographic
+   convention. Filled white and rounded at the bottom only, it read as a box with its lid
+   cut off. A closed pill is unambiguous. */
 .maplibregl-ctrl-scale{
-  background:rgba(255,255,255,.82); backdrop-filter:blur(6px);
-  border:1px solid var(--stroke); border-top:none; border-radius:0 0 4px 4px;
-  color:var(--muted); font:500 10.5px/1.5 var(--mono); padding:1px 6px 2px}
+  background:rgba(255,255,255,.8); backdrop-filter:blur(6px);
+  border:1px solid var(--stroke); border-radius:999px;
+  color:var(--muted); font:500 10px/1.5 var(--mono);
+  padding:2px 9px; box-shadow:var(--shadow-sm); white-space:nowrap}
 
 /* ------------------------------------------------------------------- pieces */
 .picker{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
@@ -295,7 +299,7 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     <div class="split">
       <div>
         <div class="picker">
-          <button class="btn" id="rec-play" type="button">Play the years</button>
+          <button class="btn" id="rec-play" type="button">Play the season</button>
           <input type="range" id="rec-year" min="0" max="1" step="1" style="flex:1 1 240px;accent-color:var(--accent)" aria-label="Year">
           <span class="num" id="rec-label" style="font-size:19px;font-weight:600;min-width:4.5ch"></span>
           <select id="rec-layer">
@@ -504,6 +508,7 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   }
   var SEASON = season();
 
+  var LATE_FROM = 8;                 // August onwards counts as the late season
   var MONTHS = ["", "January", "February", "March", "April", "May", "June", "July",
                 "August", "September", "October", "November", "December"];
   var PLAIN = { unburnt: "no fire", early: "fire before August", late: "fire after July" };
@@ -517,9 +522,25 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   function pal() { return [rgb(css("--unburnt")), rgb(css("--early")), rgb(css("--late"))]; }
 
   // -------------------------------------------------------------- grid image
+  // A canvas source wants its canvas in the document, so it sits off screen.
   var gc = document.createElement("canvas");
   gc.width = G.cols; gc.height = G.rows;
-  function gridURL(str) {
+  gc.style.cssText = "position:absolute;left:-9999px;top:0;pointer-events:none";
+  document.body.appendChild(gc);
+
+  // With animate off the source uploads a texture only when asked, so one frame is pushed
+  // after each repaint rather than on every tick of the browser's clock.
+  var nudgeTimer = null;
+  function nudge() {
+    if (!mapReady) return;
+    var src = map.getSource("fire");
+    if (!src || !src.play) return;
+    src.play();
+    clearTimeout(nudgeTimer);
+    nudgeTimer = setTimeout(function () { try { src.pause(); } catch (e) {} }, 70);
+  }
+
+  function paintGrid(str) {
     var ctx = gc.getContext("2d"), img = ctx.createImageData(G.cols, G.rows), px = img.data, p = pal();
     for (var i = 0, n = G.cols * G.rows; i < n; i++) {
       var ch = str.charCodeAt(i) - 48, c;
@@ -528,7 +549,33 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
       px[i * 4] = c[0]; px[i * 4 + 1] = c[1]; px[i * 4 + 2] = c[2];
     }
     ctx.putImageData(img, 0, 0);
-    return gc.toDataURL("image/png");
+    nudge();
+  }
+
+  // The month grid holds, per cell, the month it was detected as burnt: "0" for no fire,
+  // "1" to "<" for January to December. Drawing everything up to a given month makes the
+  // fire spread across the Territory the way the season actually runs.
+  function paintGridUpToMonth(mg, upto) {
+    var ctx = gc.getContext("2d"), img = ctx.createImageData(G.cols, G.rows);
+    var px = img.data, p = pal();
+    for (var i = 0, n2 = G.cols * G.rows; i < n2; i++) {
+      var ch = mg.charCodeAt(i) - 48;        // -2 outside, 0 unburnt, 1-12 month
+      var c, a = 235;
+      if (ch < 0) { c = [0, 0, 0]; a = 0; }
+      else if (ch === 0 || ch > upto) { c = p[0]; }
+      else { c = ch >= LATE_FROM ? p[2] : p[1]; }
+      px[i * 4] = c[0]; px[i * 4 + 1] = c[1]; px[i * 4 + 2] = c[2]; px[i * 4 + 3] = a;
+    }
+    ctx.putImageData(img, 0, 0);
+    nudge();
+  }
+
+  function paintMonth(yearIdx, month) {
+    if (!mapReady) return;
+    var mg = D.monthGrid && D.monthGrid[String(YEARS[yearIdx])];
+    if (!mg) return;
+    paintGridUpToMonth(mg, month);
+    map.setPaintProperty("fire", "raster-opacity", 0.88);
   }
 
   // The exported latTop/lonLeft are cell centres, so the image edge sits half a cell out.
@@ -567,15 +614,15 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   function refreshGrid() {
     var g = currentGrid();
     if (!mapReady) return;
-    var src = map.getSource("fire");
     if (!g) { map.setPaintProperty("fire", "raster-opacity", 0); return; }
-    src.updateImage({ url: gridURL(g) });
+    paintGrid(g);
     map.setPaintProperty("fire", "raster-opacity", 0.88);
   }
 
   map.on("load", function () {
-    map.addSource("fire", { type: "image", url: gridURL(currentGrid() || D.observed[String(YEARS[0])]),
-                            coordinates: CORNERS });
+    paintGrid(currentGrid() || D.observed[String(YEARS[0])]);
+    map.addSource("fire", { type: "canvas", canvas: gc, coordinates: CORNERS,
+                            animate: false });
     map.addLayer({
       id: "fire", type: "raster", source: "fire",
       paint: { "raster-opacity": 0.88, "raster-resampling": "nearest",
@@ -623,12 +670,20 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   function setMapState(kind) {
     var el = $("map-state");
     if (!el) return;
+    if (kind === null || (kind !== "loading" && mapFailed === false && kind === "clear")) {
+      el.hidden = true; return;
+    }
     if (kind === null) { el.hidden = true; return; }
     el.hidden = false;
     $("map-spin").hidden = (kind !== "loading");
     if (kind === "loading") {
       $("map-state-head").textContent = "Loading the map";
       $("map-state-body").textContent = "The figures beside it are ready already.";
+    } else if (kind === "nomodel") {
+      $("map-state-head").textContent = "No forecast for " + YEARS[recIdx];
+      $("map-state-body").textContent = "The model learned from this year, so showing " +
+        "its answer here would prove nothing. It was tested on " + HELD[0] + " to " +
+        HELD[HELD.length - 1] + ", and those are the years to compare.";
     } else {
       $("map-state-head").textContent = "The map could not load";
       $("map-state-body").textContent = "Everything beside it is still correct, and " +
@@ -987,9 +1042,8 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   var recSlider = $("rec-year"), recTimer = null;
   recSlider.max = YEARS.length - 1; recSlider.value = recIdx;
 
-  function drawRecord() {
+  function drawRecordPanel() {
     var ys = String(YEARS[recIdx]);
-    $("rec-label").textContent = YEARS[recIdx];
     $("rec-y").textContent = YEARS[recIdx];
     var held = D.predicted[ys];
     $("rec-role").textContent = held
@@ -1008,27 +1062,61 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
       "Trained on " + D.split.train[0] + " to " + D.split.train[D.split.train.length - 1] +
       ", tuned on " + D.split.val[0] + " to " + D.split.val[D.split.val.length - 1] +
       ", tested on " + HELD[0] + " to " + HELD[HELD.length - 1] + ".";
-    if ($("rec-layer").value === "predicted" && !held) {
-      $("rec-layer").value = "observed";
-    }
+  }
+
+  function drawRecord() {
+    var ys = String(YEARS[recIdx]);
+    var held = D.predicted[ys];
+    $("rec-label").textContent = YEARS[recIdx];
+    drawRecordPanel();
     currentLayer = $("rec-layer").value;
-    refreshGrid();
+    if (currentLayer === "predicted" && !held) {
+      // Keep the reader's choice and explain the gap, rather than silently undoing it.
+      if (mapReady && !mapFailed) setMapState("nomodel");
+      if (mapReady) map.setPaintProperty("fire", "raster-opacity", 0);
+    } else {
+      if (!mapFailed) setMapState(null);
+      refreshGrid();
+    }
   }
   recSlider.addEventListener("input", function () {
     recIdx = +recSlider.value; stopPlay(); drawRecord();
     if (recPick) selectCellRecord(recPick[0], recPick[1]);
   });
   $("rec-layer").addEventListener("change", drawRecord);
+  var playMonth = 0;
   function stopPlay() {
     if (!recTimer) return;
-    clearInterval(recTimer); recTimer = null; $("rec-play").textContent = "Play the years";
+    clearInterval(recTimer); recTimer = null; playMonth = 0;
+    $("rec-play").textContent = "Play the season";
+    drawRecord();                        // back to the whole year
   }
+
   $("rec-play").addEventListener("click", function () {
     if (recTimer) { stopPlay(); return; }
     $("rec-play").textContent = "Pause";
+
+    // A forecast has no month in it, so only the observed record can run by month. On the
+    // model layer the player still steps a year at a time.
+    var byMonth = ($("rec-layer").value === "observed") && !!D.monthGrid;
+    playMonth = 0;
+
     recTimer = setInterval(function () {
-      recIdx = (recIdx + 1) % YEARS.length; recSlider.value = recIdx; drawRecord();
-    }, 780);
+      if (!byMonth) {
+        recIdx = (recIdx + 1) % YEARS.length;
+        recSlider.value = recIdx; drawRecord();
+        return;
+      }
+      playMonth += 1;
+      if (playMonth > 12) {
+        playMonth = 1;
+        recIdx = (recIdx + 1) % YEARS.length;
+        recSlider.value = recIdx;
+        drawRecordPanel();               // the figures follow the year, not the month
+      }
+      $("rec-label").textContent = MONTHS[playMonth].slice(0, 3) + " " + YEARS[recIdx];
+      paintMonth(recIdx, playMonth);
+    }, byMonth ? 140 : 780);
   });
 
   // ------------------------------------------------------------------ views

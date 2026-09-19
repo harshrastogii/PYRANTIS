@@ -54,6 +54,11 @@ def main() -> None:
 
     observed = grid_strings(lab, "ch", r0, r1, c0, c1)
 
+    # The month each cell was detected as burnt, one character per cell, so the player can
+    # run through a season rather than jumping a year at a time. 0 means it did not burn.
+    lab["mch"] = lab["peak_month"].fillna(0).astype(int).map(lambda m: chr(48 + int(m)))
+    months_grid = grid_strings(lab, "mch", r0, r1, c0, c1)
+
     # Annual class shares, the figures the atlas quotes beside the map.
     annual = {}
     for year, g in lab.groupby("year", observed=True):
@@ -179,6 +184,7 @@ def main() -> None:
         "classes": list(CLASSES),
         "years": sorted(int(y) for y in observed),
         "observed": observed,
+        "monthGrid": months_grid,
         "predicted": predicted,
         "predModel": best["model"].replace(" (balanced)", ""),
         "annual": annual,
