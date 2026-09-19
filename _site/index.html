@@ -64,32 +64,32 @@ p{margin:0}
   -webkit-backdrop-filter:blur(18px) saturate(1.6);
   border-bottom:1px solid var(--stroke); box-shadow:var(--shadow-sm)}
 .bar-in{max-width:1400px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap}
-/* The mark is the letter P, so the word does not repeat it. "yrantis" is set to continue
-   straight out of the artwork as one lockup rather than sitting beside it as a caption.
-   The sizing is measured, not guessed: the P fills 87.1% of its square, and Manrope's cap
-   height is 0.72 of its font size, so the word must be set at 1.21 times the logo height
-   for the two cap heights to agree. The artwork also carries 11.9% transparent padding on
-   its right, which the negative margin takes back so the letters actually touch. */
-.brand{--brand-h:30px; display:flex; align-items:center; white-space:nowrap}
+/* The mark is the letter P, so the word does not repeat it: the wordmark reads "yrantis"
+   and continues out of the artwork. The word is set at the size it has always been rather
+   than blown up to match the P's cap height, so the mark stays the larger of the two and
+   the word follows it.
+   The two sit on one baseline rather than being centred against each other. The drawn P
+   has its foot at 92% of the square's height, so the word is lifted by the remaining 8%
+   to put both feet on the same line. The artwork also carries 11.9% transparent padding
+   down its right side, which the negative margin takes back so the letters meet. */
+.brand{--brand-h:30px; display:flex; align-items:baseline; white-space:nowrap}
 .brand img{
   width:var(--brand-h); height:var(--brand-h); display:block;
   filter:drop-shadow(0 2px 7px rgba(24,42,64,.2));
 }
 .brand .name{
-  font-weight:700; font-size:calc(var(--brand-h) * 1.21);
-  letter-spacing:-.035em; line-height:1;
-  margin-left:calc(var(--brand-h) * -0.105);   /* close the artwork's own right padding */
-  transform:translateY(1.5%);                  /* sit the baselines together */
-  /* Taken from the right-hand edge of the mark itself, read top to bottom: the sky in its
-     bowl, the petrol blue beneath it, and the deep teal at its foot. The word stays
-     quieter than the artwork it grows out of. */
+  font-weight:800; font-size:19px; letter-spacing:-.025em; line-height:1;
+  margin-left:calc(var(--brand-h) * -0.119);
+  transform:translateY(calc(var(--brand-h) * -0.08));
+  /* Sampled from the right-hand edge of the mark, where the word begins: the sky inside
+     its bowl, the petrol blue below it, the deep teal at its foot. */
   color:#245f80;                               /* if the clip is unsupported */
   background:linear-gradient(176deg, #4a90b4 0%, #245f80 46%, #17333f 100%);
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 1px 0 rgba(255,255,255,.6));
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,.55));
 }
-@media (max-width:620px){ .brand{--brand-h:26px} }
+@media (max-width:620px){ .brand{--brand-h:26px} .brand .name{font-size:17px} }
 
 nav.tabs{display:flex;gap:2px;background:rgba(24,42,64,.06);padding:3px;border-radius:var(--r-md)}
 nav.tabs button{border:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;
