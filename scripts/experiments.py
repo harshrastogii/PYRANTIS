@@ -209,9 +209,28 @@ def block_soi(feat, labels):
                         index=feat.index)
 
 
+def block_ndvi(feat, labels):
+    """Satellite greenness: the fuel itself, rather than the rain that grew it.
+
+    Everything the models have been told about fuel so far is rainfall in disguise. This
+    is MODIS looking at how green the ground actually went over the wet season, which is
+    what will or will not carry a fire in August. April greenness is the standing crop as
+    the dry season opens; the anomaly compares a cell with its own normal rather than
+    with the desert; green-up is the growth itself rather than the standing total.
+    """
+    np_path = PROC / "ndvi.parquet"
+    assert np_path.exists(), "run scripts/fetch_ndvi.py first"
+    n = pd.read_parquet(np_path)
+    cols = ["ndvi_apr", "ndvi_wet_mean", "ndvi_wet_max", "ndvi_wet_min",
+            "ndvi_apr_anom", "ndvi_peak_anom", "ndvi_greenup"]
+    j = feat[["cell_id", "year"]].merge(n[["cell_id", "year"] + cols],
+                                        on=["cell_id", "year"], how="left")
+    return j[cols].astype("float32").set_index(feat.index)
+
+
 BLOCKS = {"longmem": block_longmem, "elevation": block_elevation,
           "spatial": block_spatial, "monthly": block_monthly,
-          "growth": block_growth, "soi": block_soi}
+          "growth": block_growth, "soi": block_soi, "ndvi": block_ndvi}
 
 
 # ===================================================================== models
@@ -267,6 +286,16 @@ def fit_lstm(X, y, tr, va, te, seq, seq2=None, units=64, seed=SEED):
 
 
 # ================================================================ the queue
+ROUND_THREE = [
+    ("r3-gb-ndvi", "Probe: satellite greenness on top of the round-two winner",
+     ["base", "longmem", "elevation", "ndvi"], "histgb"),
+    ("r3-gb-ndvi-growth", "Probe: greenness and wet-season shape together",
+     ["base", "longmem", "elevation", "ndvi", "growth"], "histgb"),
+    ("r3-lstm-ndvi", "The incumbent architecture on the winning features", ["winner"], "lstm"),
+    ("r3-lstm-seq-ndvi", "Winning features plus the monthly weather branch", ["winner"], "lstm-seq"),
+    ("r3-ensemble", "Average the best tree and the best network", ["winner"], "ensemble"),
+]
+
 ROUND_TWO = [
     ("r2-gb-longmem", "Probe: long memory and elevation", ["base", "longmem", "elevation"], "histgb"),
     ("r2-gb-spatial", "Probe: add district-scale neighbourhood", ["base", "longmem", "elevation", "spatial"], "histgb"),
@@ -295,6 +324,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--round2", action="store_true")
+    ap.add_argument("--round3", action="store_true")
     ap.add_argument("only", nargs="*")
     args = ap.parse_args()
     if args.list:
@@ -336,7 +366,7 @@ def main():
     probe_best, winner_blocks = 0.0, ["base"]
     probs = {}
 
-    pool = ROUND_TWO if args.round2 else EXPERIMENTS
+    pool = ROUND_THREE if args.round3 else (ROUND_TWO if args.round2 else EXPERIMENTS)
     queue = [e for e in pool if not args.only or e[0] in args.only]
     for name, desc, blocks, kind in queue:
         blocks = winner_blocks if blocks == ["winner"] else blocks
