@@ -100,7 +100,10 @@ def models():
 
 def layers():
     """What each new source of data actually bought."""
-    steps = [("fire history\nalone", 0.6394, 22), ("+ weather", 0.6739, 36), ("+ greenness", 0.6842, 50)]
+    # The third run adds greenness, the 15/20/25-year memory features and elevation
+    # together, so the bar is labelled for all three rather than for greenness alone.
+    steps = [("fire history\nalone", 0.6394, 22), ("+ weather", 0.6739, 36),
+             ("+ greenness,\nmemory, elevation", 0.6842, 50)]
     fig, ax = plt.subplots(figsize=(7.6, 4.3))
     x = np.arange(3)
     vals = [s[1] for s in steps]
@@ -121,7 +124,7 @@ def layers():
                     arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.9, ls=":"))
         ax.text(i - 0.5, max(vals[i], vals[i - 1]) + 0.016, f"+{d:.3f}",
                 ha="center", fontsize=11.5, color=EMBER, fontweight="bold")
-    ax.set_xticks(x); ax.set_xticklabels([s[0] for s in steps], fontsize=12.5)
+    ax.set_xticks(x); ax.set_xticklabels([s[0] for s in steps], fontsize=11.5)
     ax.set_xlim(-0.98, 2.44)
     ax.set_ylim(0.49, 0.72); ax.set_yticks([])
     ax.set_ylabel("balanced F1", fontsize=11)

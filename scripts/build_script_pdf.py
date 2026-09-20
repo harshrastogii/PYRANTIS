@@ -142,10 +142,11 @@ SCRIPT = [
   "A forecast is only useful if it arrives before the fire season. So every one of our "
   "fifty features is built from information available by the thirtieth of April in the "
   "year being predicted — and nothing after.",
-  "Three families. Twenty-two fire-history features: years since the last fire, how "
-  "often a square burnt over three to twenty-five years, what it did last year, and what "
-  "its neighbours did. Fourteen weather features from the wet season just gone. And "
-  "eight greenness features from the satellite."]),
+  "Four groups. Twenty-six fire-history features: years since the last fire, how often "
+  "a square burnt over three to twenty-five years, what it did last year, and what its "
+  "neighbours did. Fourteen weather features from the wet season just gone. Seven "
+  "greenness features from the satellite. And three that simply place the square: "
+  "longitude, latitude and elevation."]),
 
  (9, SAIRA, "4:05 – 4:50", "The most important slide in the middle act. Do not rush it.", [
   "This is the slide I would ask you to weigh most heavily.",
@@ -193,11 +194,12 @@ SCRIPT = [
 
  (14, THARU, "6:40 – 7:15", "Be plain about the small gain. It reads as honesty.", [
   "Fire history alone gets to 0.639. Adding weather takes it to 0.674 — plus 0.035, and "
-  "the single biggest step in the project. Adding satellite greenness takes it to 0.684, "
-  "which is plus 0.010.",
-  "We kept it, because the gain holds up on years the model never saw and two of its five "
-  "strongest inputs are greenness measures. But it cost ten minutes a run against sixty "
-  "seconds for everything else — and we will not call a 0.010 gain a breakthrough."]),
+  "the single biggest step in the project. The third run adds greenness, longer fire "
+  "memory and elevation together, and takes it to 0.684.",
+  "Isolated in the ledger, greenness on its own is worth plus 0.029. We kept it, because "
+  "that holds up on years the model never saw and two of its five strongest inputs are "
+  "greenness measures — though it cost ten minutes a run against sixty seconds for "
+  "everything else."]),
 
  (15, THARU, "7:15 – 7:55", "Trace the ember line with a finger. Stay on the last point.", [
   "One good test year could be luck. So we did it sixty-six times.",
@@ -217,7 +219,7 @@ SCRIPT = [
   "And I want to be explicit about the one that failed. We built a U-Net — a "
   "convolutional network reading fire as a picture rather than a table of numbers, the "
   "architecture you would reach for if spatial pattern were the whole story. It scored "
-  "0.588, which is 0.086 below the benchmark, so it went into the ledger as a reverted "
+  "0.588, which is 0.048 below the benchmark, so it went into the ledger as a reverted "
   "run and stayed out of the final model.",
   "We are reporting it because a ledger that only contains successes is not a ledger."]),
 

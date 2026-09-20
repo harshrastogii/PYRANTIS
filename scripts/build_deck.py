@@ -406,25 +406,28 @@ def s08_features():
          "the year being predicted — and nothing later.",
          size=14.5, color=INK, spacing=1.5)
     fams = [
-        (BLUE, "Fire history", "22 features",
+        (BLUE, "Fire history", "26 features",
          "Years since the last fire and the last late fire, how often it burnt over "
          "3, 5, 10, 15, 20 and 25 years, what it did last year, and what its "
          "neighbours did."),
         (EMBER, "Weather", "14 features",
          "Wet-season rainfall, heat, humidity deficit and sunlight, plus the dry "
          "season before it, and how far the wet sat from its own local normal."),
-        (GREEN, "Greenness", "8 features",
+        (GREEN, "Greenness", "7 features",
          "How green the country got over the wet, where it peaked, how fast it "
          "greened up, and how far April sat above or below normal."),
+        (SLATE, "Place", "3 features",
+         "Longitude, latitude and elevation, so the model can tell the Top End from "
+         "the arid south without being handed the regions."),
     ]
-    y = 3.05
+    y = 2.86
     for col, name, count, body in fams:
-        rect(s, 0.9, y, 11.5, 1.1, fill=CARD, radius=0.05)
-        rect(s, 1.28, y + 0.45, 0.2, 0.2, fill=col, radius=0.18)
-        text(s, 1.66, y + 0.2, 2.5, 0.35, name, size=17, font=DISPLAY, bold=True, color=INK)
-        text(s, 1.66, y + 0.62, 2.5, 0.3, count, size=11.5, color=MUTED)
-        text(s, 4.4, y + 0.24, 7.6, 0.75, body, size=12.5, color=INK, spacing=1.4)
-        y += 1.24
+        rect(s, 0.9, y, 11.5, 0.9, fill=CARD, radius=0.05)
+        rect(s, 1.28, y + 0.35, 0.2, 0.2, fill=col, radius=0.18)
+        text(s, 1.66, y + 0.13, 2.5, 0.32, name, size=16, font=DISPLAY, bold=True, color=INK)
+        text(s, 1.66, y + 0.5, 2.5, 0.28, count, size=11, color=MUTED)
+        text(s, 4.4, y + 0.16, 7.6, 0.62, body, size=12, color=INK, spacing=1.36)
+        y += 0.99
     stat(s, 7.6, 1.68, "30 April", "the cut-off, every feature, every year", w=4.8,
          vsize=40, color=EMBER)
     footer(s, "Saira Zafar", 8)
@@ -568,16 +571,16 @@ def s14_layers():
     title(s, "Weather earned its place. Greenness earned less, and we said so.")
     w, h = fit("deck_layers.png", 7.5, 4.0)
     picture(s, "deck_layers.png", 0.8, 2.0, w=w)
-    text(s, 8.6, 2.06, 3.9, 3.4,
+    text(s, 8.6, 1.98, 3.95, 4.1,
          [[("Adding the weather was the single biggest step in the project — "
             "+0.035, from knowing how wet the wet season was.", {})],
-          [("Satellite greenness added +0.010 on top of that. Small, real, and "
-            "expensive: the Earth Engine extraction took ten minutes a run against "
-            "sixty seconds for the rest.", {})],
+          [("The third run adds greenness, longer fire memory and elevation together, "
+            "for +0.010. Isolated in the experiment ledger, greenness on its own is "
+            "worth +0.029.", {})],
           [("We kept it, because it holds up on years the model never saw and because "
-            "two of the model's five strongest inputs turn out to be greenness. But "
-            "we are not going to call a 0.010 gain a breakthrough.",
-            {"bold": True})]],
+            "two of the model's five strongest inputs turn out to be greenness — even "
+            "though Earth Engine cost ten minutes a run against sixty seconds for "
+            "everything else.", {"bold": True})]],
          size=12.8, color=INK, spacing=1.45, space_after=10)
     footer(s, "Tharushi Wimalachandra", 14)
 
@@ -617,7 +620,7 @@ def s16_experiments():
     text(s, 9.26, 2.86, 2.95, 2.9,
          "We built a U-Net over the whole grid to let a convolutional network read "
          "fire as a picture rather than a table of numbers.\n\n"
-         "It scored 0.588 — 0.086 below the benchmark — so it went in the ledger as "
+         "It scored 0.588 — 0.048 below the benchmark — so it went in the ledger as "
          "a reverted run and stayed out of the final model.\n\n"
          "Every run was scored the same way, against the same fixed benchmark, and "
          "recorded whether it helped or not.",
