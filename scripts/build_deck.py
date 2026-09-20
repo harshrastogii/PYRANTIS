@@ -238,7 +238,7 @@ def s01_title():
     text(s, 1.24, 6.46, 3.0, 0.3, "Recording (unlisted)", size=10.5, color=ON_DARK)
     text(s, 4.1, 6.46, 4.6, 0.3,
          "[ paste the unlisted video link here ]", size=11, color=EMBER_L)
-    text(s, 9.1, 6.46, 3.0, 0.3, "pyrantis.harshrastogi.workers.dev", size=10.5,
+    text(s, 9.1, 6.46, 3.0, 0.3, "pyrantis.harshlabs.workers.dev", size=10.5,
          color=ON_DARK, align=PP_ALIGN.RIGHT)
 
 
@@ -735,7 +735,7 @@ def s22_close():
     for i, (v, l) in enumerate(items):
         stat(s, 0.9 + i * 3.6, 5.5, v, l, w=3.3, vsize=34, color=EMBER_L, dark=True)
     text(s, 8.7, 3.82, 3.75, 1.7,
-         [[("pyrantis.harshrastogi.workers.dev", {"bold": True, "color": WHITE, "size": 14})],
+         [[("pyrantis.harshlabs.workers.dev", {"bold": True, "color": WHITE, "size": 14})],
           [("github.com/harshrastogii/PYRANTIS", {"color": ON_DARK, "size": 12.5})],
           [("Every figure in this deck is generated from the repository, "
             "not typed in.", {"color": ON_DARK, "size": 11.5})]],

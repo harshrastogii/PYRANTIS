@@ -403,7 +403,7 @@ def build():
             ["Slides", "24 (slides 23–24 are the reference list, not spoken)"],
             ["Total running time", f"About {TOTAL/60:.1f} minutes including slide "
                                    f"changes, inside the 15 minute limit"],
-            ["Live site", "pyrantis.harshrastogi.workers.dev"]]
+            ["Live site", "pyrantis.harshlabs.workers.dev"]]
     t = Table(rows, colWidths=[34 * mm, doc.width - 34 * mm])
     t.setStyle(TableStyle([
         ("FONTNAME", (0, 0), (0, -1), BODY_B), ("FONTNAME", (1, 0), (1, -1), BODY),
