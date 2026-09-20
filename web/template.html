@@ -81,10 +81,11 @@ p{margin:0}
   font-weight:800; font-size:19px; letter-spacing:-.025em; line-height:1;
   margin-left:calc(var(--brand-h) * -0.119);
   transform:translateY(calc(var(--brand-h) * -0.08));
+  padding-bottom:.32em; margin-bottom:-.32em;
   /* Sampled from the right-hand edge of the mark, where the word begins: the sky inside
      its bowl, the petrol blue below it, the deep teal at its foot. */
   color:#245f80;                               /* if the clip is unsupported */
-  background:linear-gradient(176deg, #4a90b4 0%, #245f80 46%, #17333f 100%);
+  background:linear-gradient(176deg, #4a90b4 12%, #245f80 38%, #17333f 69%);
   -webkit-background-clip:text; background-clip:text;
   -webkit-text-fill-color:transparent;
   filter:drop-shadow(0 1px 0 rgba(255,255,255,.55));
@@ -166,6 +167,11 @@ nav.tabs button[aria-selected="true"]{background:#fff;color:var(--ink);box-shado
 select,.btn{font:inherit;font-size:14px;color:var(--ink);background:var(--glass-hi);
   border:1px solid var(--stroke);border-radius:var(--r-sm);padding:9px 12px;cursor:pointer;
   transition:border-color .18s var(--ease),background .18s var(--ease)}
+select{
+  appearance:none; -webkit-appearance:none; padding-right:30px;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%2347607a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 11px center; background-size:12px 8px;
+}
 select:hover,.btn:hover{border-color:var(--stroke-hi);background:#fff}
 .btn{font-weight:600}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
