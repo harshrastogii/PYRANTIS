@@ -14,3 +14,4 @@ data/processed/*.parquet
 # The page is generated from the template plus the exported results, but the built
 # site is committed: Cloudflare Workers Builds serves _site/ directly.
 web/index.html
+reports/submission/
