@@ -61,8 +61,16 @@ def slide(dark=False, notes=""):
     return s
 
 
+def hang(p, indent=0.30):
+    """APA reference entries take a hanging indent, which python-pptx does not expose."""
+    pPr = p._p.get_or_add_pPr()
+    pPr.set("marL", str(int(indent * 914400)))
+    pPr.set("indent", str(int(-indent * 914400)))
+
+
 def text(s, x, y, w, h, runs, size=16, color=INK, font=BODY, bold=False,
-         align=PP_ALIGN.LEFT, spacing=1.25, space_after=0, anchor=MSO_ANCHOR.TOP):
+         align=PP_ALIGN.LEFT, spacing=1.25, space_after=0, anchor=MSO_ANCHOR.TOP,
+         hanging=False):
     """Place a text box. `runs` is a string, or a list of paragraphs, where each
     paragraph is a string or a list of (text, overrides) run tuples."""
     box = s.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
@@ -85,6 +93,8 @@ def text(s, x, y, w, h, runs, size=16, color=INK, font=BODY, bold=False,
         p.alignment = align
         p.line_spacing = spacing
         p.space_after = Pt(space_after)
+        if hanging:
+            hang(p)
         bits = [(para, {})] if isinstance(para, str) else para
         for t, over in bits:
             r = p.add_run()
@@ -192,24 +202,44 @@ def divider(s, act, head, who, sub):
 
 def s01_title():
     s = slide(dark=True, notes="Harsh opens. Name the place, the question, the promise.")
-    key(s, 0.9, 1.72, size=0.22, gap=0.1)
-    text(s, 0.9, 2.30, 11.5, 1.2, "PYRANTIS", size=62, font=DISPLAY, bold=True,
+    text(s, 0.9, 0.78, 11.5, 0.3, "CHARLES DARWIN UNIVERSITY", size=11.5, bold=True,
+         color=ON_DARK, spacing=1.0)
+    key(s, 0.9, 1.52, size=0.2, gap=0.09)
+    text(s, 0.9, 2.02, 11.5, 1.1, "PYRANTIS", size=56, font=DISPLAY, bold=True,
          color=WHITE, spacing=1.0)
-    text(s, 0.9, 3.34, 9.6, 0.8,
+    text(s, 0.9, 2.98, 9.6, 0.7,
          "Which country burns in the Northern Territory, and when",
-         size=25, font=DISPLAY, color=ON_DARK, spacing=1.15)
-    text(s, 0.9, 4.52, 9.8, 1.0,
-         [[("Multi-class classification of 46,445 map squares across 26 fire years, "
-            "and a forecast for 2026.", {})]],
-         size=14.5, color=ON_DARK, spacing=1.45)
-    text(s, 0.9, 5.62, 11.5, 1.1,
-         [[("PRT565 Machine Learning, Artificial Intelligence and Algorithms"
-            "  ·  Assessment 3  ·  Group 85", {"size": 12, "color": ON_DARK})],
-          [("Harsh Rastogi 386401   ·   Saira Zafar 407193   ·   "
-            "Tharushi Wimalachandra 386594", {"size": 12.5, "bold": True, "color": WHITE})]],
-         size=12, color=ON_DARK, spacing=1.6)
-    text(s, 0.9, 6.92, 6.0, 0.3, "pyrantis.harshrastogi.workers.dev", size=10.5,
-         color=EMBER_L)
+         size=22, font=DISPLAY, color=ON_DARK, spacing=1.15)
+    text(s, 0.9, 3.72, 9.8, 0.4,
+         "Multi-class classification of 46,445 map squares across 26 fire years, "
+         "and a forecast for 2026.",
+         size=13.5, color=ON_DARK, spacing=1.4)
+
+    rows = [("Unit", "Machine Learning, Artificial Intelligence and Algorithms"),
+            ("Unit code", "PRT565"),
+            ("Assessment", "Assessment 3 — Presentation"),
+            ("Group", "Group 85")]
+    y = 4.52
+    for k, v in rows:
+        text(s, 0.9, y, 1.5, 0.3, k, size=10.5, color=ON_DARK)
+        text(s, 2.55, y, 5.0, 0.3, v, size=11.5, bold=True, color=WHITE)
+        y += 0.44
+
+    text(s, 8.15, 4.52, 4.3, 0.3, "Team", size=10.5, color=ON_DARK)
+    members = [("Harsh Rastogi", "386401"), ("Saira Zafar", "407193"),
+               ("Tharushi Wimalachandra", "386594")]
+    y = 4.96
+    for nm, sid in members:
+        text(s, 8.15, y, 3.2, 0.3, nm, size=11.5, bold=True, color=WHITE)
+        text(s, 11.6, y, 0.85, 0.3, sid, size=11, color=ON_DARK, align=PP_ALIGN.RIGHT)
+        y += 0.44
+
+    rect(s, 0.9, 6.28, 11.5, 0.62, fill=INK_SOFT, radius=0.06)
+    text(s, 1.24, 6.46, 3.0, 0.3, "Recording (unlisted)", size=10.5, color=ON_DARK)
+    text(s, 4.1, 6.46, 4.6, 0.3,
+         "[ paste the unlisted video link here ]", size=11, color=EMBER_L)
+    text(s, 9.1, 6.46, 3.0, 0.3, "pyrantis.harshrastogi.workers.dev", size=10.5,
+         color=ON_DARK, align=PP_ALIGN.RIGHT)
 
 
 def s02_burns():
@@ -713,12 +743,35 @@ def s22_close():
     footer(s, "", 22, dark=True)
 
 
+REFERENCES = ['Breiman, L. (2001). Random forests. Machine Learning, 45(1), 5–32. https://doi.org/10.1023/A:1010933404324', 'Chollet, F., & others. (2015). Keras [Computer software]. https://keras.io', 'Didan, K. (2021). MODIS/Terra vegetation indices 16-day L3 global 250 m SIN grid V061 [Data set]. NASA EOSDIS Land Processes Distributed Active Archive Center. https://doi.org/10.5067/MODIS/MOD13Q1.061', 'Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. The Annals of Statistics, 29(5), 1189–1232. https://doi.org/10.1214/aos/1013203451', 'Gorelick, N., Hancher, M., Dixon, M., Ilyushchenko, S., Thau, D., & Moore, R. (2017). Google Earth Engine: Planetary-scale geospatial analysis for everyone. Remote Sensing of Environment, 202, 18–27. https://doi.org/10.1016/j.rse.2017.06.031', 'Harris, C. R., Millman, K. J., van der Walt, S. J., Gommers, R., Virtanen, P., Cournapeau, D., … Oliphant, T. E. (2020). Array programming with NumPy. Nature, 585(7825), 357–362. https://doi.org/10.1038/s41586-020-2649-2', 'Hochreiter, S., & Schmidhuber, J. (1997). Long short-term memory. Neural Computation, 9(8), 1735–1780. https://doi.org/10.1162/neco.1997.9.8.1735', 'Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. Computing in Science & Engineering, 9(3), 90–95. https://doi.org/10.1109/MCSE.2007.55', 'Jeffrey, S. J., Carter, J. O., Moodie, K. B., & Beswick, A. R. (2001). Using spatial interpolation to construct a comprehensive archive of Australian climate data. Environmental Modelling & Software, 16(4), 309–330. https://doi.org/10.1016/S1364-8152(01)00008-1', 'North Australian Fire Information. (2026). Northern Territory fire scar mapping [Data set]. Darwin Centre for Bushfire Research, Charles Darwin University. https://firenorth.org.au', 'Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., … Duchesnay, É. (2011). Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12, 2825–2830.', 'Queensland Government. (2026). SILO climate data: Data Drill [Data set]. Long Paddock. https://www.longpaddock.qld.gov.au/silo/', 'Ronneberger, O., Fischer, P., & Brox, T. (2015). U-Net: Convolutional networks for biomedical image segmentation. In N. Navab, J. Hornegger, W. M. Wells, & A. F. Frangi (Eds.), Medical image computing and computer-assisted intervention – MICCAI 2015 (pp. 234–241). Springer. https://doi.org/10.1007/978-3-319-24574-4_28', "Russell-Smith, J., Yates, C. P., Whitehead, P. J., Smith, R., Craig, R., Allan, G. E., Thackway, R., Frakes, I., Cridland, S., Meyer, M. C. P., & Gill, A. M. (2007). Bushfires 'down under': Patterns and implications of contemporary Australian landscape burning. International Journal of Wildland Fire, 16(4), 361–377. https://doi.org/10.1071/WF07018"]
+
+
+def refs_slide(part, entries, n, total):
+    s = slide(notes="Reference slide. Nothing to say -- leave it up during questions.")
+    kicker(s, "References")
+    title(s, "References" + (f" ({part} of {total})" if total > 1 else ""))
+    text(s, 0.9, 1.72, 11.5, 0.32,
+         "American Psychological Association, 7th edition", size=11.5, color=MUTED)
+    text(s, 0.9, 2.22, 11.5, 4.4, list(entries), size=12.2, color=INK,
+         spacing=1.32, space_after=12, hanging=True)
+    footer(s, "", n)
+
+
+def s23_refs():
+    refs_slide(1, REFERENCES[:8], 23, 2)
+
+
+def s24_refs():
+    refs_slide(2, REFERENCES[8:], 24, 2)
+
+
 def main():
     for fn in (s01_title, s02_burns, s03_when, s04_target, s05_data,
                s06_divider_build, s07_labels, s08_features, s09_leakage, s10_split,
                s11_models, s12_divider_results, s13_results, s14_layers, s15_walk,
                s16_experiments, s17_importance, s18_limits,
-               s19_divider_2026, s20_forecast, s21_product, s22_close):
+               s19_divider_2026, s20_forecast, s21_product, s22_close,
+               s23_refs, s24_refs):
         fn()
     OUT.parent.mkdir(parents=True, exist_ok=True)
     prs.save(OUT)

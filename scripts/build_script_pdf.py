@@ -400,7 +400,7 @@ def build():
             ["Group", "Group 85"],
             ["Presenters", "Harsh Rastogi (386401), Saira Zafar (407193), "
                            "Tharushi Wimalachandra (386594)"],
-            ["Slides", "22"],
+            ["Slides", "24 (slides 23–24 are the reference list, not spoken)"],
             ["Total running time", f"About {TOTAL/60:.1f} minutes including slide "
                                    f"changes, inside the 15 minute limit"],
             ["Live site", "pyrantis.harshrastogi.workers.dev"]]
@@ -447,6 +447,7 @@ def build():
     st.append(t)
     st.append(Spacer(1, 7 * mm))
     st.append(Paragraph(
+        "Slide 1 is the cover — add the unlisted recording link before you present. "
         "Stage directions are set in orange italics and are not to be read aloud. "
         "Cues are a guide, not a stopwatch — if a section runs long, cut the third "
         "paragraph of slide 3 and the last limitation on slide 18 first.", S["note"]))
