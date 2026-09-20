@@ -116,7 +116,7 @@ SCRIPT = [
   "it. That date is not ours — it is the line the Territory\u2019s own fire management "
   "uses, so the classes mean something to the people who would act on them."]),
 
- (5, HARSH, "2:05 – 2:45", "Three cards left to right. Then hand over, and step back.", [
+ (5, HARSH, "2:05 – 2:45", "Three sources, left to right. Then hand over, and step back.", [
   "NAFI gives us 250-metre burnt-area rasters back to 2000, and each pixel carries the "
   "month it was detected — which is what makes an early-or-late label possible at all. "
   "SILO gives us daily weather on the same grid. And MODIS gives us satellite "
