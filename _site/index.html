@@ -1,3 +1,6 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pyrantis Fire Outlook</title>
 <link rel="icon" type="image/png" sizes="180x180" href="assets/pyrantis-180.png">
 <link rel="icon" type="image/png" sizes="48x48" href="assets/pyrantis-48.png">
@@ -225,7 +228,11 @@ select:hover,.btn:hover{border-color:var(--stroke-hi);background:#fff}
   .barrow,.axis{grid-template-columns:96px minmax(0,1fr) 50px;gap:8px;font-size:12.5px}
 }
 .chartwrap{overflow-x:auto}
-table.grid{border-collapse:collapse;font-size:13.5px;width:100%}
+/* Quirks mode never inherited line-height into tables, so the matrices were
+   drawn on the font's natural leading. In standards mode the body's 1.6 would
+   inherit in and grow every row, so 'normal' is restated here to keep the
+   matrices exactly the size they have always been. */
+table.grid{border-collapse:collapse;font-size:13.5px;width:100%;line-height:normal}
 table.grid th{font-weight:600;color:var(--muted);padding:8px 10px;text-align:center;white-space:nowrap}
 table.grid th.side{text-align:right}
 table.grid td{padding:12px 10px;text-align:center;border:2px solid transparent;border-radius:var(--r-sm);
@@ -233,6 +240,115 @@ table.grid td{padding:12px 10px;text-align:center;border:2px solid transparent;b
 
 .cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
 footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color:var(--dim);font-size:12.5px}
+
+
+/* --------------------------------------------------------------- handheld */
+/* Everything below applies only under 760px. The desktop layout is deliberately
+   left alone: the phone gets its own stacking, its own tap targets and its own
+   map height, rather than a shrunk photocopy of the desktop page. */
+@media (max-width:760px){
+  h2{font-size:19px}
+
+  /* Two rows: the mark and the switch share the top, the tab strip takes the
+     full width underneath, which is the only way four tabs fit honestly. */
+  .bar-in{padding:9px 14px; gap:9px 12px}
+  nav.tabs{order:3; width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none}
+  nav.tabs::-webkit-scrollbar{display:none}
+  nav.tabs button{flex:1 0 auto; font-size:12.5px; padding:9px 10px; min-height:40px}
+  .switch{font-size:12.5px}
+
+  .page{padding:16px 14px 56px}
+  .pad{padding:16px}
+  .stack-v{gap:14px}
+  .split{gap:14px}
+
+  /* A map sized for a laptop leaves nothing but map on a phone's first screen. */
+  #map{height:min(46vh,380px); min-height:250px}
+  .map-state{padding:18px}
+
+  /* Controls become full-width rows a thumb can actually hit. */
+  .picker{gap:8px}
+  .picker label{width:100%}
+  select,.btn{min-height:44px; padding:11px 13px}
+  .picker > select{flex:1 1 100%}
+  .picker > .btn{flex:1 1 calc(50% - 4px)}
+  /* The year slider carries an inline flex-basis, so it needs the override to
+     take a row of its own instead of being squeezed beside the buttons. */
+  #rec-year{flex:1 1 100%!important; min-width:0; height:44px}
+  #rec-label{font-size:17px}
+
+  .verdict{gap:10px}
+  .verdict h2{font-size:21px}
+  .headline{font-size:15.5px; margin-top:8px}
+  .answer{font-size:15.5px}
+  .lede{max-width:none}
+
+  .fact{font-size:13.5px; gap:10px; padding:10px 0}
+  .fact .k{min-width:0}
+  .fact .v{white-space:nowrap}
+
+  .legend{gap:10px 14px; margin-top:12px}
+  .key{font-size:12px}
+  .strip i{height:20px}
+  .note{font-size:12.8px; padding:11px 13px}
+
+  /* One card per row, so nothing ends up half a card wide. */
+  .cards{grid-template-columns:minmax(0,1fr); gap:12px}
+
+  /* The matrix keeps its proportions and scrolls sideways in its own box
+     rather than crushing six columns into a phone. */
+  .chartwrap{-webkit-overflow-scrolling:touch}
+  table.grid{min-width:380px}
+
+  footer{margin-top:28px; font-size:12px}
+
+  /* MapLibre's zoom buttons are 29px, which is below a comfortable thumb target. */
+  .maplibregl-ctrl-group button{width:40px; height:40px}
+  .maplibregl-ctrl-group button .maplibregl-ctrl-icon{background-size:20px 20px}
+}
+
+
+/* Under 560px a 150px label column would have to shrink to about 80px, which
+   turned "Whole Territory, burned early" into "Whole Territo...". The name gets
+   its own line instead, and the bar and its value share the line below. */
+@media (max-width:560px){
+  .barlist{gap:13px}
+  .barrow{grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:"nm nm" "tk vl"; row-gap:4px; column-gap:10px}
+  .barrow .nm{grid-area:nm; text-align:left; white-space:normal; overflow:visible;
+    text-overflow:clip; color:var(--ink); font-weight:600; font-size:12.5px; line-height:1.35}
+  .barrow .tk{grid-area:tk}
+  .barrow .vl{grid-area:vl; text-align:right}
+  .axis{grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"mk vl"}
+  .axis > :first-child{display:none}
+
+  /* Letting the headers wrap lets the matrix fit the screen, so there is nothing
+     hidden off the right edge for the reader to discover. */
+  table.grid{min-width:0; font-size:12px}
+  table.grid th{white-space:normal; padding:6px 5px; line-height:1.25}
+  table.grid td{padding:10px 5px}
+  table.grid th.side{font-size:11.5px}
+}
+
+@media (max-width:430px){
+  .barrow,.axis{font-size:12px}
+  .barrow .vl{font-size:11.5px}
+  nav.tabs button{font-size:12px; padding:9px 8px}
+  .verdict h2{font-size:19.5px}
+  .headline{font-size:15px}
+}
+
+/* Touch targets are about the input device, not the window: a phone held in
+   landscape is 844px wide and would otherwise miss every width-based rule above.
+   pointer:coarse never matches a mouse, so the desktop is untouched. */
+@media (pointer:coarse){
+  .maplibregl-ctrl-group button{width:40px; height:40px}
+  .maplibregl-ctrl-group button .maplibregl-ctrl-icon{background-size:20px 20px}
+  #rec-year{height:40px}
+  nav.tabs button{min-height:40px}
+  select,.btn{min-height:44px}
+}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -621,7 +737,11 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     container: "map",
     style: "https://api.maptiler.com/maps/dataviz-light/style.json?key=WBLnSvimIk9ssjlbmo5X",
     bounds: [[W, MAP_S], [E, N]], fitBoundsOptions: { padding: 24 },
-    attributionControl: { compact: true }
+    attributionControl: { compact: true },
+    // On a phone a full-width map swallows every vertical swipe, so the reader
+    // cannot scroll past it. Cooperative gestures hand one-finger drags back to
+    // the page and keep two-finger drags for the map. Desktop is untouched.
+    cooperativeGestures: window.matchMedia("(max-width: 760px)").matches
   });
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-left");
@@ -694,8 +814,30 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
 
     mapReady = true;
     setMapState(null);
+    // The canvas can be sized from before the stylesheet settled, and fitBounds
+    // frames against the canvas rather than the element. Without this the map is
+    // fitted to a box it no longer occupies, which on a phone left the Territory
+    // cropped at the top with dead space underneath.
+    map.resize();
     fitAll();
   });
+
+  // MapLibre only watches the window for size changes. A container that changes for
+  // any other reason -- an orientation change, the address bar collapsing, a
+  // stylesheet that sizes the map differently on a phone -- would otherwise keep a
+  // stale canvas and a stale framing. Watching the element itself covers all of them.
+  if (window.ResizeObserver) {
+    var lastMapW = 0, lastMapH = 0, roTimer = null;
+    new ResizeObserver(function (entries) {
+      if (!mapReady) return;                 // the load handler above does the first fit
+      var r = entries[0].contentRect;
+      var w = Math.round(r.width), h = Math.round(r.height);
+      if (w === lastMapW && h === lastMapH) return;
+      lastMapW = w; lastMapH = h;
+      clearTimeout(roTimer);
+      roTimer = setTimeout(function () { map.resize(); fitAll(true); }, 120);
+    }).observe($("map"));
+  }
 
   // If the basemap never arrives, say so rather than leaving a blank box and controls
   // that appear to do nothing. Everything in the panels is already computed and correct.
