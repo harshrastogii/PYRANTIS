@@ -126,8 +126,12 @@ SCRIPT = [
   "Saira will take you through how we turned that into something a model can learn "
   "from."]),
 
- (7, SAIRA, "2:45 – 3:30", "Divider passes quickly. Start on the numbered steps.", [
-  "Thanks Harsh. The first job was labelling.",
+ (6, SAIRA, "", "Divider. Say this with the slide up, then advance.", [
+  "Thanks Harsh. This part is how we built it, and how we proved the model never saw "
+  "the answer."]),
+
+ (7, SAIRA, "", "Start on the numbered steps.", [
+  "The first job was labelling.",
   "Each NAFI pixel holds the month it burned. We pool every twenty-by-twenty block into "
   "one cell and count what fraction burned early and what fraction late. A square counts "
   "as burnt only if five per cent of it burned, and is used at all only if half its "
@@ -160,7 +164,7 @@ SCRIPT = [
   "Rule two, scrambling. We shuffled one year\u2019s labels and rebuilt the features "
   "from scratch. If anything had been reading the answer, the scores would have "
   "collapsed. They moved by exactly as much as chance says they should.",
-  "Both checks are scripts in the repository. They are not claims on a slide."]),
+  "Both checks are scripts in the repository."]),
 
  (10, SAIRA, "4:50 – 5:20", "Point along the three bands, left to right.", [
   "Fire years are not independent draws. A random shuffle would put 2024 into training "
@@ -182,8 +186,11 @@ SCRIPT = [
   "model, same data, same split.",
   "Tharushi will tell you whether any of this actually works."]),
 
- (13, THARU, "6:00 – 6:40", "Point at the two grey baseline bars, not the top bar.", [
-  "Thanks Saira. These are the scores on 2023 to 2025 — years none of these models had "
+ (12, THARU, "", "Divider. Say this with the slide up, then advance.", [
+  "Thanks Saira. This part tests all of it on years the models never saw."]),
+
+ (13, THARU, "", "Point at the two grey baseline bars, not the top bar.", [
+  "These are the scores on 2023 to 2025 — years none of these models had "
   "ever seen.",
   "Gradient boosting wins, with a balanced F1 of 0.684 and accuracy of 0.725. The LSTM "
   "is just behind at 0.673, the network at 0.667, the random forest at 0.660.",
@@ -208,9 +215,8 @@ SCRIPT = [
   "The surprise is that skill does not fade with distance. One year ahead it scores "
   "0.635; eleven years ahead it still scores 0.604, with the baseline well below "
   "throughout.",
-  "That is not the model being clever. It is the data telling us the strongest clue is "
-  "the wet season just gone — known by the end of April however old the fire history "
-  "is."]),
+  "That tells us the strongest clue is the wet season just gone, which is known by the "
+  "end of April."]),
 
  (16, THARU, "7:55 – 8:40", "Say the CNN result without hedging. Markers reward this.", [
   "Behind that final model sit twenty-three experiments, each scored against the same "
@@ -235,15 +241,17 @@ SCRIPT = [
   "Late fires are still our worst class, at 0.553. The one that matters most is also the "
   "rarest and the most weather-driven — and weather after April is precisely what we "
   "refuse to look at.",
-  "It predicts a season, not a day — which squares are likely to burn and roughly when. "
-  "It is not a fire-danger rating.",
+  "It predicts a season, not a day, and it is not a fire-danger rating.",
   "The 2026 forecast is unverified, because no burnt-area record exists for a year still "
   "running. And it is fitted to the Territory at this grid size; whether it transfers to "
   "the Kimberley is an open question, not an assumption.",
   "Harsh will close with what it says about this year."]),
 
+ (19, HARSH, "", "Divider. Say this with the slide up, then advance.", [
+  "Thanks Tharushi. The last part is the 2026 forecast, and the site we built for it."]),
+
  (20, HARSH, "9:50 – 10:35", "Say fifty-one per cent slowly. It is the headline.", [
-  "Thanks Tharushi. So — 2026.",
+  "So, 2026.",
   "The model expects fifty-one per cent of the Territory to burn this year, against a "
   "twenty-six-year average of thirty-three. Fifteen per cent before August, thirty-six "
   "after July. A heavy year, and most of what is left will burn late.",
@@ -259,10 +267,10 @@ SCRIPT = [
   "This is a public site. It answers the question in plain English first, then puts the "
   "map, the twenty-six-year record and the evidence underneath. You can click any square, "
   "or pick any of forty-one named towns.",
-  "And every sentence on that page is computed from the model output rather than typed in "
-  "— so when the data updates, the prose updates with it, and cannot go quietly wrong."]),
+  "Every sentence on it is computed from the model output, so it updates when the data "
+  "does."]),
 
- (22, HARSH, "11:10 – 11:50", "Pause before \u2018Thank you\u2019. Do not trail off.", [
+ (22, HARSH, "11:10 – 11:50", "Slow down on the last two sentences, then advance.", [
   "To close.",
   "Every square, every year, and an honest number on how often it is right. A balanced F1 "
   "of 0.684 on years the models never saw. Sixty-six independent re-tests behind that "
@@ -270,8 +278,14 @@ SCRIPT = [
   "Fire in the Territory is not going to stop, and it should not. Knowing in April which "
   "country is likely to carry an October fire is how a burning programme gets planned "
   "in time.",
-  "Everything — the code, the figures in this deck, and the site — is in the repository. "
+  "Everything — the code, the figures in this deck, and the site — is in the repository, "
+  "and every source we used is referenced on the last two slides."]),
+
+ (23, HARSH, "", "Advance to the references, say this, and leave the slide up for questions.", [
   "Thank you. We are happy to take questions."]),
+
+ (24, HARSH, "", "No speech. Advance only if a marker asks to see the rest of the "
+  "reference list.", []),
 ]
 
 QA = [
@@ -319,7 +333,7 @@ QA = [
 ]
 
 SPEAKERS = [
- (HARSH, "Slides 1–5 and 19–22", "5 min 30 s", "Opening, the problem, the data, the "
+ (HARSH, "Slides 1–5 and 19–24", "5 min 30 s", "Opening, the problem, the data, the "
   "2026 forecast, the product and the close."),
  (SAIRA, "Slides 6–11", "4 min 30 s", "Labelling, features, the leakage rules, the "
   "temporal split and the models."),
@@ -402,7 +416,8 @@ def build():
             ["Group", "Group 85"],
             ["Presenters", "Harsh Rastogi (386401), Saira Zafar (407193), "
                            "Tharushi Wimalachandra (386594)"],
-            ["Slides", "24 (slides 23–24 are the reference list, not spoken)"],
+            ["Slides", "24, every one covered below. Slide 24 is the second half of the "
+                       "reference list and has no speech."],
             ["Total running time", f"About {TOTAL/60:.1f} minutes including slide "
                                    f"changes, inside the 15 minute limit"],
             ["Live site", "pyrantis.harshlabs.workers.dev"]]
@@ -460,7 +475,8 @@ def build():
     CUE, TOTAL = cues()
     for n, who, _cue, direction, paras in SCRIPT:
         a, b = CUE[n]
-        cue = f"{clock(a)} – {clock(b)}"
+        # a slide with nothing to say gets a single time rather than "14:33 – 14:33"
+        cue = clock(a) if not paras else f"{clock(a)} – {clock(b)}"
         block = []
         if who != current:
             block.append(Paragraph(who, S["h1"]))
