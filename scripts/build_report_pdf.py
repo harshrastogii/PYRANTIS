@@ -279,7 +279,7 @@ def build():
     section(st, "Recording, title and motivation", "The recorded presentation")
     link = ParagraphStyle("lk", fontName=SANS_B, fontSize=11, leading=16, textColor=RED)
     box = Table([[Paragraph("Link to the recorded presentation", S["note"])],
-                 [Paragraph("[ paste the unlisted video link here before submitting ]", link)],
+                 [Paragraph('<a href="https://youtu.be/tm0MGNdc46g">https://youtu.be/tm0MGNdc46g</a>', link)],
                  [Paragraph("The link is set so that anyone with it can view the file. "
                             "It was tested from a signed-out browser before submission.",
                             S["note"])]], colWidths=[W])
