@@ -1,0 +1,908 @@
+{
+  "models": {
+    "decision tree": {
+      "f1_train": 0.699585559225515,
+      "f1_val": 0.6265118737801493,
+      "f1_test": 0.603535941207442,
+      "roc_auc_macro": 0.7932774994812948,
+      "roc_auc_unburnt": 0.80765818766686,
+      "pr_auc_unburnt": 0.8385992661847027,
+      "prevalence_unburnt": 0.5784226416733639,
+      "roc_auc_early": 0.8569942293868267,
+      "pr_auc_early": 0.646157224114458,
+      "prevalence_early": 0.16610554819464657,
+      "roc_auc_late": 0.7151800813901975,
+      "pr_auc_late": 0.4128364575086827,
+      "prevalence_late": 0.25547181013198955,
+      "pr_auc_macro": 0.6325309826026145,
+      "seconds": 19.7
+    },
+    "random forest": {
+      "f1_train": 0.9239542289157731,
+      "f1_val": 0.685093067062946,
+      "f1_test": 0.6597554834141613,
+      "roc_auc_macro": 0.8589689559823013,
+      "roc_auc_unburnt": 0.8728977137259096,
+      "pr_auc_unburnt": 0.9070259468162318,
+      "prevalence_unburnt": 0.5784226416733639,
+      "roc_auc_early": 0.9032879400658095,
+      "pr_auc_early": 0.7312671129370334,
+      "prevalence_early": 0.16610554819464657,
+      "roc_auc_late": 0.8007212141551848,
+      "pr_auc_late": 0.5506882302980937,
+      "prevalence_late": 0.25547181013198955,
+      "pr_auc_macro": 0.7296604300171197,
+      "seconds": 127.9
+    },
+    "naive bayes": {
+      "f1_train": 0.5810311427482552,
+      "f1_val": 0.641412750790619,
+      "f1_test": 0.6018361569068559,
+      "roc_auc_macro": 0.7965187258472487,
+      "roc_auc_unburnt": 0.8065368193948079,
+      "pr_auc_unburnt": 0.8451287314768428,
+      "prevalence_unburnt": 0.5784226416733639,
+      "roc_auc_early": 0.8729704075151281,
+      "pr_auc_early": 0.6764878730591639,
+      "prevalence_early": 0.16610554819464657,
+      "roc_auc_late": 0.71004895063181,
+      "pr_auc_late": 0.3902782191151973,
+      "prevalence_late": 0.25547181013198955,
+      "pr_auc_macro": 0.6372982745504013,
+      "seconds": 1.0
+    },
+    "gradient boosting": {
+      "f1_train": 0.8209895927380991,
+      "f1_val": 0.6776151264178595,
+      "f1_test": 0.6842284189101626,
+      "roc_auc_macro": 0.8622889872102776,
+      "roc_auc_unburnt": 0.8765443140715,
+      "pr_auc_unburnt": 0.9078120658943658,
+      "prevalence_unburnt": 0.5784226416733639,
+      "roc_auc_early": 0.9082861406224098,
+      "pr_auc_early": 0.7310824371900763,
+      "prevalence_early": 0.16610554819464657,
+      "roc_auc_late": 0.8020365069369231,
+      "pr_auc_late": 0.557960172751419,
+      "prevalence_late": 0.25547181013198955,
+      "pr_auc_macro": 0.732284891945287,
+      "seconds": 138.6
+    },
+    "multilayer ANN": {
+      "f1_train": 0.7024279193349999,
+      "f1_val": 0.6739224820336687,
+      "f1_test": 0.6671641052061177,
+      "roc_auc_macro": 0.8560752508311301,
+      "roc_auc_unburnt": 0.8770425037837816,
+      "pr_auc_unburnt": 0.9085947806899626,
+      "prevalence_unburnt": 0.5784226416733639,
+      "roc_auc_early": 0.9073765260049232,
+      "pr_auc_early": 0.7244653378864001,
+      "prevalence_early": 0.16610554819464657,
+      "roc_auc_late": 0.7838067227046853,
+      "pr_auc_late": 0.5053607368468842,
+      "prevalence_late": 0.25547181013198955,
+      "pr_auc_macro": 0.712806951807749,
+      "best_epoch": 11,
+      "seconds": 18.1
+    },
+    "LSTM": {
+      "f1_train": 0.6868145170680093,
+      "f1_val": 0.6714624984798078,
+      "f1_test": 0.670323611641323,
+      "roc_auc_macro": 0.8540913044490175,
+      "roc_auc_unburnt": 0.872266537324516,
+      "pr_auc_unburnt": 0.9028975522236684,
+      "prevalence_unburnt": 0.5784226416733639,
+      "roc_auc_early": 0.8974784423009736,
+      "pr_auc_early": 0.7353052124190027,
+      "prevalence_early": 0.16610554819464657,
+      "roc_auc_late": 0.7925289337215626,
+      "pr_auc_late": 0.534359034627358,
+      "prevalence_late": 0.25547181013198955,
+      "pr_auc_macro": 0.7241872664233431,
+      "best_epoch": 3,
+      "seconds": 100.5
+    }
+  },
+  "permutation": {
+    "random forest": [
+      {
+        "feature": "wx_wet_rain",
+        "mean": 0.018442644410992793,
+        "sd": 0.0007255453825570093
+      },
+      {
+        "feature": "wx_wet_vpd",
+        "mean": 0.014894299566614788,
+        "sd": 0.00099184163613836
+      },
+      {
+        "feature": "ndvi_wet_mean",
+        "mean": 0.012488378448462156,
+        "sd": 0.00035446587368008665
+      },
+      {
+        "feature": "lat",
+        "mean": 0.011822489715451568,
+        "sd": 0.0007725980722834452
+      },
+      {
+        "feature": "ndvi_apr_anom",
+        "mean": 0.010614144323439345,
+        "sd": 0.0009002614047579054
+      },
+      {
+        "feature": "ndvi_wet_min",
+        "mean": 0.010602170941178457,
+        "sd": 0.0007351295596705672
+      },
+      {
+        "feature": "wx_wet_rain_ratio",
+        "mean": 0.01010913689568822,
+        "sd": 0.0010015750328099375
+      },
+      {
+        "feature": "lon",
+        "mean": 0.00878398918129395,
+        "sd": 0.0010831160409988827
+      },
+      {
+        "feature": "ndvi_apr",
+        "mean": 0.00746390624369746,
+        "sd": 0.0006080293463215613
+      },
+      {
+        "feature": "ndvi_peak_anom",
+        "mean": 0.006915776185955047,
+        "sd": 0.00046106914723049953
+      },
+      {
+        "feature": "wx_wet_rain_anom",
+        "mean": 0.00623276745153869,
+        "sd": 0.0007773872371889137
+      },
+      {
+        "feature": "elevation",
+        "mean": 0.0058321381320824315,
+        "sd": 0.0005390568385239315
+      },
+      {
+        "feature": "wx_wet_rain_prev",
+        "mean": 0.005776942908980542,
+        "sd": 0.0008963653443805192
+      },
+      {
+        "feature": "freq_25",
+        "mean": 0.004885149113353004,
+        "sd": 0.0008752193462100325
+      },
+      {
+        "feature": "ndvi_wet_max",
+        "mean": 0.004640657315903973,
+        "sd": 0.00048643217634452196
+      },
+      {
+        "feature": "ndvi_greenup",
+        "mean": 0.004114824225614155,
+        "sd": 0.0004243508967564916
+      },
+      {
+        "feature": "wx_apr_vpd",
+        "mean": 0.003699274934853869,
+        "sd": 0.0005872212115828547
+      },
+      {
+        "feature": "freq_15",
+        "mean": 0.00368502655623848,
+        "sd": 0.0006048964103959936
+      },
+      {
+        "feature": "wx_dry_rain_prev",
+        "mean": 0.0036212048919658235,
+        "sd": 0.0007855454510877286
+      },
+      {
+        "feature": "nbr_frac_early_prev",
+        "mean": 0.003374445544115745,
+        "sd": 0.0008974057335261442
+      },
+      {
+        "feature": "freq_20",
+        "mean": 0.0032158575807331945,
+        "sd": 0.0003234979593452035
+      },
+      {
+        "feature": "late_freq_10",
+        "mean": 0.0026093336529250167,
+        "sd": 0.0008225927736081395
+      },
+      {
+        "feature": "freq_3",
+        "mean": 0.002180183193249796,
+        "sd": 0.00023486307145375218
+      },
+      {
+        "feature": "yrs_since_late",
+        "mean": 0.0019239341178055812,
+        "sd": 0.00045811243690881934
+      },
+      {
+        "feature": "wx_wet_radn",
+        "mean": 0.0019180100173140425,
+        "sd": 0.00011983533315667366
+      },
+      {
+        "feature": "nbr_frac_burnt_prev",
+        "mean": 0.0018954560124436748,
+        "sd": 0.0003601779719881648
+      },
+      {
+        "feature": "late_freq_15",
+        "mean": 0.0017932397248346277,
+        "sd": 0.0002698078486175975
+      },
+      {
+        "feature": "yrs_since_burnt",
+        "mean": 0.0014678185047388714,
+        "sd": 0.0007001144494214526
+      },
+      {
+        "feature": "prev_frac_burnt",
+        "mean": 0.0011428833401367021,
+        "sd": 0.00037233219351050765
+      },
+      {
+        "feature": "late_freq_20",
+        "mean": 0.00111141466773097,
+        "sd": 0.0004371927188434765
+      },
+      {
+        "feature": "late_freq_25",
+        "mean": 0.0010195616046628775,
+        "sd": 0.00024274955588979806
+      },
+      {
+        "feature": "nbr_frac_late_prev",
+        "mean": 0.0008294023959213969,
+        "sd": 0.0007539900675857195
+      },
+      {
+        "feature": "prev_frac_late",
+        "mean": 0.0007246549974449623,
+        "sd": 0.0001676431569513353
+      },
+      {
+        "feature": "prev_early",
+        "mean": 0.0006365783356606425,
+        "sd": 0.0004479098438301877
+      },
+      {
+        "feature": "freq_10",
+        "mean": 0.0006251484354661496,
+        "sd": 0.0005487543229838387
+      },
+      {
+        "feature": "late_freq_3",
+        "mean": 0.0005709371014900322,
+        "sd": 0.00018104110450768544
+      },
+      {
+        "feature": "late_freq_5",
+        "mean": 0.00036639491597409977,
+        "sd": 0.00026051980980440134
+      },
+      {
+        "feature": "never_burnt",
+        "mean": 0.00019368040399641017,
+        "sd": 0.00010933409782702427
+      },
+      {
+        "feature": "prev_burnt",
+        "mean": 0.00019349823713701308,
+        "sd": 0.00010177222838409019
+      },
+      {
+        "feature": "prev_frac_early",
+        "mean": 0.00012906885090377962,
+        "sd": 0.00035681484033184117
+      },
+      {
+        "feature": "never_late",
+        "mean": -8.454413652581039e-06,
+        "sd": 0.00012658757902686736
+      },
+      {
+        "feature": "freq_5",
+        "mean": -7.125156058063187e-05,
+        "sd": 0.00011318636589446174
+      },
+      {
+        "feature": "prev_late",
+        "mean": -0.00012147357554139759,
+        "sd": 8.592321131972449e-05
+      },
+      {
+        "feature": "prev2_burnt",
+        "mean": -0.00022252268343361247,
+        "sd": 0.0002468447413204642
+      },
+      {
+        "feature": "wx_dry_tmax_prev",
+        "mean": -0.0015584980597996845,
+        "sd": 0.0009527908506714374
+      },
+      {
+        "feature": "wx_apr_rain",
+        "mean": -0.0015758135176059617,
+        "sd": 0.000296262220705468
+      },
+      {
+        "feature": "wx_days_since_rain",
+        "mean": -0.0019292720773095961,
+        "sd": 0.0002825081093449246
+      },
+      {
+        "feature": "wx_wet_tmax",
+        "mean": -0.002593994587749715,
+        "sd": 0.000538151576988982
+      },
+      {
+        "feature": "wx_days_since_heavy",
+        "mean": -0.0027320696273894995,
+        "sd": 0.00028438339783597703
+      },
+      {
+        "feature": "wx_dry_vpd_prev",
+        "mean": -0.0037133471943518125,
+        "sd": 0.0005632710576774401
+      }
+    ],
+    "gradient boosting": [
+      {
+        "feature": "ndvi_wet_mean",
+        "mean": 0.03633842942558303,
+        "sd": 0.0012353792663875283
+      },
+      {
+        "feature": "ndvi_apr",
+        "mean": 0.028436818552196173,
+        "sd": 0.001249483238481526
+      },
+      {
+        "feature": "lat",
+        "mean": 0.021778570119248396,
+        "sd": 0.0007163706209844619
+      },
+      {
+        "feature": "wx_wet_rain",
+        "mean": 0.01738194659593173,
+        "sd": 0.0007542211707453328
+      },
+      {
+        "feature": "lon",
+        "mean": 0.017236890132609095,
+        "sd": 0.0014074013932395193
+      },
+      {
+        "feature": "wx_wet_vpd",
+        "mean": 0.016587040164691237,
+        "sd": 0.0010589678160577243
+      },
+      {
+        "feature": "freq_20",
+        "mean": 0.016459228132083937,
+        "sd": 0.0009631818551465485
+      },
+      {
+        "feature": "nbr_frac_early_prev",
+        "mean": 0.016383704203331018,
+        "sd": 0.0009950541708513417
+      },
+      {
+        "feature": "ndvi_apr_anom",
+        "mean": 0.014799417113822221,
+        "sd": 0.0023280645846987403
+      },
+      {
+        "feature": "wx_wet_rain_prev",
+        "mean": 0.012192927118553753,
+        "sd": 0.0006427097825486736
+      },
+      {
+        "feature": "elevation",
+        "mean": 0.009658424729094218,
+        "sd": 0.0006145310168244305
+      },
+      {
+        "feature": "ndvi_greenup",
+        "mean": 0.00912662265674884,
+        "sd": 0.0007421886203529379
+      },
+      {
+        "feature": "wx_dry_tmax_prev",
+        "mean": 0.008186889167246015,
+        "sd": 0.0011408199043719976
+      },
+      {
+        "feature": "nbr_frac_burnt_prev",
+        "mean": 0.007018253991049561,
+        "sd": 0.0006293931998089887
+      },
+      {
+        "feature": "freq_15",
+        "mean": 0.006841315959671701,
+        "sd": 0.00043011794339582515
+      },
+      {
+        "feature": "ndvi_wet_max",
+        "mean": 0.006399904269130197,
+        "sd": 0.0006546893001651834
+      },
+      {
+        "feature": "ndvi_peak_anom",
+        "mean": 0.005911778402434819,
+        "sd": 0.0007679782072193888
+      },
+      {
+        "feature": "nbr_frac_late_prev",
+        "mean": 0.0058726916647664495,
+        "sd": 0.00022946818029278442
+      },
+      {
+        "feature": "wx_dry_vpd_prev",
+        "mean": 0.005346472039560646,
+        "sd": 0.000971119979675176
+      },
+      {
+        "feature": "ndvi_wet_min",
+        "mean": 0.004172278254582417,
+        "sd": 0.0006277431672085747
+      },
+      {
+        "feature": "prev_frac_burnt",
+        "mean": 0.0038923988575748415,
+        "sd": 0.0003471255990304574
+      },
+      {
+        "feature": "wx_wet_radn",
+        "mean": 0.0036791803724172123,
+        "sd": 0.0008091104421193912
+      },
+      {
+        "feature": "wx_wet_rain_ratio",
+        "mean": 0.003587058290139633,
+        "sd": 0.00042789033343143253
+      },
+      {
+        "feature": "wx_wet_tmax",
+        "mean": 0.002773076107225325,
+        "sd": 0.0006537457722936666
+      },
+      {
+        "feature": "freq_10",
+        "mean": 0.0027466667849503023,
+        "sd": 0.0002727705067590858
+      },
+      {
+        "feature": "yrs_since_burnt",
+        "mean": 0.002693866703329384,
+        "sd": 0.00083919375372436
+      },
+      {
+        "feature": "yrs_since_late",
+        "mean": 0.002611461458871767,
+        "sd": 0.0006515383976922969
+      },
+      {
+        "feature": "late_freq_10",
+        "mean": 0.002444624057319289,
+        "sd": 0.0007750283974879907
+      },
+      {
+        "feature": "freq_5",
+        "mean": 0.0024325374509195806,
+        "sd": 0.00039544583787425085
+      },
+      {
+        "feature": "wx_apr_vpd",
+        "mean": 0.0022098740647406912,
+        "sd": 0.0009052110593456659
+      },
+      {
+        "feature": "prev2_burnt",
+        "mean": 0.0016135392378703762,
+        "sd": 0.00027236918470138397
+      },
+      {
+        "feature": "prev_frac_late",
+        "mean": 0.0013724398897408062,
+        "sd": 0.00041812779128063776
+      },
+      {
+        "feature": "freq_3",
+        "mean": 0.0011143619179883712,
+        "sd": 0.00015218380020845266
+      },
+      {
+        "feature": "late_freq_20",
+        "mean": 0.0008547617703190457,
+        "sd": 0.0005217047986151308
+      },
+      {
+        "feature": "prev_frac_early",
+        "mean": 0.0006632177758848723,
+        "sd": 0.00023992706680824776
+      },
+      {
+        "feature": "wx_wet_rain_anom",
+        "mean": 0.0006072635242010182,
+        "sd": 0.0005834686069876635
+      },
+      {
+        "feature": "wx_dry_rain_prev",
+        "mean": 0.0004004457332051903,
+        "sd": 0.0009022222202780521
+      },
+      {
+        "feature": "late_freq_3",
+        "mean": 0.0003690601233174995,
+        "sd": 0.00025729093867889375
+      },
+      {
+        "feature": "late_freq_15",
+        "mean": 0.0003419088087930122,
+        "sd": 0.0005344176924079768
+      },
+      {
+        "feature": "prev_burnt",
+        "mean": 0.00015304710164179002,
+        "sd": 0.0001316590780059543
+      },
+      {
+        "feature": "late_freq_5",
+        "mean": 2.3213708751845807e-05,
+        "sd": 0.000281446845036964
+      },
+      {
+        "feature": "prev_late",
+        "mean": 1.911585262579507e-05,
+        "sd": 0.00010619413290705191
+      },
+      {
+        "feature": "late_freq_25",
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      {
+        "feature": "freq_25",
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      {
+        "feature": "never_burnt",
+        "mean": -1.5951786960766155e-05,
+        "sd": 9.039383878611409e-05
+      },
+      {
+        "feature": "never_late",
+        "mean": -2.9393759785012464e-05,
+        "sd": 6.248421564785976e-05
+      },
+      {
+        "feature": "prev_early",
+        "mean": -0.00025288200453805755,
+        "sd": 0.00020296491638091812
+      },
+      {
+        "feature": "wx_apr_rain",
+        "mean": -0.0002902061442529025,
+        "sd": 0.0003158885258409578
+      },
+      {
+        "feature": "wx_days_since_rain",
+        "mean": -0.0006874159236813782,
+        "sd": 0.0005076505740560107
+      },
+      {
+        "feature": "wx_days_since_heavy",
+        "mean": -0.0015487962763302888,
+        "sd": 0.00041853298265528017
+      }
+    ]
+  },
+  "impurity_random_forest": [
+    {
+      "feature": "wx_wet_vpd",
+      "importance": 0.061751654740960456
+    },
+    {
+      "feature": "ndvi_wet_mean",
+      "importance": 0.06049672344485298
+    },
+    {
+      "feature": "wx_wet_rain",
+      "importance": 0.05537073139699275
+    },
+    {
+      "feature": "nbr_frac_early_prev",
+      "importance": 0.04271435227989392
+    },
+    {
+      "feature": "ndvi_wet_min",
+      "importance": 0.039353820100178856
+    },
+    {
+      "feature": "wx_wet_rain_prev",
+      "importance": 0.03914330161425097
+    },
+    {
+      "feature": "ndvi_apr",
+      "importance": 0.038858250631222155
+    },
+    {
+      "feature": "lat",
+      "importance": 0.035784380402463185
+    },
+    {
+      "feature": "lon",
+      "importance": 0.026374732619129225
+    },
+    {
+      "feature": "wx_wet_radn",
+      "importance": 0.02581628763335622
+    },
+    {
+      "feature": "wx_dry_rain_prev",
+      "importance": 0.02511365886450254
+    },
+    {
+      "feature": "wx_dry_tmax_prev",
+      "importance": 0.0246233709406876
+    },
+    {
+      "feature": "wx_dry_vpd_prev",
+      "importance": 0.024500948860316212
+    },
+    {
+      "feature": "freq_25",
+      "importance": 0.02449490716688441
+    },
+    {
+      "feature": "ndvi_apr_anom",
+      "importance": 0.024353306177722297
+    },
+    {
+      "feature": "wx_apr_vpd",
+      "importance": 0.02365768948842236
+    },
+    {
+      "feature": "wx_wet_rain_ratio",
+      "importance": 0.023631990558084476
+    },
+    {
+      "feature": "ndvi_peak_anom",
+      "importance": 0.02354184544125161
+    },
+    {
+      "feature": "ndvi_wet_max",
+      "importance": 0.023187819067158638
+    },
+    {
+      "feature": "wx_wet_rain_anom",
+      "importance": 0.022434041121817395
+    },
+    {
+      "feature": "wx_wet_tmax",
+      "importance": 0.02238002525902462
+    },
+    {
+      "feature": "prev_frac_early",
+      "importance": 0.021201296376272927
+    },
+    {
+      "feature": "freq_20",
+      "importance": 0.020964229845981484
+    },
+    {
+      "feature": "elevation",
+      "importance": 0.020928015739691854
+    },
+    {
+      "feature": "wx_days_since_heavy",
+      "importance": 0.020757157765766993
+    },
+    {
+      "feature": "wx_apr_rain",
+      "importance": 0.020127091008904696
+    },
+    {
+      "feature": "wx_days_since_rain",
+      "importance": 0.01892540787186456
+    },
+    {
+      "feature": "freq_15",
+      "importance": 0.01812131055700981
+    },
+    {
+      "feature": "freq_10",
+      "importance": 0.01638444364808621
+    },
+    {
+      "feature": "ndvi_greenup",
+      "importance": 0.01621463362500146
+    },
+    {
+      "feature": "nbr_frac_burnt_prev",
+      "importance": 0.014992408113694029
+    },
+    {
+      "feature": "nbr_frac_late_prev",
+      "importance": 0.013446894671313237
+    },
+    {
+      "feature": "prev_early",
+      "importance": 0.01116826817471363
+    },
+    {
+      "feature": "late_freq_10",
+      "importance": 0.010298555231657232
+    },
+    {
+      "feature": "freq_5",
+      "importance": 0.01023242935260597
+    },
+    {
+      "feature": "prev_frac_burnt",
+      "importance": 0.00957904631101925
+    },
+    {
+      "feature": "late_freq_20",
+      "importance": 0.009019537501419967
+    },
+    {
+      "feature": "yrs_since_late",
+      "importance": 0.00896452384064843
+    },
+    {
+      "feature": "late_freq_25",
+      "importance": 0.008679295124475099
+    },
+    {
+      "feature": "late_freq_15",
+      "importance": 0.008659142205530735
+    },
+    {
+      "feature": "freq_3",
+      "importance": 0.007471141485219238
+    },
+    {
+      "feature": "prev_frac_late",
+      "importance": 0.007370981698572187
+    },
+    {
+      "feature": "yrs_since_burnt",
+      "importance": 0.005352121852291993
+    },
+    {
+      "feature": "late_freq_5",
+      "importance": 0.004127308442340099
+    },
+    {
+      "feature": "late_freq_3",
+      "importance": 0.0036907473778660924
+    },
+    {
+      "feature": "prev2_burnt",
+      "importance": 0.0025167117393673985
+    },
+    {
+      "feature": "prev_late",
+      "importance": 0.0018644983987319542
+    },
+    {
+      "feature": "prev_burnt",
+      "importance": 0.0007659350026467286
+    },
+    {
+      "feature": "never_late",
+      "importance": 0.0003133905716940592
+    },
+    {
+      "feature": "never_burnt",
+      "importance": 0.00027963865643971906
+    }
+  ],
+  "tuning": {
+    "decision tree": {
+      "search": "random",
+      "candidates": 25,
+      "best_params": {
+        "min_samples_leaf": 500,
+        "max_depth": 20,
+        "criterion": "gini"
+      },
+      "val_f1_best": 0.6425239061743738,
+      "test_f1_tuned": 0.6322493655828514,
+      "test_f1_manual": 0.603535941207442,
+      "seconds": 73.7
+    },
+    "naive bayes": {
+      "search": "grid",
+      "candidates": 11,
+      "best_params": {
+        "var_smoothing": 1e-12
+      },
+      "val_f1_best": 0.6392855557987576,
+      "test_f1_tuned": 0.6025537782778557,
+      "test_f1_manual": 0.6018361569068559,
+      "seconds": 1.2
+    },
+    "random forest": {
+      "search": "random",
+      "candidates": 10,
+      "best_params": {
+        "n_estimators": 400,
+        "min_samples_leaf": 5,
+        "max_features": "sqrt",
+        "max_depth": 30
+      },
+      "val_f1_best": 0.6853468058772957,
+      "test_f1_tuned": 0.6615263939249943,
+      "test_f1_manual": 0.6597554834141613,
+      "seconds": 1577.5
+    },
+    "gradient boosting": {
+      "search": "random",
+      "candidates": 14,
+      "best_params": {
+        "min_samples_leaf": 100,
+        "max_leaf_nodes": 63,
+        "max_iter": 800,
+        "learning_rate": 0.05,
+        "l2_regularization": 3.0
+      },
+      "val_f1_best": 0.6785806262947309,
+      "test_f1_tuned": 0.6840299572118486,
+      "test_f1_manual": 0.6842284189101626,
+      "seconds": 636.8
+    },
+    "multilayer ANN": {
+      "search": "grid",
+      "candidates": 7,
+      "best_params": {
+        "units": [
+          256,
+          128
+        ],
+        "drop": 0.2,
+        "lr": 0.001
+      },
+      "val_f1_best": 0.678276878312536,
+      "test_f1_tuned": 0.6739429481906196,
+      "test_f1_manual": 0.6671641052061177,
+      "seconds": 121.7
+    },
+    "LSTM": {
+      "search": "grid",
+      "candidates": 4,
+      "best_params": {
+        "units": 64,
+        "drop": 0.4,
+        "lr": 0.001
+      },
+      "val_f1_best": 0.6726942215901923,
+      "test_f1_tuned": 0.6702071707147335,
+      "test_f1_manual": 0.670323611641323,
+      "seconds": 406.0
+    }
+  },
+  "random_cv": {
+    "folds": 10,
+    "mean": 0.7719690581249513,
+    "sd": 0.003536230603739352,
+    "forward_val_f1": 0.6786515061995201,
+    "forward_test_f1": 0.6773137286345007,
+    "rows": 240000
+  }
+}

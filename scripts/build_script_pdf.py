@@ -291,9 +291,8 @@ SCRIPT = [
 QA = [
  ("Why gradient boosting rather than the LSTM, when they are so close?",
   "On the held-out years gradient boosting is ahead, 0.684 to 0.673, and it trains in "
-  "about ninety-five seconds against a much heavier fit for the network. It is also far "
-  "easier to interrogate — the importance chart on slide seventeen comes straight out of "
-  "it. With that small a gap we took the model we could explain."),
+  "about ninety-five seconds against a much heavier fit for the network. It also held up "
+  "under a systematic search: tuning left its test score at exactly 0.684."),
  ("How do you know there is no leakage?",
   "Two checks. Every fire-history feature is recomputed from years strictly before the "
   "target year through a single shared function, so the training and forecast paths "
@@ -325,6 +324,27 @@ QA = [
   "April. Test whether it transfers to the Kimberley. And go back to the spatial idea "
   "with a model that keeps the tabular features and adds a spatial branch, rather than "
   "replacing them the way the U-Net did."),
+ ("What is cross-validation, and why not use ordinary k-fold?",
+  "Cross-validation trains on part of the data and tests on the part left out, in turn. "
+  "Shuffled k-fold leaks here, because a square looks like its neighbour and like itself the "
+  "next year. We measured it: repeated stratified 5-fold scored 0.772, while the same "
+  "model on unseen years scored 0.677. So we used 66 walk-forward tests "
+  "instead, which always train on the past and test on the future."),
+ ("How do you know it is not overfitting?",
+  "Three checks. Validation and test scores agree within 0.04 for every model. Gradient "
+  "boosting scores 0.821 on its training years "
+  "against 0.684 on the test years, and the neural "
+  "networks stop training at the best validation epoch. And across 66 walk-forward tests it "
+  "beat the same-as-last-year baseline every time."),
+ ("Besides accuracy, what scores did you use?",
+  "Macro precision, recall and F1, F1 on each class, the confusion matrix, and ROC-AUC and "
+  "PR-AUC. Gradient boosting has a ROC-AUC of 0.862 "
+  "and a PR-AUC on late fires of 0.558, about "
+  "twice what guessing would score."),
+ ("Were the settings tuned, or picked by hand?",
+  "Both. They were first picked by hand, then every model was tuned with a randomised or grid "
+  "search scored on the validation years only. Gradient boosting stayed at 0.684; the decision "
+  "tree gained most, from 0.604 to 0.632."),
  ("Who did what?",
   "Harsh led the project: the problem framing, the data pipeline, the forecast and the "
   "web product. Saira led labelling, feature engineering and the leakage and validation "

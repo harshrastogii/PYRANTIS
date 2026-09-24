@@ -1,0 +1,54 @@
+19:18:40 50 features  train 690,585  val 138,117  test 138,117
+19:18:40 [1-2] decision tree
+19:19:00       train 0.700  val 0.627  test 0.604  ROC-AUC 0.793  PR-AUC 0.633
+19:19:00 [1-2] random forest
+19:21:08       train 0.924  val 0.685  test 0.660  ROC-AUC 0.859  PR-AUC 0.730
+19:21:08 [1-2] naive bayes
+19:21:09       train 0.581  val 0.641  test 0.602  ROC-AUC 0.797  PR-AUC 0.637
+19:21:09 [1-2] gradient boosting
+19:23:27       train 0.821  val 0.678  test 0.684  ROC-AUC 0.862  PR-AUC 0.732
+19:23:27 [3] permutation importance: random forest
+19:24:47       top: wx_wet_rain 0.018, wx_wet_vpd 0.015, ndvi_wet_mean 0.012, lat 0.012, ndvi_apr_anom 0.011, ndvi_wet_min 0.011
+19:24:47 [3] permutation importance: gradient boosting
+19:28:24       top: ndvi_wet_mean 0.036, ndvi_apr 0.028, lat 0.022, wx_wet_rain 0.017, lon 0.017, wx_wet_vpd 0.017
+19:28:29 [1-2] multilayer ANN
+    best val macro-F1 0.674 at epoch 11
+19:28:47       train 0.702  val 0.674  test 0.667  ROC-AUC 0.856  PR-AUC 0.713
+19:28:47 [1-2] LSTM
+    best val macro-F1 0.671 at epoch 3
+19:30:27       train 0.687  val 0.671  test 0.670  ROC-AUC 0.854  PR-AUC 0.724
+19:30:28 [4] tuning decision tree (random search)
+19:31:41       best {'min_samples_leaf': 500, 'max_depth': 20, 'criterion': 'gini'}  val 0.643  test tuned 0.632 vs manual 0.604
+19:31:41 [4] tuning naive bayes (grid search)
+19:31:43       best {'var_smoothing': 1e-12}  val 0.639  test tuned 0.603 vs manual 0.602
+19:31:43 [4] tuning random forest (random search)
+19:58:00       best {'n_estimators': 400, 'min_samples_leaf': 5, 'max_features': 'sqrt', 'max_depth': 30}  val 0.685  test tuned 0.662 vs manual 0.660
+19:58:00 [4] tuning gradient boosting (random search)
+20:08:37       best {'min_samples_leaf': 100, 'max_leaf_nodes': 63, 'max_iter': 800, 'learning_rate': 0.05, 'l2_regularization': 3.0}  val 0.679  test tuned 0.684 vs manual 0.684
+20:08:37 [4] tuning multilayer ANN (grid of 7)
+    best val macro-F1 0.675 at epoch 7
+20:08:46       {'units': (64, 32), 'drop': 0.2, 'lr': 0.001}  val 0.675
+    best val macro-F1 0.673 at epoch 2
+20:08:51       {'units': (64, 32), 'drop': 0.4, 'lr': 0.001}  val 0.673
+    best val macro-F1 0.674 at epoch 11
+20:09:08       {'units': (128, 64), 'drop': 0.2, 'lr': 0.001}  val 0.674
+    best val macro-F1 0.673 at epoch 4
+20:09:18       {'units': (128, 64), 'drop': 0.4, 'lr': 0.001}  val 0.673
+    best val macro-F1 0.678 at epoch 3
+20:09:36       {'units': (256, 128), 'drop': 0.2, 'lr': 0.001}  val 0.678
+    best val macro-F1 0.676 at epoch 20
+20:10:24       {'units': (256, 128), 'drop': 0.4, 'lr': 0.001}  val 0.676
+    best val macro-F1 0.671 at epoch 8
+20:10:38       {'units': (128, 64), 'drop': 0.2, 'lr': 0.0003}  val 0.671
+20:10:39 [4] tuning LSTM (grid of 4)
+    best val macro-F1 0.672 at epoch 7
+20:11:46       {'units': 32, 'drop': 0.2, 'lr': 0.001}  val 0.672
+    best val macro-F1 0.671 at epoch 3
+20:13:24       {'units': 64, 'drop': 0.2, 'lr': 0.001}  val 0.671
+    best val macro-F1 0.662 at epoch 1
+20:15:42       {'units': 96, 'drop': 0.2, 'lr': 0.001}  val 0.662
+    best val macro-F1 0.673 at epoch 3
+20:17:24       {'units': 64, 'drop': 0.4, 'lr': 0.001}  val 0.673
+20:17:25 [5] repeated stratified 5-fold CV on the training years (gradient boosting)
+20:26:48       random CV 0.772 +/- 0.004   vs forward: val 0.679  test 0.677
+20:26:48 done
