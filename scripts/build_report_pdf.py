@@ -265,7 +265,7 @@ def build():
     idl = ParagraphStyle("i", fontName=SANS, fontSize=10.2, leading=15, textColor=MUTED)
     mem = Table([[Paragraph("Harsh Rastogi", nm), Paragraph("386401", idl)],
                  [Paragraph("Saira Zafar", nm), Paragraph("407193", idl)],
-                 [Paragraph("Tharushi Wimalachandra", nm), Paragraph("386594", idl)]],
+                 [Paragraph("Tharushi Wimalachandra", nm), Paragraph("387594", idl)]],
                 colWidths=[W*0.55, W*0.45])
     mem.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"),
                              ("TOPPADDING", (0, 0), (-1, -1), 4),
@@ -591,7 +591,7 @@ def build():
         ("Saira Zafar (407193)", "Labelling from the NAFI rasters, feature engineering and "
                                  "the 30 April rule, the two leakage tests and the temporal "
                                  "split design. Presents slides 6–11."),
-        ("Tharushi Wimalachandra (386594)", "Model training and tuning across all six "
+        ("Tharushi Wimalachandra (387594)", "Model training and tuning across all six "
                                             "classifiers, the experiment ledger, "
                                             "walk-forward validation and the results "
                                             "analysis. Presents slides 12–18."),

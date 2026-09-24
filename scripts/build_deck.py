@@ -227,7 +227,7 @@ def s01_title():
 
     text(s, 8.15, 4.52, 4.3, 0.3, "Team", size=10.5, color=ON_DARK)
     members = [("Harsh Rastogi", "386401"), ("Saira Zafar", "407193"),
-               ("Tharushi Wimalachandra", "386594")]
+               ("Tharushi Wimalachandra", "387594")]
     y = 4.96
     for nm, sid in members:
         text(s, 8.15, y, 3.2, 0.3, nm, size=11.5, bold=True, color=WHITE)

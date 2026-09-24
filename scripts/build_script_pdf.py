@@ -435,7 +435,7 @@ def build():
             ["Assessment", "Assessment 3 — presentation"],
             ["Group", "Group 85"],
             ["Presenters", "Harsh Rastogi (386401), Saira Zafar (407193), "
-                           "Tharushi Wimalachandra (386594)"],
+                           "Tharushi Wimalachandra (387594)"],
             ["Slides", "24, every one covered below. Slide 24 is the second half of the "
                        "reference list and has no speech."],
             ["Total running time", f"About {TOTAL/60:.1f} minutes including slide "
