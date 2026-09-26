@@ -40,8 +40,8 @@ def _emit(im: Image.Image) -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
     square.resize((512, 512), Image.LANCZOS).save(OUT / "pyrantis-logo.png")
-    for s in (180, 96, 48, 32):
-        square.resize((s, s), Image.LANCZOS).save(OUT / f"pyrantis-{s}.png")
+    # Only the header mark is drawn from this; the favicons are their own set.
+    square.resize((180, 180), Image.LANCZOS).save(OUT / "pyrantis-180.png")
     for f in sorted(OUT.glob("pyrantis*.png")):
         print(f"  {f.name}  {f.stat().st_size/1000:.0f} kB")
 

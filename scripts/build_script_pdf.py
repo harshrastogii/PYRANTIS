@@ -218,7 +218,11 @@ SCRIPT = [
   "That tells us the strongest clue is the wet season just gone, which is known by the "
   "end of April."]),
 
- (16, THARU, "7:55 – 8:40", "Say the CNN result without hedging. Markers reward this.", [
+ (16, THARU, "", "Point to each box in turn: top left, top right, bottom left, bottom "
+  "right. Then carry straight on to the experiments slide.", [
+  "We also checked the results four more ways. A proper search over every model's settings left gradient boosting at 0.684. It scores 0.821 on the years it trained on and 0.684 on years it never saw, far less overfitting than the random forest. Its ROC-AUC is 0.862 and its PR-AUC 0.732. And shuffled cross-validation scored 0.772, well above the real 0.677, because neighbouring years leak into each other. That is why every test here moves forward in time."]),
+
+ (17, THARU, "7:55 – 8:40", "Say the CNN result without hedging. Markers reward this.", [
   "Behind that final model sit twenty-three experiments, each scored against the same "
   "fixed benchmark, each recorded as kept or reverted.",
   "Exactly one was kept — adding satellite greenness.",
@@ -229,7 +233,7 @@ SCRIPT = [
   "run and stayed out of the final model.",
   "We are reporting it because a ledger that only contains successes is not a ledger."]),
 
- (17, THARU, "8:40 – 9:10", "Read the top three bars. Land on the closing sentence.", [
+ (18, THARU, "8:40 – 9:10", "Read the top three bars. Land on the closing sentence.", [
   "Nobody told it that a wet, hot wet season grows the grass that carries an October "
   "fire. It found that in the data. Its strongest inputs are the dryness of the air "
   "through the wet, average greenness, wet-season rainfall, and what the neighbouring "
@@ -237,7 +241,7 @@ SCRIPT = [
   "That it lands where fire ecology already sits is the best evidence we have that it "
   "learned the problem rather than our dataset."]),
 
- (18, THARU, "9:10 – 9:50", "Four limits, briskly. Then hand back to Harsh.", [
+ (19, THARU, "9:10 – 9:50", "Four limits, briskly. Then hand back to Harsh.", [
   "Late fires are still our worst class, at 0.553. The one that matters most is also the "
   "rarest and the most weather-driven — and weather after April is precisely what we "
   "refuse to look at.",
@@ -247,10 +251,10 @@ SCRIPT = [
   "the Kimberley is an open question, not an assumption.",
   "Harsh will close with what it says about this year."]),
 
- (19, HARSH, "", "Divider. Say this with the slide up, then advance.", [
+ (20, HARSH, "", "Divider. Say this with the slide up, then advance.", [
   "Thanks Tharushi. The last part is the 2026 forecast, and the site we built for it."]),
 
- (20, HARSH, "9:50 – 10:35", "Say fifty-one per cent slowly. It is the headline.", [
+ (21, HARSH, "9:50 – 10:35", "Say fifty-one per cent slowly. It is the headline.", [
   "So, 2026.",
   "The model expects fifty-one per cent of the Territory to burn this year, against a "
   "twenty-six-year average of thirty-three. Fifteen per cent before August, thirty-six "
@@ -262,7 +266,7 @@ SCRIPT = [
   "Mean confidence across the map is 0.733. And because no fire scars exist for 2026 "
   "yet, this is not a result — it is a claim we can be held to in 2027."]),
 
- (21, HARSH, "10:35 – 11:10", "If live, click one town. If not, talk over the screenshot.", [
+ (22, HARSH, "10:35 – 11:10", "If live, click one town. If not, talk over the screenshot.", [
   "So we shipped it.",
   "This is a public site. It answers the question in plain English first, then puts the "
   "map, the twenty-six-year record and the evidence underneath. You can click any square, "
@@ -270,7 +274,7 @@ SCRIPT = [
   "Every sentence on it is computed from the model output, so it updates when the data "
   "does."]),
 
- (22, HARSH, "11:10 – 11:50", "Slow down on the last two sentences, then advance.", [
+ (23, HARSH, "11:10 – 11:50", "Slow down on the last two sentences, then advance.", [
   "To close.",
   "Every square, every year, and an honest number on how often it is right. A balanced F1 "
   "of 0.684 on years the models never saw. Sixty-six independent re-tests behind that "
@@ -281,10 +285,10 @@ SCRIPT = [
   "Everything — the code, the figures in this deck, and the site — is in the repository, "
   "and every source we used is referenced on the last two slides."]),
 
- (23, HARSH, "", "Advance to the references, say this, and leave the slide up for questions.", [
+ (24, HARSH, "", "Advance to the references, say this, and leave the slide up for questions.", [
   "Thank you. We are happy to take questions."]),
 
- (24, HARSH, "", "No speech. Advance only if a marker asks to see the rest of the "
+ (25, HARSH, "", "No speech. Advance only if a marker asks to see the rest of the "
   "reference list.", []),
 ]
 
@@ -353,11 +357,11 @@ QA = [
 ]
 
 SPEAKERS = [
- (HARSH, "Slides 1–5 and 19–24", "5 min 30 s", "Opening, the problem, the data, the "
+ (HARSH, "Slides 1–5 and 20–25", "5 min 30 s", "Opening, the problem, the data, the "
   "2026 forecast, the product and the close."),
  (SAIRA, "Slides 6–11", "4 min 30 s", "Labelling, features, the leakage rules, the "
   "temporal split and the models."),
- (THARU, "Slides 12–18", "4 min 30 s", "Results, the data-layer gains, walk-forward "
+ (THARU, "Slides 12–19", "4 min 30 s", "Results, the data-layer gains, walk-forward "
   "testing, the experiment ledger and the limits."),
 ]
 
@@ -436,7 +440,7 @@ def build():
             ["Group", "Group 85"],
             ["Presenters", "Harsh Rastogi (386401), Saira Zafar (407193), "
                            "Tharushi Wimalachandra (387594)"],
-            ["Slides", "24, every one covered below. Slide 24 is the second half of the "
+            ["Slides", "25, every one covered below. Slide 25 is the second half of the "
                        "reference list and has no speech."],
             ["Total running time", f"About {TOTAL/60:.1f} minutes including slide "
                                    f"changes, inside the 15 minute limit"],
@@ -487,7 +491,7 @@ def build():
         "Slide 1 is the cover — add the unlisted recording link before you present. "
         "Stage directions are set in orange italics and are not to be read aloud. "
         "Cues are a guide, not a stopwatch — if a section runs long, cut the third "
-        "paragraph of slide 3 and the last limitation on slide 18 first.", S["note"]))
+        "paragraph of slide 3 and the last limitation on slide 19 first.", S["note"]))
     st.append(PageBreak())
 
     # ---- the script

@@ -15,3 +15,7 @@ data/processed/*.parquet
 # site is committed: Cloudflare Workers Builds serves _site/ directly.
 web/index.html
 reports/submission/
+
+# The narrated deck is 320 MB, past GitHub's 100 MB file limit; the video is on YouTube.
+reports/PYRANTIS Presentation with Naration.pptx
+reports/~$*
