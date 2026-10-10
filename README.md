@@ -4,7 +4,7 @@ Classifying Northern Territory fire regimes from satellite burnt-area mapping, g
 weather and satellite greenness, and forecasting the 2026 season.
 
 Built for **PRT565 Machine Learning, Artificial Intelligence and Algorithms**,
-Assessment 3, Charles Darwin University (Darwin, Danala campus). Group 85: Harsh
+Assessments 3 and 4, Charles Darwin University (Darwin, Danala campus). Group 85: Harsh
 Rastogi (386401), Saira Zafar (407193), Tharushi Wimalachandra (387594).
 
 - Live site: https://pyrantis.harshlabs.workers.dev
@@ -35,7 +35,8 @@ as burnt, which is what makes the early/late split possible. Used with permissio
 
 **SILO Data Drill** (Queensland Government). Daily rainfall, maximum temperature, vapour
 pressure deficit and solar radiation, interpolated from Bureau of Meteorology station
-observations onto the same 0.05° grid. CC BY 4.0.
+observations. Requested at 497 points half a degree apart and interpolated linearly onto
+the 0.05° cells; each point file also carries its elevation. CC BY 4.0.
 
 **MODIS MOD13Q1** (NASA), through Google Earth Engine. Sixteen-day vegetation greenness
 at 250 m, averaged onto the same grid. Greenness over the wet season measures how much
@@ -95,9 +96,9 @@ Late fire is the hard class and the one that matters, since those are the fires
 management exists to prevent. Class weighting stops the models buying accuracy by never
 calling it: gradient boosting scores 0.420 on late fire unweighted and 0.553 weighted.
 
-Each source of data earned its place. Fire history alone reaches 0.639 macro F1, adding
-weather reaches 0.674, and adding greenness, longer fire memory and elevation reaches
-0.684. Twenty-three experiments against a fixed benchmark decided which extra features
+Each source of data earned its place. The best model on fire history alone reaches 0.639
+macro F1, adding weather lifts the best score to 0.674, and adding greenness, longer fire
+memory and elevation reaches 0.684. Twenty-three experiments against a fixed benchmark decided which extra features
 to keep; one was kept. A U-Net that read the grid as an image scored 0.588 and was
 dropped.
 
@@ -109,10 +110,14 @@ fire.
 
 ## Checks on the results
 
-- **Walk-forward testing.** The record is cut at every year from 2014 to 2024 and the
-  model is scored on every later year: 66 tests. It averages 0.640 macro F1 (standard
-  deviation 0.033) and beats the same-as-last-year baseline in all 66. Skill barely
-  fades with distance: 0.635 one year ahead, 0.604 eleven years ahead.
+- **Walk-forward testing.** The record is cut at every year from 2014 to 2024 and each
+  model is scored on every later year: 66 tests per model, on the 36 fire-history and
+  weather features (gradient boosting and greenness came later and are not in this run).
+  The LSTM averages 0.625 macro F1 (standard deviation 0.043), the multilayer ANN 0.618
+  and the random forest 0.611, against 0.539 for same-as-last-year. Naive Bayes beats
+  the baseline in all 66 tests, the forest in 65, the LSTM and ANN in 64. Skill barely
+  fades with distance: the LSTM scores 0.617 one year ahead and 0.604 eleven years ahead.
+  The Assessment 3 report quoted 0.640, which took the best learner in each fold.
 - **Tuning.** Every model was tuned with a randomised or grid search scored on the
   validation years only. Gradient boosting stayed at 0.684; the decision tree gained
   most, from 0.604 to 0.632.
@@ -165,15 +170,21 @@ pyrantis/     shared constants
 scripts/      download, preprocessing, models, checks, forecast and site export
 tests/        leakage tests
 data/         raw, interim and processed (not committed; scripts rebuild it)
-reports/      results as JSON, figures, and the submitted report and presentation
+reports/      results as JSON, figures, and the submitted reports and presentation
+reports/a4/   the Assessment 4 report, its source text, figures and analysis numbers
 web/          the page template and its assets
 _site/        the built page Cloudflare serves (committed)
 env/          pinned Python requirements
 ```
 
-The submitted files are `reports/PRT565 A3 Report Group85.pdf` and
+Assessment 3 submitted `reports/PRT565 A3 Report Group85.pdf` and
 `reports/PYRANTIS Presentation.pptx`, with the presentation also as a PDF and the
 speaking script in `reports/PYRANTIS_presentation_script.pdf`.
+
+Assessment 4 is the detailed report, `reports/a4/PRT565 A4 Report Group85.pdf` (and the
+editable `.docx`). Its text lives in `reports/a4/report_text.md`; every number quoted in it
+is written to `reports/a4/analysis.json` by `scripts/report_figures.py`, so the text can
+be checked against the data.
 
 ## Reproducing
 
@@ -206,6 +217,11 @@ SILO_CONTACT=you@example.com .venv/bin/python scripts/download_weather.py
 .venv/bin/python scripts/analyse_recurrence.py
 .venv/bin/python scripts/export_web.py               # writes _site/
 .venv/bin/python -m pytest tests/
+
+# Assessment 4 report
+.venv/bin/python scripts/report_figures.py           # analysis charts and analysis.json
+.venv/bin/python scripts/code_figures.py             # code excerpts (needs Google Chrome)
+.venv/bin/python scripts/build_a4_report.py          # the .docx; Word exports the PDF
 ```
 
 The raw data is not committed. NAFI is about 40 MB and SILO about 800 MB, and both

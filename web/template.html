@@ -1,7 +1,10 @@
 <!doctype html>
+<html lang="en-AU">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pyrantis Fire Outlook</title>
+<meta name="description" content="Where the Northern Territory is expected to burn this year, and when: a forecast from 26 years of satellite fire mapping, with the record and the evidence behind it.">
+<meta name="color-scheme" content="light dark">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -11,624 +14,711 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.0/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
 <style>__MAPLIBRE_CSS__</style>
 
 <style>
+/* ------------------------------------------------------------------ tokens
+   One interface accent (the slate blue of the logo's bowl) and three data colours that
+   nothing else uses, so a selected control is never mistaken for burnt country.
+   Radius rule: panels 18px, controls and chips fully round. */
 :root{
-  --bg:#eef1f5; --bg2:#e4e9f0;
-  --glass:rgba(255,255,255,.72); --glass-hi:rgba(255,255,255,.92); --solid:#f8fafc;
-  --stroke:rgba(24,42,64,.12); --stroke-hi:rgba(24,42,64,.22);
-  --ink:#16283b; --muted:#4a6179; --dim:#6d8398;
-
-  /* The three fire classes, and nothing else uses these. */
-  --unburnt:#93a4b1; --early:#15805f; --late:#c8441a;
-  /* Interface colour, kept outside the data palette so a selected thing is never
-     mistaken for a burnt thing. */
-  --accent:#1f6f9b; --accent-ink:#fff; --accent-soft:rgba(31,111,155,.13);
-
-  --shadow-sm:0 1px 2px rgba(24,42,64,.07), 0 4px 12px -7px rgba(24,42,64,.2);
-  --shadow:0 1px 2px rgba(24,42,64,.06), 0 18px 44px -20px rgba(24,42,64,.34);
-  --r-xl:20px; --r-lg:15px; --r-md:11px; --r-sm:8px;
-  --ease:cubic-bezier(.22,.61,.36,1);
-
-  --sans:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --bg:#f2f4f1; --bg-2:#e8ece7; --surface:#fbfcfa; --surface-2:#f4f6f3;
+  --ink:#16201c; --ink-2:#2c3833; --muted:#53615b; --dim:#7a8781;
+  --line:rgba(22,32,28,.11); --line-2:rgba(22,32,28,.2);
+  --unburnt:#a9b3ad; --early:#1e8a67; --late:#d04a1d; --straw:#c9b07a;
+  --accent:#245f80; --accent-2:#3b7fa3; --accent-ink:#ffffff; --accent-soft:rgba(36,95,128,.12);
+  --rain:#2f6690;
+  --shadow:0 1px 1px rgba(22,40,32,.05), 0 14px 36px -18px rgba(22,40,32,.32);
+  --shadow-sm:0 1px 2px rgba(22,40,32,.07), 0 4px 12px -8px rgba(22,40,32,.25);
+  --r:18px; --r-sm:12px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --display:"Bricolage Grotesque","Geist",system-ui,sans-serif;
+  --sans:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* hero scene */
+  --sky-top:#cfe0e6; --sky-mid:#eadfcf; --sky-low:#f3d7b6; --sun:#f6b46a;
+  --ridge-far:#9fb3b1; --ridge-mid:#7f958d; --ground:#b7a172; --ground-2:#a28c5c;
+  --tree:#41574b; --mound:#a8693f; --smoke:rgba(90,90,90,.18);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1412; --bg-2:#121a17; --surface:#151d1a; --surface-2:#1a2420;
+    --ink:#e7ece9; --ink-2:#cbd4cf; --muted:#9ba8a2; --dim:#76837d;
+    --line:rgba(231,236,233,.1); --line-2:rgba(231,236,233,.2);
+    --unburnt:#56645e; --early:#37b088; --late:#ff6b35; --straw:#8f7c52;
+    --accent:#7ab8d8; --accent-2:#9acbe4; --accent-ink:#0e1412; --accent-soft:rgba(122,184,216,.14);
+    --rain:#6ea6d4;
+    --shadow:0 1px 1px rgba(0,0,0,.3), 0 18px 40px -20px rgba(0,0,0,.7);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.35), 0 4px 12px -8px rgba(0,0,0,.6);
+    --sky-top:#0d1b24; --sky-mid:#1d2630; --sky-low:#4a2c22; --sun:#e87a3c;
+    --ridge-far:#24323a; --ridge-mid:#1b2724; --ground:#3a3324; --ground-2:#2c271b;
+    --tree:#0f1a16; --mound:#5b3420; --smoke:rgba(200,200,200,.1);
+  }
 }
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{
-  margin:0; color:var(--ink); font-family:var(--sans); font-size:15px; line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  background:
-    radial-gradient(1200px 660px at 82% -14%, rgba(200,68,26,.08), transparent 60%),
-    radial-gradient(900px 560px at 4% 2%, rgba(31,111,155,.10), transparent 56%),
-    linear-gradient(174deg, var(--bg), var(--bg2));
-  background-attachment:fixed;
-}
-::selection{background:var(--accent-soft); color:var(--ink)}
-:root{scrollbar-color:rgba(24,42,64,.26) transparent; scrollbar-width:thin; caret-color:var(--accent)}
-::-webkit-scrollbar{width:11px;height:11px}
-::-webkit-scrollbar-thumb{background:rgba(24,42,64,.24);border-radius:9px;border:3px solid transparent;background-clip:content-box}
-::-webkit-scrollbar-thumb:hover{background:rgba(24,42,64,.4);background-clip:content-box}
-::-webkit-scrollbar-track{background:transparent}
-:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:5px}
-
-h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
-h2{font-size:22px} h3{font-size:16px; font-weight:600}
+html{scroll-behavior:smooth; scroll-padding-top:84px; -webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 var(--sans);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; overflow-x:hidden}
+::selection{background:var(--accent-soft)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:6px}
+h1,h2,h3{margin:0; font-family:var(--display); font-weight:700; letter-spacing:-.025em; line-height:1.08; text-wrap:balance}
+h2{font-size:clamp(28px,3.4vw,42px)}
+h3{font-size:19px; letter-spacing:-.015em; line-height:1.25}
 p{margin:0}
-.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-.01em}
 .muted{color:var(--muted)} .dim{color:var(--dim)}
-.lede{color:var(--muted); max-width:66ch}
-.small{font-size:13.5px}
+.lede{color:var(--muted); max-width:62ch; font-size:17px; line-height:1.6}
+.small{font-size:14px}
+.wrap{max-width:1320px; margin:0 auto; padding:0 28px}
+section.block{padding:clamp(64px,8vw,112px) 0 0}
+.head{margin-bottom:32px; max-width:760px}
+.head .lede{margin-top:14px}
 
-/* ---------------------------------------------------------------------- bar */
-.bar{position:sticky; top:env(safe-area-inset-top,0px); z-index:50;
-  background:var(--glass); backdrop-filter:blur(18px) saturate(1.6);
-  -webkit-backdrop-filter:blur(18px) saturate(1.6);
-  border-bottom:1px solid var(--stroke); box-shadow:var(--shadow-sm)}
-.bar-in{max-width:1400px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap}
-/* The mark is the letter P, so the word does not repeat it: the wordmark reads "yrantis"
-   and continues out of the artwork. The word is set at the size it has always been rather
-   than blown up to match the P's cap height, so the mark stays the larger of the two and
-   the word follows it.
-   The two sit on one baseline rather than being centred against each other. The drawn P
-   has its foot at 92% of the square's height, so the word is lifted by the remaining 8%
-   to put both feet on the same line. The artwork also carries 11.9% transparent padding
-   down its right side, which the negative margin takes back so the letters meet. */
-.brand{--brand-h:30px; display:flex; align-items:baseline; white-space:nowrap}
-.brand img{
-  width:var(--brand-h); height:var(--brand-h); display:block;
-  filter:drop-shadow(0 2px 7px rgba(24,42,64,.2));
-}
-.brand .name{
-  font-weight:800; font-size:19px; letter-spacing:-.025em; line-height:1;
-  margin-left:calc(var(--brand-h) * -0.119);
-  transform:translateY(calc(var(--brand-h) * -0.08));
-  padding-bottom:.32em; margin-bottom:-.32em;
-  /* Sampled from the right-hand edge of the mark, where the word begins: the sky inside
-     its bowl, the petrol blue below it, the deep teal at its foot. */
-  color:#245f80;                               /* if the clip is unsupported */
-  background:linear-gradient(176deg, #4a90b4 12%, #245f80 38%, #17333f 69%);
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 1px 0 rgba(255,255,255,.55));
-}
-@media (max-width:620px){ .brand{--brand-h:26px} .brand .name{font-size:17px} }
-
-nav.tabs{display:flex;gap:2px;background:rgba(24,42,64,.06);padding:3px;border-radius:var(--r-md)}
-nav.tabs button{border:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;
-  color:var(--muted);padding:8px 14px;border-radius:var(--r-sm);background:transparent;
-  transition:background .18s var(--ease),color .18s var(--ease);white-space:nowrap}
-nav.tabs button:hover{background:rgba(255,255,255,.75);color:var(--ink)}
-nav.tabs button[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
-
-.bar-right{margin-left:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.switch{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none}
-.switch input{position:absolute;opacity:0;width:0;height:0}
-.switch .track{width:40px;height:23px;border-radius:99px;background:rgba(24,42,64,.18);
-  position:relative;transition:background .2s var(--ease);flex:none}
-.switch .track::after{content:"";position:absolute;top:3px;left:3px;width:17px;height:17px;
-  border-radius:50%;background:#fff;box-shadow:var(--shadow-sm);transition:transform .2s var(--ease)}
+/* --------------------------------------------------------------------- nav */
+.nav{position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter:blur(14px) saturate(1.3); -webkit-backdrop-filter:blur(14px) saturate(1.3);
+  border-bottom:1px solid transparent; transition:border-color .3s var(--ease)}
+.nav.scrolled{border-bottom-color:var(--line)}
+.nav-in{max-width:1320px; margin:0 auto; padding:12px 28px; display:flex; align-items:center; gap:28px; height:68px}
+/* The mark is a cropped copy of the same artwork, with its transparent margin removed,
+   so the wordmark can sit on the P's foot without negative-margin guesswork. The word is
+   a little shorter than the mark, so the P still leads. */
+.brand{display:flex; align-items:flex-end; gap:1px; text-decoration:none; flex:none}
+.brand img{height:34px; width:auto; display:block; filter:drop-shadow(0 2px 5px rgba(20,40,40,.18))}
+.brand span{font-family:var(--display); font-weight:800; font-size:23px; line-height:1; letter-spacing:-.035em;
+  padding-bottom:1px; color:var(--accent);
+  background:linear-gradient(178deg, #4a90b4 5%, #245f80 45%, #17333f 92%);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
+@media (prefers-color-scheme:dark){.brand span{background:linear-gradient(178deg,#a5d4ec 5%,#6fb0d3 50%,#3f86ad 95%);
+  -webkit-background-clip:text; background-clip:text}}
+.links{display:flex; gap:2px; margin:0 auto 0 0; overflow-x:auto; scrollbar-width:none}
+.links::-webkit-scrollbar{display:none}
+.links a{color:var(--muted); text-decoration:none; font-size:14.5px; font-weight:500; padding:8px 13px;
+  border-radius:999px; white-space:nowrap; transition:color .2s var(--ease), background .2s var(--ease)}
+.links a:hover{color:var(--ink); background:var(--surface-2)}
+.links a.on{color:var(--ink); background:var(--surface); box-shadow:var(--shadow-sm)}
+.switch{display:flex; align-items:center; gap:9px; font-size:14px; color:var(--muted); cursor:pointer; user-select:none; flex:none}
+.switch input{position:absolute; opacity:0; width:0; height:0}
+.switch .track{width:38px; height:22px; border-radius:99px; background:var(--line-2); position:relative; transition:background .2s var(--ease)}
+.switch .track::after{content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%;
+  background:var(--surface); box-shadow:var(--shadow-sm); transition:transform .25s var(--ease)}
 .switch input:checked + .track{background:var(--accent)}
-.switch input:checked + .track::after{transform:translateX(17px)}
-.switch input:focus-visible + .track{outline:2px solid var(--accent);outline-offset:2px}
+.switch input:checked + .track::after{transform:translateX(16px)}
+.switch input:focus-visible + .track{outline:2px solid var(--accent); outline-offset:2px}
 
-/* ------------------------------------------------------------------- layout */
-.page{max-width:1400px;margin:0 auto;padding:22px 20px 70px}
-.view{display:none}
-.view.on{display:block;animation:rise .34s var(--ease) both}
-@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* -------------------------------------------------------------------- hero */
+.hero{padding:clamp(28px,4vw,56px) 0 0}
+.hero-grid{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,6fr); gap:clamp(28px,4vw,64px); align-items:center}
+.eyebrow{font-size:13px; font-weight:600; color:var(--accent); letter-spacing:.02em; margin-bottom:18px; display:flex; align-items:center; gap:8px}
+.hero h1{font-size:clamp(40px,5.4vw,72px); line-height:1.02; letter-spacing:-.04em}
+.hero h1 em{font-style:normal; color:var(--late)}
+.hero .sub{font-size:19px; color:var(--muted); margin-top:22px; max-width:30em; line-height:1.55}
+.ctas{display:flex; gap:12px; margin-top:30px; flex-wrap:wrap}
+.btn{display:inline-flex; align-items:center; gap:9px; font:600 15px/1 var(--sans); color:var(--ink);
+  background:var(--surface); border:1px solid var(--line-2); border-radius:999px; padding:13px 20px;
+  cursor:pointer; text-decoration:none; white-space:nowrap;
+  transition:transform .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease)}
+.btn:hover{border-color:var(--ink-2); box-shadow:var(--shadow-sm)}
+.btn:active{transform:translateY(1px) scale(.985)}
+.btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.btn.primary:hover{background:var(--ink-2)}
+.btn.sm{padding:10px 15px; font-size:14px}
+.btn i{font-size:18px}
+.btn[disabled]{opacity:.6; cursor:progress}
 
-.panel{background:var(--glass);backdrop-filter:blur(16px) saturate(1.45);
-  -webkit-backdrop-filter:blur(16px) saturate(1.45);border:1px solid var(--stroke);
-  border-radius:var(--r-lg);box-shadow:var(--shadow)}
-.pad{padding:20px}
-.stack-v{display:flex;flex-direction:column;gap:18px}
-.split{display:grid;gap:18px;grid-template-columns:minmax(0,1fr) minmax(320px,400px);align-items:start}
-@media (max-width:1020px){.split{grid-template-columns:minmax(0,1fr)}}
+.scene{position:relative; border-radius:var(--r); overflow:hidden; background:var(--sky-top);
+  box-shadow:var(--shadow); border:1px solid var(--line); aspect-ratio:16/10.4}
+.scene svg{display:block; width:100%; height:100%}
+.scene-bar{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:14px}
+.seg{display:inline-flex; background:var(--surface-2); border:1px solid var(--line); border-radius:999px; padding:3px}
+.seg button{border:0; background:transparent; font:600 13.5px/1 var(--sans); color:var(--muted); padding:9px 14px;
+  border-radius:999px; cursor:pointer; transition:background .2s var(--ease), color .2s var(--ease)}
+.seg button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:var(--shadow-sm)}
+.keys{display:flex; gap:16px; flex-wrap:wrap; align-items:center}
+.key{display:inline-flex; align-items:center; gap:7px; font-size:13.5px; color:var(--muted)}
+.key b{width:11px; height:11px; border-radius:3px; display:inline-block}
+.scene-note{font-size:13.5px; color:var(--muted)}
+.scene-note strong{color:var(--ink); font-weight:600}
 
-/* ---------------------------------------------------------------------- map */
-#mapwrap{position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--stroke);
-  box-shadow:var(--shadow);background:#e8edf2}
-#map{width:100%;height:min(64vh,580px);min-height:360px}
-/* The map depends on a basemap fetched from another service. When that is slow or
-   unavailable the page used to sit there looking broken: picking a town updated the text
-   and the map never moved, with nothing to say why. */
-.map-state{
-  position:absolute; inset:0; z-index:3; display:grid; place-items:center;
-  background:rgba(240,243,246,.94); backdrop-filter:blur(3px);
-  padding:24px; text-align:center; transition:opacity .3s var(--ease);
+/* blades and flame motion: the grass sways from its root, flames flicker at the tip */
+.blade{transform-box:fill-box; transform-origin:50% 100%}
+.sway .blade{animation:sway var(--d,4.2s) ease-in-out var(--dl,0s) infinite alternate}
+@keyframes sway{from{transform:rotate(-2.4deg)}to{transform:rotate(2.6deg)}}
+.grow .blade{animation:grow .9s var(--ease) var(--dl,0s) both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.flame{transform-box:fill-box; transform-origin:50% 100%; animation:flick var(--d,.9s) ease-in-out var(--dl,0s) infinite alternate}
+@keyframes flick{0%{transform:scale(.86,.92); opacity:.85}100%{transform:scale(1.06,1.14); opacity:1}}
+.smoke{animation:rise 9s linear var(--dl,0s) infinite}
+@keyframes rise{0%{transform:translate(0,0) scale(.6); opacity:0}15%{opacity:1}100%{transform:translate(var(--dx,30px),-150px) scale(1.7); opacity:0}}
+.sunglow{animation:glow 6s ease-in-out infinite alternate}
+@keyframes glow{from{opacity:.55}to{opacity:.9}}
+
+/* ------------------------------------------------------------------ panels */
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
+.pad{padding:24px}
+.split{display:grid; gap:22px; grid-template-columns:minmax(0,1fr) minmax(330px,410px); align-items:start}
+.stack{display:flex; flex-direction:column; gap:18px}
+
+.controls{display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:14px}
+.field{display:flex; flex-direction:column; gap:6px}
+.field label{font-size:13px; font-weight:600; color:var(--muted)}
+select{font:500 15px/1.2 var(--sans); color:var(--ink); background:var(--surface); border:1px solid var(--line-2);
+  border-radius:999px; padding:12px 40px 12px 16px; min-width:240px; cursor:pointer; appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%237a8781' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 16px center}
+select:hover{border-color:var(--ink-2)}
+
+.mapwrap{position:relative; border-radius:var(--r); overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); background:var(--surface-2)}
+.map{width:100%; height:min(68vh,620px); min-height:380px}
+.map-state{position:absolute; inset:0; z-index:3; display:grid; place-items:center; text-align:center; padding:24px;
+  background:color-mix(in srgb, var(--surface-2) 92%, transparent); backdrop-filter:blur(3px)}
+.map-state p{max-width:36ch; font-size:14px; color:var(--muted)}
+.map-state strong{display:block; color:var(--ink); font-size:16px; margin-bottom:6px; font-family:var(--display)}
+/* a skeleton of the Territory's outline stands in while tiles load */
+.skeleton{width:130px; height:150px; margin:0 auto 14px; border-radius:12px;
+  background:linear-gradient(100deg, var(--line) 30%, var(--line-2) 50%, var(--line) 70%); background-size:300% 100%;
+  animation:shimmer 1.6s linear infinite; clip-path:polygon(0 18%,20% 6%,48% 0,70% 4%,86% 12%,100% 30%,100% 100%,0 100%)}
+@keyframes shimmer{from{background-position:100% 0}to{background-position:-100% 0}}
+.maplibregl-ctrl-group{border-radius:12px!important; box-shadow:var(--shadow-sm)!important; overflow:hidden}
+.maplibregl-ctrl-attrib{font-size:10px}
+.maplibregl-ctrl-bottom-left{margin:0 0 6px 8px}
+.maplibregl-ctrl-scale{background:color-mix(in srgb, var(--surface) 85%, transparent); border:1px solid var(--line);
+  border-radius:999px; color:var(--muted); font:500 10px/1.5 var(--mono); padding:2px 9px}
+.map-foot{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:12px; align-items:center}
+
+.verdict{display:flex; gap:14px; align-items:flex-start}
+.chip{width:14px; height:14px; border-radius:50%; flex:none; margin-top:9px; box-shadow:0 0 0 5px color-mix(in srgb, currentColor 18%, transparent)}
+.verdict h3{font-size:27px; letter-spacing:-.03em; line-height:1.15}
+.season{font-size:14px; color:var(--muted); margin-top:5px}
+.headline{font-size:17.5px; line-height:1.55; margin-top:14px; color:var(--ink-2)}
+.headline b{color:var(--ink)}
+.facts{margin-top:14px}
+.fact{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:11px 0; border-top:1px solid var(--line); font-size:14.5px}
+.fact .k{color:var(--muted)} .fact .v{font-weight:600; text-align:right}
+.conf{margin-top:16px}
+.conf .row{display:flex; justify-content:space-between; font-size:13.5px; color:var(--muted)}
+.gauge{position:relative; height:8px; margin-top:9px; border-radius:99px; overflow:hidden; background:var(--line)}
+.gauge i{position:absolute; inset:0 auto 0 0; width:0; border-radius:99px; background:var(--accent); transition:width .7s var(--ease)}
+.strip{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:2px; margin-top:10px}
+.strip i{height:26px; border-radius:3px; transition:transform .2s var(--ease)}
+.strip i:hover{transform:scaleY(1.2)}
+.striplab{display:flex; justify-content:space-between; font:500 11px var(--mono); color:var(--dim); margin-top:6px}
+
+/* the "why" panel draws its two reasons rather than only stating them */
+.why-rows{display:flex; flex-direction:column; gap:16px; margin-top:16px}
+.why-row .lab{display:flex; justify-content:space-between; font-size:13.5px; color:var(--muted); margin-bottom:7px}
+.why-row .lab b{color:var(--ink); font-weight:600}
+.pair{display:flex; flex-direction:column; gap:5px}
+.pair div{height:12px; border-radius:99px; background:var(--rain); transform-origin:left; width:0; transition:width 1s var(--ease)}
+.pair div.base{background:var(--line-2)}
+.rank{display:grid; grid-template-columns:repeat(26,1fr); gap:2px; align-items:end; height:36px}
+.rank i{border-radius:2px; background:var(--line-2); height:var(--h); transition:background .3s}
+.rank i.me{background:var(--early)}
+
+.note{display:flex; gap:11px; padding:14px 16px; border-radius:var(--r-sm); font-size:14px; line-height:1.55;
+  background:color-mix(in srgb, var(--late) 9%, var(--surface)); border:1px solid color-mix(in srgb, var(--late) 25%, transparent); color:var(--ink-2)}
+.note i{font-size:19px; color:var(--late); flex:none; margin-top:1px}
+
+/* --------------------------------------------------------------- calendar */
+.cal{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:28px; align-items:stretch}
+.clock{display:flex; flex-direction:column; align-items:center; justify-content:center; padding:26px}
+.clock svg{width:100%; max-width:430px; height:auto; overflow:visible}
+.wedge{cursor:pointer; transition:opacity .25s var(--ease)}
+.clock svg:hover .wedge{opacity:.45} .clock svg .wedge.hot{opacity:1}
+.clock .hand{transform-origin:0 0; transition:transform 1.4s var(--ease)}
+.kinds{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+.kind{overflow:hidden; display:flex; flex-direction:column}
+.kind .art{height:170px; background:var(--sky-top); border-bottom:1px solid var(--line)}
+.kind .art svg{display:block; width:100%; height:100%}
+.kind .body{padding:20px 22px 22px}
+.kind .big{font-family:var(--display); font-size:46px; font-weight:700; letter-spacing:-.04em; line-height:1}
+.kind .big small{font-size:16px; font-weight:600; letter-spacing:0; color:var(--muted); margin-left:6px}
+.kind p{color:var(--muted); font-size:15px; margin-top:10px}
+.kind h3{margin-top:4px}
+
+/* ----------------------------------------------------------------- record */
+.rec-top{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:12px}
+.yearnum{font:600 40px/1 var(--display); letter-spacing:-.04em; min-width:4.6ch}
+.scrub{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:3px; height:74px; align-items:end;
+  margin-bottom:14px; padding:8px 8px 0; border-radius:var(--r-sm); background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow-sm)}
+.scrub button{all:unset; cursor:pointer; height:100%; display:flex; flex-direction:column; justify-content:flex-end; position:relative; border-radius:3px 3px 0 0}
+.scrub button span{display:block; width:100%; transition:opacity .2s}
+.scrub button .e{background:var(--early)} .scrub button .l{background:var(--late)}
+.scrub button::after{content:attr(data-y); position:absolute; left:50%; bottom:-20px; transform:translateX(-50%); font:500 10px var(--mono); color:var(--dim); opacity:0}
+.scrub button:nth-child(5n+1)::after{opacity:1}
+.scrub button[aria-current="true"]{outline:2px solid var(--ink); outline-offset:2px}
+.scrub button.test::before{content:""; position:absolute; top:-6px; left:20%; right:20%; height:3px; border-radius:2px; background:var(--accent)}
+.scrub:hover button span{opacity:.55} .scrub button:hover span, .scrub button[aria-current="true"] span{opacity:1}
+.scrub-wrap{padding-bottom:20px}
+.icon-btn{width:46px; height:46px; border-radius:50%; display:grid; place-items:center; border:1px solid var(--line-2);
+  background:var(--ink); color:var(--bg); cursor:pointer; font-size:20px; transition:transform .2s var(--ease)}
+.icon-btn:active{transform:scale(.94)}
+.empty{display:flex; gap:12px; align-items:flex-start; color:var(--muted); font-size:14.5px; margin-top:10px}
+.empty i{font-size:26px; color:var(--accent)}
+
+/* ----------------------------------------------------------------- bento */
+.bento{display:grid; gap:20px}
+.bento .row{display:grid; gap:20px}
+.bento .r1{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
+.bento .r2{grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
+.tile{padding:26px; display:flex; flex-direction:column}
+.tile .ans{font-size:17px; font-weight:500; color:var(--ink-2); margin-top:10px; line-height:1.5}
+.tile .chart{margin-top:auto; padding-top:20px}
+.tile.ember{background:color-mix(in srgb, var(--late) 10%, var(--surface)); border-color:color-mix(in srgb, var(--late) 22%, transparent)}
+.tile.leaf{background:color-mix(in srgb, var(--early) 8%, var(--surface)); border-color:color-mix(in srgb, var(--early) 20%, transparent)}
+.giant{font-family:var(--display); font-weight:700; font-size:clamp(64px,8vw,104px); letter-spacing:-.05em; line-height:.9; color:var(--late)}
+.mtx{display:grid; grid-template-columns:auto repeat(3,1fr); gap:5px; font-size:13px}
+.mtx .h{color:var(--muted); font-weight:600; text-align:center; padding:4px 2px; line-height:1.25}
+.mtx .s{color:var(--muted); font-weight:600; text-align:right; padding-right:8px; align-self:center; line-height:1.25}
+.mtx .c{border-radius:10px; padding:16px 4px; text-align:center; font:600 15px var(--mono); color:var(--ink)}
+.minibars{display:flex; flex-direction:column; gap:9px}
+.mb{display:grid; grid-template-columns:118px minmax(0,1fr) 46px; gap:10px; align-items:center; font-size:13.5px}
+.mb .n{color:var(--muted); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.mb .t{height:14px; border-radius:99px; overflow:hidden}
+.mb .t i{display:block; height:100%; border-radius:99px; width:0; transition:width .9s var(--ease)}
+.mb .v{font:500 13px var(--mono); text-align:right}
+.pairs{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; align-items:end}
+.pairs .grp{display:flex; flex-direction:column; gap:8px}
+.pairs .cols{display:flex; gap:6px; align-items:flex-end; height:150px}
+.pairs .cols div{flex:1; border-radius:8px 8px 3px 3px; position:relative; height:0; transition:height 1s var(--ease)}
+.pairs .cols div span{position:absolute; top:-21px; left:0; right:0; text-align:center; font:600 12.5px var(--mono); color:var(--ink)}
+.pairs .lab{font-size:13px; color:var(--muted); text-align:center; line-height:1.3}
+
+/* --------------------------------------------------------------- quality */
+.q-top{display:grid; grid-template-columns:minmax(0,4fr) minmax(0,7fr); gap:20px}
+.stat{padding:28px}
+.stat .giant{color:var(--ink)}
+.stat .vs{display:flex; gap:22px; margin-top:22px; flex-wrap:wrap}
+.stat .vs div{display:flex; flex-direction:column}
+.stat .vs b{font:600 24px var(--mono); letter-spacing:-.02em}
+.stat .vs span{font-size:13px; color:var(--muted)}
+.years3{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:24px}
+.years3 div{padding:12px; border-radius:var(--r-sm); background:var(--surface-2); border:1px solid var(--line)}
+.years3 b{display:block; font:600 20px var(--mono)} .years3 span{font-size:12.5px; color:var(--muted)}
+.lolli svg, .walk svg{width:100%; height:auto; display:block; overflow:visible}
+.legend-row{display:flex; gap:16px; flex-wrap:wrap; margin-top:12px}
+.rules{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:28px; padding:30px}
+.rule{display:flex; gap:16px; padding:16px 0; border-top:1px solid var(--line)}
+.rule:first-child{border-top:0; padding-top:0}
+.rule i{font-size:26px; color:var(--accent); flex:none; margin-top:2px}
+.rule h3{font-size:17px}
+.rule p{color:var(--muted); font-size:15px; margin-top:4px}
+.q-two{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px}
+.cm{display:grid; grid-template-columns:auto repeat(3,1fr); gap:5px; font-size:13px; margin-top:18px}
+.cm .h,.cm .s{color:var(--muted); font-weight:600; line-height:1.25}
+.cm .h{text-align:center; padding:4px} .cm .s{text-align:right; padding-right:8px; align-self:center}
+.cm .c{border-radius:10px; padding:15px 4px; text-align:center; font:600 15px var(--mono)}
+.imp{display:flex; flex-direction:column; gap:8px; margin-top:18px}
+
+/* ------------------------------------------------------------------ footer */
+footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); padding:44px 0 56px; color:var(--muted); font-size:14px}
+.foot{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,3fr) minmax(0,2fr); gap:36px}
+.foot img{height:54px; width:auto}
+.foot h4{margin:0 0 10px; font:600 13px var(--sans); color:var(--ink)}
+.foot a{color:var(--ink-2); text-decoration-color:var(--line-2); text-underline-offset:3px}
+.foot p+p{margin-top:8px}
+
+/* ----------------------------------------------------------------- reveal */
+.reveal{opacity:0; transform:translateY(22px); transition:opacity .8s var(--ease), transform .8s var(--ease)}
+.reveal.in{opacity:1; transform:none}
+.words span{display:inline-block; opacity:0; transform:translateY(.4em); animation:word .9s var(--ease) both}
+@keyframes word{to{opacity:1; transform:none}}
+.draw path.ln{stroke-dasharray:var(--len); stroke-dashoffset:var(--len); transition:stroke-dashoffset 1.6s var(--ease)}
+.draw.in path.ln{stroke-dashoffset:0}
+
+/* ---------------------------------------------------------------- handheld
+   Under 900px everything stacks into one column; the nav keeps the mark and the
+   switch on one line and lets the section links scroll sideways underneath. */
+@media (max-width:1060px){
+  .split,.cal,.q-top,.q-two,.rules,.bento .r1,.bento .r2{grid-template-columns:minmax(0,1fr)}
+  .foot{grid-template-columns:1fr 1fr}
 }
-.map-state p{max-width:34ch; font-size:13.5px; color:var(--muted); line-height:1.6}
-.map-state strong{display:block; color:var(--ink); font-size:15px; margin-bottom:6px}
-.map-state .spin{
-  width:22px; height:22px; margin:0 auto 12px; border-radius:50%;
-  border:2px solid var(--stroke-hi); border-top-color:var(--accent);
-  animation:spin .9s linear infinite;
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:minmax(0,1fr)}
+  .nav-in{height:auto; flex-wrap:wrap; gap:6px 14px; padding:10px 18px}
+  .links{order:3; width:100%; margin:0 -6px}
+  .switch{margin-left:auto}
+  html{scroll-padding-top:110px}
 }
-@keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.map-state .spin{animation:none}}
-.maplibregl-ctrl-group{border-radius:var(--r-sm)!important;box-shadow:var(--shadow-sm)!important}
-.maplibregl-ctrl-attrib{font-size:10px;background:rgba(255,255,255,.72)!important}
-/* The map has a rounded corner, and the default control margin puts the scale bar's own
-   box across it, which cropped the left edge. These clear the curve and restyle the bar
-   to belong to the page rather than to MapLibre's defaults. */
-.maplibregl-ctrl-bottom-left{margin:0 0 4px 6px}
-.maplibregl-ctrl-bottom-left .maplibregl-ctrl{margin:0 0 8px 10px}
-/* MapLibre draws its scale as a bracket, open at the top, which is the cartographic
-   convention. Filled white and rounded at the bottom only, it read as a box with its lid
-   cut off. A closed pill is unambiguous. */
-.maplibregl-ctrl-scale{
-  background:rgba(255,255,255,.8); backdrop-filter:blur(6px);
-  border:1px solid var(--stroke); border-radius:999px;
-  color:var(--muted); font:500 10px/1.5 var(--mono);
-  padding:2px 9px; box-shadow:var(--shadow-sm); white-space:nowrap}
-
-/* ------------------------------------------------------------------- pieces */
-.picker{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-.picker label{font-size:13.5px;color:var(--muted);font-weight:600}
-select,.btn{font:inherit;font-size:14px;color:var(--ink);background:var(--glass-hi);
-  border:1px solid var(--stroke);border-radius:var(--r-sm);padding:9px 12px;cursor:pointer;
-  transition:border-color .18s var(--ease),background .18s var(--ease)}
-select{
-  appearance:none; -webkit-appearance:none; padding-right:30px;
-  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%2347607a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 11px center; background-size:12px 8px;
-}
-select:hover,.btn:hover{border-color:var(--stroke-hi);background:#fff}
-.btn{font-weight:600}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.btn.primary:hover{filter:brightness(1.08);background:var(--accent)}
-
-.verdict{display:flex;align-items:flex-start;gap:13px}
-.dot{width:14px;height:14px;border-radius:50%;flex:none;margin-top:7px;box-shadow:0 0 0 4px rgba(255,255,255,.7)}
-.verdict h2{font-size:26px;line-height:1.25}
-.headline{font-size:17px;line-height:1.55;margin-top:10px}
-.headline b{font-weight:700}
-
-.facts{display:flex;flex-direction:column;gap:0;margin-top:4px}
-.fact{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
-  padding:11px 0;border-top:1px solid var(--stroke);font-size:14px}
-.fact .k{color:var(--muted)}
-.fact .v{font-weight:600;text-align:right}
-
-.meter{height:9px;border-radius:99px;background:rgba(24,42,64,.09);overflow:hidden;margin-top:9px}
-.meter i{display:block;height:100%;border-radius:99px;background:var(--accent);
-  transition:width .5s var(--ease)}
-
-.strip{display:flex;gap:2px;margin-top:10px}
-.strip i{flex:1;height:26px;border-radius:2px;transition:transform .16s var(--ease)}
-.strip i:hover{transform:scaleY(1.22)}
-.striplab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-top:6px}
-
-.legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:14px}
-.key{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--muted)}
-.key i{width:11px;height:11px;border-radius:3px;flex:none}
-
-.note{display:flex;gap:10px;padding:13px 15px;border-radius:var(--r-md);
-  background:rgba(180,83,9,.09);border:1px solid rgba(180,83,9,.22);
-  font-size:13.5px;color:#7a3c06;line-height:1.6}
-.note svg{width:16px;height:16px;flex:none;margin-top:2px}
-
-.answer{font-size:17px;font-weight:600;line-height:1.5;margin-top:8px;color:var(--ink)}
-
-/* charts */
-.barlist{display:flex;flex-direction:column;gap:7px}
-.barrow{display:grid;grid-template-columns:150px minmax(0,1fr) 56px;gap:11px;align-items:center;font-size:13.5px}
-.barrow .nm{text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}
-.barrow .tk{height:18px;border-radius:4px;background:rgba(24,42,64,.08);overflow:hidden}
-.barrow .tk i{display:block;height:100%;border-radius:4px;background:var(--accent);
-  transform-origin:left;animation:grow .6s var(--ease) both}
-@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.barrow .vl{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px}
-.axis{display:grid;grid-template-columns:150px minmax(0,1fr) 56px;gap:11px;margin-top:8px;
-  font-family:var(--mono);font-size:10.5px;color:var(--dim)}
-.axis .mk{display:flex;justify-content:space-between}
-@media (max-width:620px){
-  .barrow,.axis{grid-template-columns:96px minmax(0,1fr) 50px;gap:8px;font-size:12.5px}
-}
-.chartwrap{overflow-x:auto}
-/* Quirks mode never inherited line-height into tables, so the matrices were
-   drawn on the font's natural leading. In standards mode the body's 1.6 would
-   inherit in and grow every row, so 'normal' is restated here to keep the
-   matrices exactly the size they have always been. */
-table.grid{border-collapse:collapse;font-size:13.5px;width:100%;line-height:normal}
-table.grid th{font-weight:600;color:var(--muted);padding:8px 10px;text-align:center;white-space:nowrap}
-table.grid th.side{text-align:right}
-table.grid td{padding:12px 10px;text-align:center;border:2px solid transparent;border-radius:var(--r-sm);
-  font-family:var(--mono);font-variant-numeric:tabular-nums;background-clip:padding-box}
-
-.cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color:var(--dim);font-size:12.5px}
-
-
-/* --------------------------------------------------------------- handheld */
-/* Everything below applies only under 760px. The desktop layout is deliberately
-   left alone: the phone gets its own stacking, its own tap targets and its own
-   map height, rather than a shrunk photocopy of the desktop page. */
-@media (max-width:760px){
-  h2{font-size:19px}
-
-  /* Two rows: the mark and the switch share the top, the tab strip takes the
-     full width underneath, which is the only way four tabs fit honestly. */
-  .bar-in{padding:9px 14px; gap:9px 12px}
-  nav.tabs{order:3; width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
-    scrollbar-width:none}
-  nav.tabs::-webkit-scrollbar{display:none}
-  nav.tabs button{flex:1 0 auto; font-size:12.5px; padding:9px 10px; min-height:40px}
-  .switch{font-size:12.5px}
-
-  .page{padding:16px 14px 56px}
-  .pad{padding:16px}
-  .stack-v{gap:14px}
-  .split{gap:14px}
-
-  /* A map sized for a laptop leaves nothing but map on a phone's first screen. */
-  #map{height:min(46vh,380px); min-height:250px}
-  .map-state{padding:18px}
-
-  /* Controls become full-width rows a thumb can actually hit. */
-  .picker{gap:8px}
-  .picker label{width:100%}
-  select,.btn{min-height:44px; padding:11px 13px}
-  .picker > select{flex:1 1 100%}
-  .picker > .btn{flex:1 1 calc(50% - 4px)}
-  /* The year slider carries an inline flex-basis, so it needs the override to
-     take a row of its own instead of being squeezed beside the buttons. */
-  #rec-year{flex:1 1 100%!important; min-width:0; height:44px}
-  #rec-label{font-size:17px}
-
-  .verdict{gap:10px}
-  .verdict h2{font-size:21px}
-  .headline{font-size:15.5px; margin-top:8px}
-  .answer{font-size:15.5px}
-  .lede{max-width:none}
-
-  .fact{font-size:13.5px; gap:10px; padding:10px 0}
-  .fact .k{min-width:0}
-  .fact .v{white-space:nowrap}
-
-  .legend{gap:10px 14px; margin-top:12px}
-  .key{font-size:12px}
-  .strip i{height:20px}
-  .note{font-size:12.8px; padding:11px 13px}
-
-  /* One card per row, so nothing ends up half a card wide. */
-  .cards{grid-template-columns:minmax(0,1fr); gap:12px}
-
-  /* The matrix keeps its proportions and scrolls sideways in its own box
-     rather than crushing six columns into a phone. */
-  .chartwrap{-webkit-overflow-scrolling:touch}
-  table.grid{min-width:380px}
-
-  footer{margin-top:28px; font-size:12px}
-
-  /* MapLibre's zoom buttons are 29px, which is below a comfortable thumb target. */
+@media (max-width:640px){
+  body{font-size:15.5px}
+  .wrap{padding:0 16px}
+  .nav-in{padding:9px 16px}
+  .brand img{height:30px} .brand span{font-size:20px}
+  .switch span:last-child{display:none}
+  .hero h1{font-size:40px}
+  .hero .sub{font-size:17px}
+  .ctas .btn{flex:1 1 auto; justify-content:center}
+  .pad{padding:18px} .tile{padding:20px} .stat{padding:22px} .rules{padding:22px}
+  .map{height:min(54vh,430px); min-height:300px}
+  select{min-width:0; width:100%}
+  .controls .field{flex:1 1 100%}
+  .controls .btn{flex:1 1 calc(50% - 5px); justify-content:center}
+  .kinds{grid-template-columns:minmax(0,1fr)}
+  .pairs{grid-template-columns:repeat(2,1fr)}
+  .foot{grid-template-columns:minmax(0,1fr)}
+  .mb{grid-template-columns:92px minmax(0,1fr) 42px}
+  .verdict h3{font-size:23px}
+  .scrub{height:60px}
   .maplibregl-ctrl-group button{width:40px; height:40px}
-  .maplibregl-ctrl-group button .maplibregl-ctrl-icon{background-size:20px 20px}
 }
-
-
-/* Under 560px a 150px label column would have to shrink to about 80px, which
-   turned "Whole Territory, burned early" into "Whole Territo...". The name gets
-   its own line instead, and the bar and its value share the line below. */
-@media (max-width:560px){
-  .barlist{gap:13px}
-  .barrow{grid-template-columns:minmax(0,1fr) auto;
-    grid-template-areas:"nm nm" "tk vl"; row-gap:4px; column-gap:10px}
-  .barrow .nm{grid-area:nm; text-align:left; white-space:normal; overflow:visible;
-    text-overflow:clip; color:var(--ink); font-weight:600; font-size:12.5px; line-height:1.35}
-  .barrow .tk{grid-area:tk}
-  .barrow .vl{grid-area:vl; text-align:right}
-  .axis{grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"mk vl"}
-  .axis > :first-child{display:none}
-
-  /* Letting the headers wrap lets the matrix fit the screen, so there is nothing
-     hidden off the right edge for the reader to discover. */
-  table.grid{min-width:0; font-size:12px}
-  table.grid th{white-space:normal; padding:6px 5px; line-height:1.25}
-  table.grid td{padding:10px 5px}
-  table.grid th.side{font-size:11.5px}
+@media (pointer:coarse){ .maplibregl-ctrl-group button{width:40px; height:40px} }
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important; transition:none!important}
+  .reveal,.words span{opacity:1; transform:none}
+  .draw path.ln{stroke-dashoffset:0}
 }
-
-@media (max-width:430px){
-  .barrow,.axis{font-size:12px}
-  .barrow .vl{font-size:11.5px}
-  nav.tabs button{font-size:12px; padding:9px 8px}
-  .verdict h2{font-size:19.5px}
-  .headline{font-size:15px}
-}
-
-/* Touch targets are about the input device, not the window: a phone held in
-   landscape is 844px wide and would otherwise miss every width-based rule above.
-   pointer:coarse never matches a mouse, so the desktop is untouched. */
-@media (pointer:coarse){
-  .maplibregl-ctrl-group button{width:40px; height:40px}
-  .maplibregl-ctrl-group button .maplibregl-ctrl-icon{background-size:20px 20px}
-  #rec-year{height:40px}
-  nav.tabs button{min-height:40px}
-  select,.btn{min-height:44px}
-}
-
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
-<header class="bar">
-  <div class="bar-in">
-    <span class="brand" role="img" aria-label="Pyrantis">
-      <img src="assets/pyrantis-180.png" alt="">
-      <span class="name" aria-hidden="true">yrantis</span>
-    </span>
-    <nav class="tabs" role="tablist" aria-label="Views">
-      <button role="tab" aria-selected="true" data-view="outlook">This year</button>
-      <button role="tab" aria-selected="false" data-view="record">The record</button>
-      <button role="tab" aria-selected="false" data-view="patterns">Patterns</button>
-      <button role="tab" aria-selected="false" data-view="quality">How good is it</button>
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top" aria-label="Pyrantis, back to the top">
+      <img src="assets/pyrantis-mark.png" alt="" width="27" height="34"><span aria-hidden="true">yrantis</span>
+    </a>
+    <nav class="links" aria-label="Sections">
+      <a href="#outlook">Outlook</a>
+      <a href="#calendar">Fire calendar</a>
+      <a href="#record">The record</a>
+      <a href="#patterns">Patterns</a>
+      <a href="#quality">How good is it</a>
     </nav>
-    <div class="bar-right">
-      <label class="switch">
-        <input type="checkbox" id="detail-toggle">
-        <span class="track"></span>
-        <span>Show the numbers</span>
-      </label>
-    </div>
+    <label class="switch" title="Show the extra tables and charts">
+      <input type="checkbox" id="detail-toggle"><span class="track"></span><span>Show the numbers</span>
+    </label>
   </div>
 </header>
 
-<main class="page">
-
-  <!-- ============================================================= THIS YEAR -->
-  <section class="view on" id="v-outlook" role="tabpanel">
-    <div class="split">
+<main id="top">
+  <!-- ==================================================================== HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
       <div>
-        <div class="picker">
-          <label for="place">Pick a place</label>
-          <select id="place"></select>
-          <button class="btn" id="locate" type="button">Where I am</button>
-          <button class="btn" id="whole" type="button">Whole Territory</button>
-        </div>
-        <div id="mapwrap"><div id="map"></div>
-          <div class="map-state" id="map-state">
-            <p><span class="spin" id="map-spin"></span>
-              <strong id="map-state-head">Loading the map</strong>
-              <span id="map-state-body">The figures beside it are ready already.</span></p>
-          </div>
-        </div>
-        <div class="legend">
-          <span class="key"><i style="background:var(--unburnt)"></i>We expect no fire</span>
-          <span class="key"><i style="background:var(--early)"></i>Fire before August</span>
-          <span class="key"><i style="background:var(--late)"></i>Fire after July</span>
-          <span class="key dim" id="map-note" style="margin-left:auto;text-align:right"></span>
+        <p class="eyebrow"><i class="ph ph-fire"></i>Northern Territory fire outlook</p>
+        <h1 id="hero-h1" class="words"></h1>
+        <p class="sub" id="hero-sub"></p>
+        <div class="ctas">
+          <a class="btn primary" href="#outlook" id="cta-place"><i class="ph ph-map-pin"></i>Find your place</a>
+          <a class="btn" href="#record"><i class="ph ph-clock-counter-clockwise"></i>See the record</a>
         </div>
       </div>
+      <figure style="margin:0">
+        <div class="scene"><svg id="scene" viewBox="0 0 800 520" role="img" aria-labelledby="scene-t"><title id="scene-t"></title></svg></div>
+        <figcaption class="scene-bar">
+          <div class="seg" role="group" aria-label="Compare the forecast with the long-run average">
+            <button type="button" id="sc-fc" aria-pressed="true"></button>
+            <button type="button" id="sc-avg" aria-pressed="false">26-year average</button>
+          </div>
+          <p class="scene-note" id="scene-note"></p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
 
-      <div class="stack-v">
-        <div class="panel pad">
-          <div class="verdict">
-            <span class="dot" id="v-dot"></span>
-            <div style="min-width:0">
-              <h2 id="v-place">Northern Territory</h2>
-              <p class="small" id="v-season" style="margin-top:4px;color:var(--muted)"></p>
-              <p class="headline" id="v-headline"></p>
+  <!-- ================================================================= OUTLOOK -->
+  <section class="block" id="outlook">
+    <div class="wrap">
+      <div class="head reveal">
+        <h2>Pick a place</h2>
+        <p class="lede">Choose a town, use your location, or click any five-kilometre square on the map to see what the model expects there this year.</p>
+      </div>
+      <div class="split">
+        <div class="reveal">
+          <div class="controls">
+            <div class="field"><label for="place">Town or community</label><select id="place"></select></div>
+            <button class="btn sm" id="locate" type="button"><i class="ph ph-crosshair"></i>Where I am</button>
+            <button class="btn sm" id="whole" type="button"><i class="ph ph-corners-out"></i>Whole Territory</button>
+          </div>
+          <div class="mapwrap"><div class="map" id="map-outlook"></div>
+            <div class="map-state" id="ms-outlook"><p><span class="skeleton"></span><strong>Loading the map</strong><span>The figures beside it are ready already.</span></p></div>
+          </div>
+          <div class="map-foot">
+            <div class="keys">
+              <span class="key"><b style="background:var(--unburnt)"></b>No fire expected</span>
+              <span class="key"><b style="background:var(--early)"></b>Fire before August</span>
+              <span class="key"><b style="background:var(--late)"></b>Fire after July</span>
+            </div>
+            <span class="small dim" id="map-note"></span>
+          </div>
+        </div>
+
+        <div class="stack reveal">
+          <div class="panel pad" aria-live="polite">
+            <div class="verdict">
+              <span class="chip" id="v-dot"></span>
+              <div style="min-width:0">
+                <h3 id="v-place">Northern Territory</h3>
+                <p class="season" id="v-season"></p>
+              </div>
+            </div>
+            <p class="headline" id="v-headline"></p>
+            <div class="facts" id="v-facts"></div>
+            <div class="conf">
+              <div class="row"><span id="v-conf-label"></span></div>
+              <div class="gauge"><i id="v-conf-bar"></i></div>
+            </div>
+            <div id="v-strip-wrap" style="margin-top:18px" hidden>
+              <p class="small muted">Every year since 2000, oldest on the left</p>
+              <div class="strip" id="v-strip"></div>
+              <div class="striplab"><span>2000</span><span id="v-strip-end"></span></div>
             </div>
           </div>
-          <div class="facts" id="v-facts"></div>
-          <div style="margin-top:16px">
-            <p class="small muted" id="v-conf-label"></p>
-            <div class="meter"><i id="v-conf-bar"></i></div>
+
+          <div class="panel pad">
+            <h3>Why the model expects a big year</h3>
+            <div class="why-rows">
+              <div class="why-row">
+                <div class="lab"><span>Wet-season rain</span><b id="why-rain-v"></b></div>
+                <div class="pair"><div id="why-rain"></div><div class="base" id="why-rain-base"></div></div>
+                <div class="keys" style="margin-top:8px"><span class="key"><b style="background:var(--rain)"></b><span id="why-rain-l1"></span></span><span class="key" id="why-rain-l2"><b style="background:var(--line-2)"></b>2005 to 2019 average</span></div>
+              </div>
+              <div class="why-row">
+                <div class="lab"><span id="why-ndvi-l">April greenness, every year on record</span><b id="why-ndvi-v"></b></div>
+                <div class="rank" id="why-rank"></div>
+              </div>
+            </div>
+            <p class="small muted" style="margin-top:16px" id="v-why"></p>
           </div>
-          <div id="v-strip-wrap" style="margin-top:18px">
-            <p class="small muted">Every year since 2000, oldest on the left</p>
-            <div class="strip" id="v-strip"></div>
-            <div class="striplab"><span>2000</span><span id="v-strip-end"></span></div>
+
+          <div class="note"><i class="ph ph-info"></i><span id="v-caveat"></span></div>
+
+          <div class="panel pad detail">
+            <h3>What the model was given</h3>
+            <p class="small muted" style="margin-top:8px" id="v-inputs"></p>
           </div>
-        </div>
-
-        <div class="panel pad">
-          <h3>Why we think so</h3>
-          <p class="lede" style="margin-top:8px; font-size:14.5px" id="v-why"></p>
-        </div>
-
-        <div class="note">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.2v.1"/></svg>
-          <span id="v-caveat"></span>
-        </div>
-
-        <div class="panel pad detail">
-          <h3>What the model was given</h3>
-          <p class="lede small" style="margin-top:8px" id="v-inputs"></p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================ THE RECORD -->
-  <section class="view" id="v-record" role="tabpanel">
-    <div class="split">
-      <div>
-        <div class="picker">
-          <button class="btn" id="rec-play" type="button">Play the season</button>
-          <input type="range" id="rec-year" min="0" max="1" step="1" style="flex:1 1 240px;accent-color:var(--accent)" aria-label="Year">
-          <span class="num" id="rec-label" style="font-size:19px;font-weight:600;min-width:4.5ch"></span>
-          <select id="rec-layer">
-            <option value="observed">What actually burned</option>
-            <option value="predicted">What the model said</option>
-          </select>
-        </div>
-        <div id="mapslot-record"></div>
-        <div class="legend">
-          <span class="key"><i style="background:var(--unburnt)"></i>No fire</span>
-          <span class="key"><i style="background:var(--early)"></i>Burned before August</span>
-          <span class="key"><i style="background:var(--late)"></i>Burned after July</span>
-        </div>
+  <!-- ================================================================ CALENDAR -->
+  <section class="block" id="calendar">
+    <div class="wrap">
+      <div class="head reveal">
+        <h2>When the country burns</h2>
+        <p class="lede" id="cal-lede"></p>
       </div>
-      <div class="stack-v">
-        <div class="panel pad">
-          <h2 class="num" id="rec-y"></h2>
-          <p class="lede small" style="margin-top:6px" id="rec-role"></p>
-          <div class="facts" id="rec-facts"></div>
+      <div class="cal">
+        <div class="panel clock reveal">
+          <svg id="clock" viewBox="-220 -220 440 440" role="img" aria-label="Share of burnt squares by month"></svg>
+          <p class="small muted" id="clock-read" style="margin-top:8px; text-align:center; min-height:2.6em"></p>
+          <p class="small dim" id="clock-today" style="text-align:center"></p>
         </div>
-        <div class="panel pad">
-          <h3 id="rec-cell-title">Click the map</h3>
-          <div id="rec-cell-empty" class="empty-inspect small" style="margin-top:8px;color:var(--dim)">
-            Pick any square to see what burned there this year, what the model said, and
-            every year it has burned since 2000.
-          </div>
-          <div id="rec-cell-body" hidden>
-            <p class="num dim" style="font-size:12px;margin-top:2px" id="rec-cell-coord"></p>
-            <div class="facts" id="rec-cell-facts"></div>
-            <p class="small muted" style="margin-top:14px">Every year since 2000</p>
-            <div class="strip" id="rec-cell-strip"></div>
-            <div class="striplab"><span>2000</span><span id="rec-cell-end"></span></div>
-          </div>
-        </div>
-
-        <div class="panel pad detail">
-          <h3>How this year was used</h3>
-          <p class="lede small" style="margin-top:8px" id="rec-split"></p>
+        <div class="kinds">
+          <article class="panel kind reveal">
+            <div class="art"><svg id="art-early" viewBox="0 0 400 170" aria-hidden="true"></svg></div>
+            <div class="body">
+              <p class="big num" style="color:var(--early)" id="k-early"></p>
+              <h3>Before August</h3>
+              <p>The grass still holds water and the nights are cool. Fires creep, stay low and leave patches, and many are lit on purpose to break up the fuel.</p>
+            </div>
+          </article>
+          <article class="panel kind reveal">
+            <div class="art"><svg id="art-late" viewBox="0 0 400 170" aria-hidden="true"></svg></div>
+            <div class="body">
+              <p class="big num" style="color:var(--late)" id="k-late"></p>
+              <h3>After July</h3>
+              <p>The grass has cured and the wind is up. The same spark now runs for days, burns hot enough to kill canopy, and takes fences and stock with it.</p>
+            </div>
+          </article>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================== PATTERNS -->
-  <section class="view" id="v-patterns" role="tabpanel">
-    <div class="stack-v">
-      <div class="panel pad">
-        <h2>When does the Territory burn?</h2>
-        <p class="answer" id="pt-month-answer"></p>
-        <p class="lede small" style="margin-top:8px">Every fire on record, sorted by the month
-          it was detected. The tall bars late in the year are the damaging fires; the bump in
-          May and June is deliberate burning done while the country is still damp.</p>
-        <div class="chartwrap" style="margin-top:16px"><div id="pt-months"></div></div>
+  <!-- ================================================================== RECORD -->
+  <section class="block" id="record">
+    <div class="wrap">
+      <div class="head reveal">
+        <h2>Twenty-six years of fire, mapped</h2>
+        <p class="lede">Each bar below is one year's burnt share. Pick a year, or press play to watch a season spread month by month.</p>
       </div>
-
-      <div class="panel pad">
-        <h2>If a place burns, will it burn again?</h2>
-        <p class="answer" id="pt-reburn-answer"></p>
-        <p class="lede small" style="margin-top:8px">Each bar answers one question: of all the
-          places that burned in some year, what share burned again exactly that many years
-          later. The flat line is the finding. Waiting does not make a place safer.</p>
-        <div class="chartwrap" style="margin-top:16px"><div id="pt-reburn"></div></div>
-      </div>
-
       <div class="split">
-        <div class="panel pad">
-          <h2>What happens the year after?</h2>
-          <p class="answer" id="pt-trans-answer"></p>
-          <p class="lede small" style="margin-top:8px">Pick a row for what happened this year,
-            then read across for what happened next year. Each row adds to 100.</p>
-          <div class="chartwrap" style="margin-top:14px"><table class="grid" id="pt-trans"></table></div>
-        </div>
-        <div class="panel pad">
-          <h2>Can one place burn twice in a year?</h2>
-          <p class="answer" id="pt-twice-answer"></p>
-          <p class="lede small" style="margin-top:8px">It burns once in the cool part of the
-            season and again after the country dries out.</p>
-          <div style="margin-top:16px">
-            <p class="small muted">How long between one fire and the next</p>
-            <div style="margin-top:10px" id="pt-gaps"></div>
+        <div class="reveal">
+          <div class="rec-top">
+            <button class="icon-btn" id="rec-play" type="button" aria-label="Play the season"><i class="ph-fill ph-play"></i></button>
+            <span class="yearnum num" id="rec-label"></span>
+            <div class="seg" role="group" aria-label="Map layer" style="margin-left:auto">
+              <button type="button" data-layer="observed" aria-pressed="true">What burnt</button>
+              <button type="button" data-layer="predicted" aria-pressed="false">What the model said</button>
+            </div>
+          </div>
+          <div class="scrub-wrap"><div class="scrub" id="scrub" role="group" aria-label="Year"></div></div>
+          <div class="mapwrap"><div class="map" id="map-record"></div>
+            <div class="map-state" id="ms-record"><p><span class="skeleton"></span><strong>Loading the map</strong><span>It loads when you reach it.</span></p></div>
+          </div>
+          <div class="map-foot">
+            <div class="keys">
+              <span class="key"><b style="background:var(--unburnt)"></b>No fire</span>
+              <span class="key"><b style="background:var(--early)"></b>Burnt before August</span>
+              <span class="key"><b style="background:var(--late)"></b>Burnt after July</span>
+              <span class="key"><b style="background:var(--accent); height:3px; border-radius:2px"></b>Test year</span>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="panel pad">
-        <h2>Does burning early stop a worse fire later?</h2>
-        <p class="answer" id="pt-supp-answer"></p>
-        <p class="lede small" style="margin-top:8px">Rangers across northern Australia light
-          cool fires before August so there is less grass left to carry a hot one in
-          September. Each bar is the chance of a fire after July next year.</p>
-        <div class="chartwrap" style="margin-top:16px"><div id="pt-supp"></div></div>
-        <div class="note" style="margin-top:16px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.2v.1"/></svg>
-          <span id="pt-supp-note"></span>
+        <div class="stack reveal">
+          <div class="panel pad">
+            <h3 class="num" id="rec-y" style="font-size:30px"></h3>
+            <p class="small muted" style="margin-top:6px" id="rec-role"></p>
+            <div class="facts" id="rec-facts"></div>
+          </div>
+          <div class="panel pad">
+            <h3 id="rec-cell-title">Pick a square</h3>
+            <div id="rec-cell-empty" class="empty"><i class="ph ph-cursor-click"></i><span>Click anywhere on the map to see what burnt there that year, what the model said, and every year since 2000.</span></div>
+            <div id="rec-cell-body" hidden>
+              <p class="num dim" style="font-size:12.5px; margin-top:3px" id="rec-cell-coord"></p>
+              <div class="facts" id="rec-cell-facts"></div>
+              <p class="small muted" style="margin-top:14px">Every year since 2000</p>
+              <div class="strip" id="rec-cell-strip"></div>
+              <div class="striplab"><span>2000</span><span id="rec-cell-end"></span></div>
+            </div>
+          </div>
+          <div class="panel pad detail">
+            <h3>How this year was used</h3>
+            <p class="small muted" style="margin-top:8px" id="rec-split"></p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ========================================================= HOW GOOD IS IT -->
-  <section class="view" id="v-quality" role="tabpanel">
-    <div class="stack-v">
-      <div class="panel pad">
-        <h2>We tested it by pretending to be in the past</h2>
-        <p class="lede" style="margin-top:8px">Showing a model the answers and then asking it
-          the same questions proves nothing. So we cut the record at a year, let the model
-          learn only what came before, and asked it about years it had never seen. Then we
-          moved the cut forward and did it again.</p>
-        <div id="q-walk-wrap" style="margin-top:18px">
-          <p class="answer" id="q-walk-answer"></p>
-          <div class="chartwrap" style="margin-top:14px"><div id="q-walk"></div></div>
-          <p class="lede small" style="margin-top:12px" id="q-walk-note"></p>
+  <!-- ================================================================ PATTERNS -->
+  <section class="block" id="patterns">
+    <div class="wrap">
+      <div class="head reveal">
+        <h2>How fire repeats</h2>
+        <p class="lede">Four questions about the same ground over 26 years. The answers are what the models had to learn.</p>
+      </div>
+      <div class="bento">
+        <div class="row r1">
+          <article class="panel tile leaf reveal">
+            <h3>If a place burns, will it burn again?</h3>
+            <p class="ans" id="pt-reburn-answer"></p>
+            <div class="chart draw" id="pt-reburn"></div>
+          </article>
+          <article class="panel tile reveal">
+            <h3>What happens the year after?</h3>
+            <p class="ans" id="pt-trans-answer"></p>
+            <div class="chart"><div class="mtx" id="pt-trans"></div></div>
+          </article>
+        </div>
+        <div class="row r2">
+          <article class="panel tile ember reveal">
+            <h3>Can one place burn twice in a year?</h3>
+            <p class="giant num" id="pt-twice-big" style="margin-top:18px"></p>
+            <p class="ans" id="pt-twice-answer"></p>
+            <div class="chart">
+              <p class="small muted" style="margin-bottom:10px">Years between one fire and the next</p>
+              <div class="minibars" id="pt-gaps"></div>
+            </div>
+          </article>
+          <article class="panel tile reveal">
+            <h3>Does burning early stop a worse fire later?</h3>
+            <p class="ans" id="pt-supp-answer"></p>
+            <div class="chart">
+              <div class="pairs" id="pt-supp"></div>
+              <div class="keys" style="margin-top:16px">
+                <span class="key"><b style="background:var(--early)"></b>Burnt early the year before</span>
+                <span class="key"><b style="background:var(--unburnt)"></b>Left alone</span>
+              </div>
+              <div class="note" style="margin-top:16px"><i class="ph ph-scales"></i><span id="pt-supp-note"></span></div>
+            </div>
+          </article>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="split">
-        <div class="panel pad">
-          <h2>How often it is right</h2>
-          <p class="answer" id="q-acc-answer"></p>
-          <p class="lede small" style="margin-top:8px" id="q-acc-note"></p>
-          <div class="facts" id="q-facts"></div>
+  <!-- ================================================================= QUALITY -->
+  <section class="block" id="quality">
+    <div class="wrap">
+      <div class="head reveal">
+        <h2>How good is it?</h2>
+        <p class="lede">Every number here comes from years the model never saw while it was learning.</p>
+      </div>
+      <div class="stack" style="gap:20px">
+        <div class="q-top">
+          <div class="panel stat reveal">
+            <p class="small muted">Squares placed correctly, 2023 to 2025</p>
+            <p class="giant num" id="q-acc-big" style="margin-top:12px"></p>
+            <p class="ans" id="q-acc-answer" style="margin-top:14px; font-size:16px; color:var(--ink-2)"></p>
+            <div class="years3" id="q-years"></div>
+          </div>
+          <div class="panel pad lolli reveal">
+            <h3 id="q-models-h"></h3>
+            <p class="small muted" style="margin-top:6px" id="q-models-lede"></p>
+            <div id="q-models" style="margin-top:18px"></div>
+            <div class="legend-row">
+              <span class="key"><b style="background:var(--accent); border-radius:50%"></b>Balanced F1, the main score</span>
+              <span class="key"><b style="background:transparent; border:2px solid var(--muted); border-radius:50%"></b>Accuracy</span>
+            </div>
+            <p class="small muted detail" style="margin-top:12px" id="q-models-note"></p>
+          </div>
         </div>
-        <div class="panel pad">
-          <h2>What it gets wrong</h2>
-          <p class="answer" id="q-wrong-answer"></p>
-          <div class="chartwrap detail" style="margin-top:14px"><table class="grid" id="q-cm"></table></div>
-          <p class="lede small detail" style="margin-top:12px">Rows add to 100. Each row is what
-            became of country that truly fell in that class.</p>
+
+        <div class="panel pad walk reveal">
+          <h3>Tested 66 times by pretending to be in the past</h3>
+          <p class="small muted" style="margin-top:6px; max-width:72ch">We cut the record at each year from 2014 to 2024, trained only on what came before the cut, and scored every year after it.</p>
+          <p class="ans" id="q-walk-answer" style="margin-top:12px; font-size:16.5px; color:var(--ink-2)"></p>
+          <div class="draw" id="q-walk" style="margin-top:18px"></div>
+          <div class="legend-row" id="q-walk-legend"></div>
+        </div>
+
+        <div class="q-two">
+          <div class="panel pad reveal">
+            <h3>What it gets wrong</h3>
+            <p class="ans" id="q-wrong-answer" style="margin-top:8px; font-size:16px; color:var(--ink-2)"></p>
+            <div class="cm detail" id="q-cm"></div>
+            <p class="small muted detail" style="margin-top:12px">Rows add to 100. Each row is what became of the squares that really fell in that class.</p>
+          </div>
+          <div class="panel pad reveal detail">
+            <h3>What the forest leans on</h3>
+            <p class="small muted" style="margin-top:6px">How much each input helped the random forest split the data. Weather in blue, greenness in green, fire history in ember, place in grey.</p>
+            <div class="imp" id="q-imp"></div>
+          </div>
+        </div>
+
+        <div class="panel rules reveal">
+          <div>
+            <h3 style="font-size:24px">Three rules it follows</h3>
+            <p class="small muted" style="margin-top:10px">These are what make the scores above mean something in a real fire season.</p>
+          </div>
+          <div>
+            <div class="rule"><i class="ph ph-eye-slash"></i><div><h3>It never sees the year it predicts</h3><p>Fire history comes only from earlier years. Two tests check this, one by scrambling a year's answers and confirming nothing the model reads moves.</p></div></div>
+            <div class="rule"><i class="ph ph-calendar-x"></i><div><h3>It stops reading on 30 April</h3><p>The fire season runs May to October. August weather would describe a fire, not forecast it, so the model can be run in May.</p></div></div>
+            <div class="rule"><i class="ph ph-hourglass-medium"></i><div><h3>The month is approximate</h3><p>Satellites revisit the same ground every few weeks, so a fire is dated to the window it was seen in. Close to 31 July that dating blurs.</p></div></div>
+          </div>
         </div>
       </div>
-
-      <div class="panel pad detail">
-        <h2>Five models, two baselines</h2>
-        <p class="lede small" style="margin-top:8px" id="q-models-lede"></p>
-        <div class="chartwrap" style="margin-top:16px"><div id="q-models"></div></div>
-        <p class="lede small" style="margin-top:14px" id="q-models-note"></p>
-      </div>
-
-      <div class="panel pad detail">
-        <h2>What the forest leans on</h2>
-        <p class="lede small" style="margin-top:8px">Weather in ember, fire history in slate.</p>
-        <div style="margin-top:16px" id="q-imp"></div>
-      </div>
-
-      <div class="cards">
-        <div class="panel pad">
-          <h3>It never sees the year it is guessing</h3>
-          <p class="lede small" style="margin-top:8px">Everything the model knows about fire
-            history comes from years before the one it is asked about. Two tests check it,
-            including one that scrambles a year's answers to confirm nothing the model reads
-            moves with them.</p>
-        </div>
-        <div class="panel pad">
-          <h3>It only uses weather known by 30 April</h3>
-          <p class="lede small" style="margin-top:8px">The fire season runs May to October.
-            Using August weather would be describing a fire rather than predicting it, so the
-            model stops reading at the end of the wet season and can be run in May.</p>
-        </div>
-        <div class="panel pad">
-          <h3>The month is approximate</h3>
-          <p class="lede small" style="margin-top:8px">Satellites check the same ground every
-            few weeks, so a fire is dated to the period it was spotted in. Close to the end of
-            July that dating blurs, which limits how sharp the before and after split can be.</p>
-        </div>
-      </div>
-
-      <footer>
-        <p>Burnt area from the North Australia and Rangelands Fire Information service at
-          Charles Darwin University, 250 metre fire-scar mapping for 2000 to 2025, used with
-          permission. Weather from SILO Data Drill, Queensland Department of Environment,
-          Science and Innovation, built on Bureau of Meteorology observations, CC BY 4.0.
-          Basemap by MapTiler and OpenStreetMap contributors.</p>
-        <p class="num" style="margin-top:10px" id="q-counts"></p>
-      </footer>
     </div>
   </section>
 </main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <img src="assets/pyrantis-mark.png" alt="Pyrantis" width="42" height="54">
+      <p style="margin-top:14px">Built by Harsh Rastogi, Saira Zafar and Tharushi Wimalachandra for PRT565 at Charles Darwin University.</p>
+      <p class="num" id="q-counts" style="font-size:12.5px"></p>
+    </div>
+    <div>
+      <h4>Data</h4>
+      <p>Burnt area from the North Australia and Rangelands Fire Information service at Charles Darwin University, 250 m fire-scar mapping for 2000 to 2025, used with permission.</p>
+      <p>Weather from SILO Data Drill (Queensland Government), built on Bureau of Meteorology observations, CC BY 4.0. Greenness from NASA MODIS MOD13Q1 through Google Earth Engine. Basemap by MapTiler and OpenStreetMap contributors.</p>
+    </div>
+    <div>
+      <h4>More</h4>
+      <p><a href="https://youtu.be/c_0yCsdZX2U" rel="noopener">The recorded presentation</a></p>
+      <p><a href="https://github.com/harshrastogii/PYRANTIS" rel="noopener">Code and method on GitHub</a></p>
+    </div>
+  </div>
+</footer>
 
 <script id="atlas-data" type="application/json">__ATLAS_DATA__</script>
 <script>
@@ -640,31 +730,22 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   var PLACES = D.places || [];
   var $ = function (id) { return document.getElementById(id); };
   var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  // The page has to know what month it is. A forecast that says "fire before the end of
-  // July" reads as a prediction in April and as a stale claim in September, and the
-  // difference matters more than any wording.
-  function season() {
-    var d = new Date(), m = d.getMonth() + 1, y = d.getFullYear();
-    var endLate = new Date(y, 9, 31);                 // end of October
-    var weeksLeft = Math.max(0, Math.round((endLate - d) / 6048e5));
-    if (m >= 5 && m <= 7)
-      return { phase: "early", year: y, weeksLeft: weeksLeft,
-               note: "The early burning window is open now and closes on 31 July." };
-    if (m >= 8 && m <= 10)
-      return { phase: "late", year: y, weeksLeft: weeksLeft,
-               note: "The early burning window closed on 31 July. The late season is "
-                     + "running now, with about " + weeksLeft + " weeks to go." };
-    return { phase: "wet", year: (m >= 11 ? y + 1 : y), weeksLeft: 0,
-             note: "The wet season is on. The next fire season opens in May." };
+  var DARK = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var NS = "http://www.w3.org/2000/svg";
+  function S(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
   }
-  var SEASON = season();
-
-  var LATE_FROM = 8;                 // August onwards counts as the late season
-  var MONTHS = ["", "January", "February", "March", "April", "May", "June", "July",
-                "August", "September", "October", "November", "December"];
-  var PLAIN = { unburnt: "no fire", early: "fire before August", late: "fire after July" };
-
+  function H(tag, cls, text, parent) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined && text !== null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function sum(a) { return a.reduce(function (x, y) { return x + y; }, 0); }
   function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
   function rgb(h) {
     var m = h.match(/^#([0-9a-f]{6})$/i);
@@ -673,259 +754,324 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   }
   function pal() { return [rgb(css("--unburnt")), rgb(css("--early")), rgb(css("--late"))]; }
 
-  // -------------------------------------------------------------- grid image
-  // A canvas source wants its canvas in the document, so it sits off screen.
-  var gc = document.createElement("canvas");
-  gc.width = G.cols; gc.height = G.rows;
-  gc.style.cssText = "position:absolute;left:-9999px;top:0;pointer-events:none";
-  document.body.appendChild(gc);
+  // Small deterministic random so the illustration is the same on every visit.
+  var seed = 7;
+  function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
 
-  // With animate off the source uploads a texture only when asked, so one frame is pushed
-  // after each repaint rather than on every tick of the browser's clock.
-  var nudgeTimer = null;
-  function nudge() {
-    if (!mapReady) return;
-    var src = map.getSource("fire");
-    if (!src || !src.play) return;
-    src.play();
-    clearTimeout(nudgeTimer);
-    nudgeTimer = setTimeout(function () { try { src.pause(); } catch (e) {} }, 70);
+  // The page has to know what month it is: "fire before the end of July" is a forecast in
+  // April and a stale claim in September.
+  function season() {
+    var d = new Date(), m = d.getMonth() + 1, y = d.getFullYear();
+    var weeksLeft = Math.max(0, Math.round((new Date(y, 9, 31) - d) / 6048e5));
+    if (m >= 5 && m <= 7)
+      return { phase: "early", month: m, weeksLeft: weeksLeft,
+               note: "The early burning window is open now and closes on 31 July." };
+    if (m >= 8 && m <= 10)
+      return { phase: "late", month: m, weeksLeft: weeksLeft,
+               note: "The early burning window closed on 31 July. The late season is running, with about " + weeksLeft + " weeks to go." };
+    return { phase: "wet", month: m, weeksLeft: 0, note: "The wet season is on. The next fire season opens in May." };
+  }
+  var SEASON = season();
+  var LATE_FROM = 8;
+  var MONTHS = ["", "January", "February", "March", "April", "May", "June", "July",
+                "August", "September", "October", "November", "December"];
+  var PLAIN = { unburnt: "no fire", early: "fire before August", late: "fire after July" };
+
+  var share = FC.share || { unburnt: 0, early: 0, late: 0 };
+  var avg = FC.long_run_share || { unburnt: 0, early: 0, late: 0 };
+  var burntFc = share.early + share.late, burntAvg = avg.early + avg.late;
+
+  // ------------------------------------------------------------------- reveal
+  var io = ("IntersectionObserver" in window) ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add("in");
+      if (e.target._onIn) { e.target._onIn(); e.target._onIn = null; }
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 }) : null;
+  function watch(el, fn) {
+    if (!el) return;
+    if (fn) el._onIn = fn;
+    if (!io || REDUCED) { el.classList.add("in"); if (fn) fn(); return; }
+    io.observe(el);
   }
 
-  function paintGrid(str) {
-    var ctx = gc.getContext("2d"), img = ctx.createImageData(G.cols, G.rows), px = img.data, p = pal();
+  // ---------------------------------------------------------------------- nav
+  var nav = $("nav");
+  var spy = ("IntersectionObserver" in window) ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      Array.prototype.forEach.call(document.querySelectorAll(".links a"), function (a) {
+        a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id);
+      });
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" }) : null;
+  ["outlook", "calendar", "record", "patterns", "quality"].forEach(function (id) { if (spy) spy.observe($(id)); });
+  var topSentinel = $("hero-h1");
+  if ("IntersectionObserver" in window) new IntersectionObserver(function (es) {
+    nav.classList.toggle("scrolled", !es[0].isIntersecting);
+  }).observe(topSentinel);
+
+  // --------------------------------------------------------------------- hero
+  (function hero() {
+    var words = ("Where the Territory burns in " + FCYEAR + ", and when.").split(" ");
+    var h1 = $("hero-h1");
+    words.forEach(function (w, i) {
+      var s = H("span", null, null, h1);
+      if (w.indexOf("when") === 0) { var em = H("em", null, w, s); } else s.textContent = w;
+      s.style.animationDelay = (REDUCED ? 0 : 60 + i * 55) + "ms";
+      h1.appendChild(document.createTextNode(" "));
+    });
+    $("hero-sub").textContent =
+      "Trained on " + YEARS.length + " years of satellite fire scars, the model expects " +
+      burntFc.toFixed(0) + "% of the Territory to burn, " +
+      (share.late > share.early ? "most of it after July." : "most of it before August.") +
+      " The average is " + burntAvg.toFixed(0) + "%.";
+    $("sc-fc").textContent = FCYEAR + " forecast";
+  })();
+
+  // The hero scene is the forecast drawn as country: one hundred grass blades, each one per
+  // cent of the Territory, coloured by what the model expects there.
+  var blades = [];
+  (function scene() {
+    var svg = $("scene");
+    $("scene-t").textContent = "A savanna at dusk. One hundred blades of grass stand for the Territory, coloured by the " + FCYEAR + " forecast.";
+    var defs = S("defs", {}, svg);
+    var sky = S("linearGradient", { id: "sky", x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+    S("stop", { offset: "0", "stop-color": "var(--sky-top)" }, sky);
+    S("stop", { offset: ".62", "stop-color": "var(--sky-mid)" }, sky);
+    S("stop", { offset: "1", "stop-color": "var(--sky-low)" }, sky);
+    var sun = S("radialGradient", { id: "sun" }, defs);
+    S("stop", { offset: "0", "stop-color": "var(--sun)", "stop-opacity": ".95" }, sun);
+    S("stop", { offset: "1", "stop-color": "var(--sun)", "stop-opacity": "0" }, sun);
+    var blur = S("filter", { id: "soft", x: "-50%", y: "-50%", width: "200%", height: "200%" }, defs);
+    S("feGaussianBlur", { stdDeviation: "6" }, blur);
+
+    S("rect", { x: 0, y: 0, width: 800, height: 520, fill: "url(#sky)" }, svg);
+    S("circle", { cx: 592, cy: 268, r: 150, fill: "url(#sun)", "class": "sunglow" }, svg);
+    S("circle", { cx: 592, cy: 268, r: 34, fill: "var(--sun)", opacity: .9 }, svg);
+    // a sandstone escarpment, then a closer ridge
+    S("path", { d: "M0 300 L60 286 L118 290 L150 262 L230 258 L262 280 L340 276 L372 250 L470 246 L500 272 L560 268 L600 292 L700 288 L742 270 L800 274 L800 360 L0 360 Z", fill: "var(--ridge-far)", opacity: .85 }, svg);
+    S("path", { d: "M0 338 C90 320 170 330 250 322 C340 312 420 334 520 326 C610 318 700 330 800 320 L800 400 L0 400 Z", fill: "var(--ridge-mid)" }, svg);
+
+    // smoke from the late-fire side of the field
+    var smoke = S("g", { filter: "url(#soft)" }, svg);
+    for (var s = 0; s < 6; s++) {
+      var c = S("circle", { cx: 360 + s * 52, cy: 420, r: 22 + (s % 3) * 8, fill: "var(--smoke)", "class": "smoke" }, smoke);
+      c.style.setProperty("--dl", (s * 1.4) + "s"); c.style.setProperty("--dx", (24 + s * 6) + "px");
+    }
+    // eucalypts and cathedral termite mounds, the two shapes that say Top End
+    function tree(x, base, h, sc) {
+      var g = S("g", { fill: "var(--tree)" }, svg);
+      S("path", { d: "M" + x + " " + base + " C" + (x - 3) + " " + (base - h * .45) + " " + (x + 4) + " " + (base - h * .7) + " " + (x - 2) + " " + (base - h), stroke: "var(--tree)", "stroke-width": 4 * sc, fill: "none", "stroke-linecap": "round" }, g);
+      [[-26, -1.02, 30], [18, -.98, 26], [-6, -1.18, 32], [30, -1.12, 20], [-36, -.9, 18]].forEach(function (b) {
+        S("ellipse", { cx: x + b[0] * sc, cy: base + b[1] * h, rx: b[2] * sc, ry: b[2] * .55 * sc, opacity: .96 }, g);
+      });
+    }
+    tree(118, 420, 150, 1.05); tree(258, 418, 104, .8); tree(708, 420, 130, .95);
+    function mound(x, base, h, w) {
+      S("path", { d: "M" + (x - w) + " " + base + " C" + (x - w * .9) + " " + (base - h * .5) + " " + (x - w * .45) + " " + (base - h) + " " + x + " " + (base - h) +
+        " C" + (x + w * .35) + " " + (base - h * .98) + " " + (x + w * .5) + " " + (base - h * .62) + " " + (x + w * .66) + " " + (base - h * .55) +
+        " C" + (x + w * .85) + " " + (base - h * .42) + " " + (x + w) + " " + (base - h * .2) + " " + (x + w) + " " + base + " Z", fill: "var(--mound)" }, svg);
+    }
+    mound(196, 424, 64, 15); mound(548, 424, 48, 12); mound(640, 424, 36, 9);
+    S("rect", { x: 0, y: 420, width: 800, height: 100, fill: "var(--ground)" }, svg);
+    S("rect", { x: 0, y: 470, width: 800, height: 50, fill: "var(--ground-2)" }, svg);
+
+    var field = S("g", { "class": REDUCED ? "" : "grow" }, svg);
+    for (var i = 0; i < 100; i++) {
+      var x = 18 + i * 7.64 + (rnd() - .5) * 4, h = 70 + rnd() * 78, lean = (rnd() - .5) * 26;
+      var g = S("g", { "class": "blade" }, field);
+      g.style.setProperty("--dl", (REDUCED ? 0 : 0.25 + i * 0.012) + "s");
+      g.style.setProperty("--d", (3.4 + rnd() * 2.2) + "s");
+      var p = S("path", { d: "M" + (x - 2) + " 470 Q" + (x + lean * .3) + " " + (470 - h * .55) + " " + (x + lean) + " " + (470 - h) + " Q" + (x + lean * .3 + 1.6) + " " + (470 - h * .5) + " " + (x + 2.2) + " 470 Z",
+                          fill: "var(--straw)" }, g);
+      var fs = .5 + rnd() * .5, fx = x + lean * .55, fy = 470 - h * .55;
+      var fl = S("path", { d: "M" + fx + " " + fy + " c" + (-6 * fs) + " " + (-5 * fs) + " " + (-5 * fs) + " " + (-14 * fs) + " 0 " + (-22 * fs) + " c" + (2 * fs) + " " + (7 * fs) + " " + (8 * fs) + " " + (9 * fs) + " " + (5 * fs) + " " + (16 * fs) + " c" + (-1 * fs) + " " + (3 * fs) + " " + (-3 * fs) + " " + (5 * fs) + " " + (-5 * fs) + " " + (6 * fs) + " z",
+                           fill: "#ffb347", opacity: 0, "class": "flame" }, g);
+      fl.style.setProperty("--dl", (rnd() * .8) + "s"); fl.style.setProperty("--d", (.6 + rnd() * .5) + "s");
+      blades.push({ g: g, p: p, f: fl });
+    }
+    if (!REDUCED) setTimeout(function () { field.setAttribute("class", "sway"); }, 1900);
+  })();
+
+  function paintBlades(mix) {
+    var nE = Math.round(mix.early), nL = Math.round(mix.late);
+    blades.forEach(function (b, i) {
+      var cls = i < nE ? "early" : i < nE + nL ? "late" : "unburnt";
+      b.p.style.transition = REDUCED ? "none" : "fill .6s ease " + (i * 9) + "ms";
+      b.p.style.fill = cls === "unburnt" ? "var(--straw)" : "var(--" + cls + ")";
+      // the flicker animation owns opacity, so hidden flames are taken out of the render
+      b.f.style.display = (cls === "late" && i % 3 === 0) ? "" : "none";
+      b.f.setAttribute("opacity", .9);
+    });
+    $("scene-note").innerHTML = "Each blade is 1% of the Territory: <strong style='color:var(--early)'>" +
+      mix.early.toFixed(0) + "</strong> before August, <strong style='color:var(--late)'>" +
+      mix.late.toFixed(0) + "</strong> after July.";
+  }
+  paintBlades(share);
+  function sceneMode(fc) {
+    $("sc-fc").setAttribute("aria-pressed", String(fc));
+    $("sc-avg").setAttribute("aria-pressed", String(!fc));
+    paintBlades(fc ? share : avg);
+  }
+  $("sc-fc").addEventListener("click", function () { sceneMode(true); });
+  $("sc-avg").addEventListener("click", function () { sceneMode(false); });
+
+  // ---------------------------------------------------------------- grid image
+  function paintGrid(canvas, str) {
+    var ctx = canvas.getContext("2d"), img = ctx.createImageData(G.cols, G.rows), px = img.data, p = pal();
     for (var i = 0, n = G.cols * G.rows; i < n; i++) {
       var ch = str.charCodeAt(i) - 48, c;
-      if (ch >= 0 && ch <= 2) { c = p[ch]; px[i * 4 + 3] = 235; }
-      else { c = [0, 0, 0]; px[i * 4 + 3] = 0; }
+      if (ch >= 0 && ch <= 2) { c = p[ch]; px[i * 4 + 3] = 235; } else { c = [0, 0, 0]; px[i * 4 + 3] = 0; }
       px[i * 4] = c[0]; px[i * 4 + 1] = c[1]; px[i * 4 + 2] = c[2];
     }
     ctx.putImageData(img, 0, 0);
-    nudge();
   }
-
-  // The month grid holds, per cell, the month it was detected as burnt: "0" for no fire,
-  // "1" to "<" for January to December. Drawing everything up to a given month makes the
-  // fire spread across the Territory the way the season actually runs.
-  function paintGridUpToMonth(mg, upto) {
-    var ctx = gc.getContext("2d"), img = ctx.createImageData(G.cols, G.rows);
-    var px = img.data, p = pal();
-    for (var i = 0, n2 = G.cols * G.rows; i < n2; i++) {
-      var ch = mg.charCodeAt(i) - 48;        // -2 outside, 0 unburnt, 1-12 month
-      var c, a = 235;
-      if (ch < 0) { c = [0, 0, 0]; a = 0; }
-      else if (ch === 0 || ch > upto) { c = p[0]; }
-      else { c = ch >= LATE_FROM ? p[2] : p[1]; }
+  // The month grid holds the month each cell burnt: "0" no fire, "1" to "<" January to December.
+  function paintUpToMonth(canvas, mg, upto) {
+    var ctx = canvas.getContext("2d"), img = ctx.createImageData(G.cols, G.rows), px = img.data, p = pal();
+    for (var i = 0, n = G.cols * G.rows; i < n; i++) {
+      var ch = mg.charCodeAt(i) - 48, c, a = 235;
+      if (ch < 0) { c = [0, 0, 0]; a = 0; } else if (ch === 0 || ch > upto) c = p[0]; else c = ch >= LATE_FROM ? p[2] : p[1];
       px[i * 4] = c[0]; px[i * 4 + 1] = c[1]; px[i * 4 + 2] = c[2]; px[i * 4 + 3] = a;
     }
     ctx.putImageData(img, 0, 0);
-    nudge();
   }
 
-  function paintMonth(yearIdx, month) {
-    if (!mapReady) return;
-    var mg = D.monthGrid && D.monthGrid[String(YEARS[yearIdx])];
-    if (!mg) return;
-    paintGridUpToMonth(mg, month);
-    map.setPaintProperty("fire", "raster-opacity", 0.88);
-  }
-
-  // The exported latTop/lonLeft are cell centres, so the image edge sits half a cell out.
   var half = G.cell / 2;
   var W = G.lonLeft - half, N = G.latTop + half;
   var E = W + G.cols * G.cell, MAP_S = N - G.rows * G.cell;
   var CORNERS = [[W, N], [E, N], [E, MAP_S], [W, MAP_S]];
-
-  // --------------------------------------------------------------------- map
-  var map = new maplibregl.Map({
-    container: "map",
-    style: "https://api.maptiler.com/maps/dataviz-light/style.json?key=WBLnSvimIk9ssjlbmo5X",
-    bounds: [[W, MAP_S], [E, N]], fitBoundsOptions: { padding: 24 },
-    attributionControl: { compact: true },
-    // On a phone a full-width map swallows every vertical swipe, so the reader
-    // cannot scroll past it. Cooperative gestures hand one-finger drags back to
-    // the page and keep two-finger drags for the map. Desktop is untouched.
-    cooperativeGestures: window.matchMedia("(max-width: 760px)").matches
-  });
-  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-  map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-left");
-  map.dragRotate.disable();
-  map.touchZoomRotate.disableRotation();
-
-  var mapReady = false, currentLayer = "forecast", recIdx = YEARS.length - 1;
-  var currentView = "outlook", recPick = null, mapFailed = false;
-  var pinned = false;                      // true once the reader picks a place or square
-
-  function fitAll(instant) {
-    if (!mapReady || pinned) return;
-    map.fitBounds([[W, MAP_S], [E, N]], { padding: 22, duration: (instant || REDUCED) ? 0 : 600 });
+  function outside(row, col) {
+    return col < 0 || row < 0 || col >= G.cols || row >= G.rows ||
+      D.observed[String(YEARS[0])][row * G.cols + col] === G.outside;
   }
+  function fmtLat(v) { return Math.abs(v).toFixed(2) + "°S"; }
+  function fmtLon(v) { return v.toFixed(2) + "°E"; }
 
-  function currentGrid() {
-    if (currentLayer === "forecast") return FC.grid && FC.grid[String(FCYEAR)];
-    var ys = String(YEARS[recIdx]);
-    return currentLayer === "predicted" ? D.predicted[ys] : D.observed[ys];
-  }
-
-  function refreshGrid() {
-    var g = currentGrid();
-    if (!mapReady) return;
-    if (!g) { map.setPaintProperty("fire", "raster-opacity", 0); return; }
-    paintGrid(g);
-    map.setPaintProperty("fire", "raster-opacity", 0.88);
-  }
-
-  map.on("load", function () {
-    paintGrid(currentGrid() || D.observed[String(YEARS[0])]);
-    map.addSource("fire", { type: "canvas", canvas: gc, coordinates: CORNERS,
-                            animate: false });
-    map.addLayer({
-      id: "fire", type: "raster", source: "fire",
-      paint: { "raster-opacity": 0.88, "raster-resampling": "nearest",
-               "raster-opacity-transition": { duration: 260 } }
-    });
-
-    map.addSource("places", {
-      type: "geojson",
-      data: { type: "FeatureCollection", features: PLACES.map(function (p) {
-        return { type: "Feature", properties: { name: p.name, major: !!p.major },
-                 geometry: { type: "Point", coordinates: [p.lon, p.lat] } };
-      }) }
-    });
-    map.addLayer({
-      id: "place-dot", type: "circle", source: "places",
-      paint: { "circle-radius": ["case", ["get", "major"], 5.2, 3.8], "circle-color": "#fff",
-               "circle-stroke-color": css("--ink"), "circle-stroke-width": 1.6,
-               "circle-opacity": .95 }
-    });
-    map.addLayer({
-      id: "place-label", type: "symbol", source: "places",
-      layout: { "text-field": ["get", "name"], "text-font": ["Noto Sans Bold"],
-                "text-size": ["case", ["get", "major"], 12.5, 11],
-                "text-offset": [0, 1.05], "text-anchor": "top",
-                "text-padding": 4, "text-allow-overlap": false,
-                // Lower sort keys win a collision, so the main towns stay on the map and
-                // the small communities are the ones that drop out when it gets crowded.
-                "symbol-sort-key": ["case", ["get", "major"], 0, 1] },
-      paint: { "text-color": css("--ink"), "text-halo-color": "rgba(255,255,255,.92)",
-               "text-halo-width": 1.6 }
-    });
-
-    map.addSource("pick", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-    map.addLayer({ id: "pick", type: "circle", source: "pick",
-      paint: { "circle-radius": 9, "circle-color": "rgba(0,0,0,0)",
-               "circle-stroke-color": css("--accent"), "circle-stroke-width": 3 } });
-
-    mapReady = true;
-    setMapState(null);
-    // The canvas can be sized from before the stylesheet settled, and fitBounds
-    // frames against the canvas rather than the element. Without this the map is
-    // fitted to a box it no longer occupies, which on a phone left the Territory
-    // cropped at the top with dead space underneath.
-    map.resize();
-    fitAll();
-  });
-
-  // MapLibre only watches the window for size changes. A container that changes for
-  // any other reason -- an orientation change, the address bar collapsing, a
-  // stylesheet that sizes the map differently on a phone -- would otherwise keep a
-  // stale canvas and a stale framing. Watching the element itself covers all of them.
-  if (window.ResizeObserver) {
-    var lastMapW = 0, lastMapH = 0, roTimer = null;
-    new ResizeObserver(function (entries) {
-      if (!mapReady) return;                 // the load handler above does the first fit
-      var r = entries[0].contentRect;
-      var w = Math.round(r.width), h = Math.round(r.height);
-      if (w === lastMapW && h === lastMapH) return;
-      lastMapW = w; lastMapH = h;
-      clearTimeout(roTimer);
-      roTimer = setTimeout(function () { map.resize(); fitAll(true); }, 120);
-    }).observe($("map"));
-  }
-
-  // If the basemap never arrives, say so rather than leaving a blank box and controls
-  // that appear to do nothing. Everything in the panels is already computed and correct.
-  function setMapState(kind) {
-    var el = $("map-state");
-    if (!el) return;
-    if (kind === null || (kind !== "loading" && mapFailed === false && kind === "clear")) {
-      el.hidden = true; return;
-    }
-    if (kind === null) { el.hidden = true; return; }
-    el.hidden = false;
-    $("map-spin").hidden = (kind !== "loading");
-    if (kind === "loading") {
-      $("map-state-head").textContent = "Loading the map";
-      $("map-state-body").textContent = "The figures beside it are ready already.";
-    } else if (kind === "nomodel") {
-      $("map-state-head").textContent = "No forecast for " + YEARS[recIdx];
-      $("map-state-body").textContent = "The model learned from this year, so showing " +
-        "its answer here would prove nothing. It was tested on " + HELD[0] + " to " +
-        HELD[HELD.length - 1] + ", and those are the years to compare.";
-    } else {
-      $("map-state-head").textContent = "The map could not load";
-      $("map-state-body").textContent = "Everything beside it is still correct, and " +
-        "picking a town still works. The background map comes from another service; " +
-        "refreshing usually fixes it.";
-    }
-  }
-
-  // A browser suspends requestAnimationFrame in a tab that is not visible, and MapLibre
-  // cannot finish loading without a render frame. So a page opened in a background tab
-  // never completes, and a plain timer would tell the reader the map failed when nothing
-  // had. The clock only runs while the page is on screen, and restarts when it returns.
-  var failTimer = null;
-  function armFailTimer() {
-    clearTimeout(failTimer);
-    if (mapReady || document.visibilityState !== "visible") return;
-    failTimer = setTimeout(function () {
-      if (!mapReady) { mapFailed = true; setMapState("failed"); }
-    }, 15000);
-  }
-  document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState !== "visible" || mapReady) return;
-    mapFailed = false;
-    setMapState("loading");
-    armFailTimer();
-  });
-  armFailTimer();
-
-  map.on("error", function (e) {
-    // One missing tile or glyph range is not a failure worth reporting, and treating it
-    // as one showed the message while the map was still coming up fine. Only a style
-    // that never arrives counts, and the timer above is what decides that.
-    if (window.console && e && e.error) console.warn("map:", String(e.error).slice(0, 120));
-  });
-
-  map.on("click", function (e) {
-    var col = Math.floor((e.lngLat.lng - W) / G.cell);
-    var row = Math.floor((N - e.lngLat.lat) / G.cell);
-    if (col < 0 || row < 0 || col >= G.cols || row >= G.rows) return;
-    if (D.observed[String(YEARS[0])][row * G.cols + col] === G.outside) return;
-    if (currentView === "record") selectCellRecord(row, col);
-    else selectCell(row, col, null);
-  });
-  map.on("mouseenter", "place-dot", function () { map.getCanvas().style.cursor = "pointer"; });
-  map.on("mouseleave", "place-dot", function () { map.getCanvas().style.cursor = ""; });
-  map.on("click", "place-dot", function (e) {
-    var n = e.features[0].properties.name;
-    var i = PLACES.findIndex(function (p) { return p.name === n; });
-    if (i >= 0) { $("place").value = String(i); choosePlace(i); }
-  });
-
-  function markPick(lon, lat) {
-    if (!mapReady) return;
-    // Passing nulls used to build a Point with null coordinates, which threw inside
-    // MapLibre and killed the rest of the click handler. That is why Whole Territory
-    // changed the panel but left the map zoomed in: the fitBounds after it never ran.
-    var features = (lon === null || lat === null || !isFinite(lon) || !isFinite(lat))
-      ? [] : [{ type: "Feature", geometry: { type: "Point", coordinates: [lon, lat] },
-                properties: {} }];
-    map.getSource("pick").setData({ type: "FeatureCollection", features: features });
+  // --------------------------------------------------------------- map factory
+  // Each section gets its own map. They share nothing but the code, so moving between the
+  // forecast and the record never repaints the other one.
+  function makeMap(containerId, stateId, opts) {
+    var M = { ready: false, failed: false, pinned: false, map: null };
+    var canvas = document.createElement("canvas");
+    canvas.width = G.cols; canvas.height = G.rows;
+    canvas.style.cssText = "position:absolute;left:-9999px;top:0;pointer-events:none";
+    document.body.appendChild(canvas);
+    M.canvas = canvas;
+    var stateEl = $(stateId);
+    M.state = function (kind, head, body) {
+      if (!kind) { stateEl.hidden = true; return; }
+      stateEl.hidden = false;
+      stateEl.innerHTML = "<p>" + (kind === "loading" ? "<span class='skeleton'></span>" : "") +
+        "<strong></strong><span></span></p>";
+      stateEl.querySelector("strong").textContent = head;
+      stateEl.querySelector("span:last-child").textContent = body;
+    };
+    var nudgeT = null;
+    M.push = function () {
+      if (!M.ready) return;
+      var src = M.map.getSource("fire");
+      if (!src || !src.play) return;
+      src.play(); clearTimeout(nudgeT);
+      nudgeT = setTimeout(function () { try { src.pause(); } catch (e) {} }, 70);
+    };
+    M.show = function (str) {
+      if (!str) { if (M.ready) M.map.setPaintProperty("fire", "raster-opacity", 0); return; }
+      paintGrid(canvas, str); M.push();
+      if (M.ready) M.map.setPaintProperty("fire", "raster-opacity", .88);
+    };
+    M.fit = function (instant) {
+      if (!M.ready || M.pinned) return;
+      M.map.fitBounds([[W, MAP_S], [E, N]], { padding: 22, duration: (instant || REDUCED) ? 0 : 700 });
+    };
+    M.mark = function (lon, lat) {
+      if (!M.ready) return;
+      var f = (lon === null || lat === null || !isFinite(lon) || !isFinite(lat)) ? [] :
+        [{ type: "Feature", geometry: { type: "Point", coordinates: [lon, lat] }, properties: {} }];
+      M.map.getSource("pick").setData({ type: "FeatureCollection", features: f });
+    };
+    M.start = function () {
+      if (M.map) return;
+      var map = new maplibregl.Map({
+        container: containerId,
+        style: "https://api.maptiler.com/maps/" + (DARK ? "dataviz-dark" : "dataviz-light") + "/style.json?key=WBLnSvimIk9ssjlbmo5X",
+        bounds: [[W, MAP_S], [E, N]], fitBoundsOptions: { padding: 24 },
+        attributionControl: { compact: true },
+        // One-finger drags scroll the page on a phone; two fingers move the map.
+        cooperativeGestures: window.matchMedia("(max-width: 760px)").matches
+      });
+      M.map = map;
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+      map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-left");
+      map.dragRotate.disable(); map.touchZoomRotate.disableRotation();
+      map.on("load", function () {
+        paintGrid(canvas, opts.initial() || D.observed[String(YEARS[0])]);
+        map.addSource("fire", { type: "canvas", canvas: canvas, coordinates: CORNERS, animate: false });
+        map.addLayer({ id: "fire", type: "raster", source: "fire",
+          paint: { "raster-opacity": 0, "raster-resampling": "nearest", "raster-opacity-transition": { duration: REDUCED ? 0 : 700 } } });
+        if (opts.places) {
+          map.addSource("places", { type: "geojson", data: { type: "FeatureCollection", features: PLACES.map(function (p) {
+            return { type: "Feature", properties: { name: p.name, major: !!p.major }, geometry: { type: "Point", coordinates: [p.lon, p.lat] } };
+          }) } });
+          map.addLayer({ id: "place-dot", type: "circle", source: "places",
+            paint: { "circle-radius": ["case", ["get", "major"], 5.4, 4], "circle-color": DARK ? "#0e1412" : "#ffffff",
+                     "circle-stroke-color": css("--ink"), "circle-stroke-width": 1.7 } });
+          map.addLayer({ id: "place-label", type: "symbol", source: "places",
+            layout: { "text-field": ["get", "name"], "text-font": ["Noto Sans Bold"], "text-size": ["case", ["get", "major"], 12.5, 11],
+                      "text-offset": [0, 1.05], "text-anchor": "top", "text-padding": 4, "symbol-sort-key": ["case", ["get", "major"], 0, 1] },
+            paint: { "text-color": css("--ink"), "text-halo-color": DARK ? "rgba(14,20,18,.9)" : "rgba(255,255,255,.92)", "text-halo-width": 1.6 } });
+          map.on("mouseenter", "place-dot", function () { map.getCanvas().style.cursor = "pointer"; });
+          map.on("mouseleave", "place-dot", function () { map.getCanvas().style.cursor = ""; });
+          map.on("click", "place-dot", function (e) { opts.onPlace(e.features[0].properties.name); });
+        }
+        map.addSource("pick", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+        map.addLayer({ id: "pick", type: "circle", source: "pick",
+          paint: { "circle-radius": 10, "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": css("--accent"), "circle-stroke-width": 3 } });
+        M.ready = true;
+        M.state(null);
+        map.resize(); M.fit(true);
+        map.setPaintProperty("fire", "raster-opacity", .88);
+        M.push();
+        if (opts.onReady) opts.onReady();
+      });
+      map.on("click", function (e) {
+        var col = Math.floor((e.lngLat.lng - W) / G.cell), row = Math.floor((N - e.lngLat.lat) / G.cell);
+        if (outside(row, col)) return;
+        if (map.queryRenderedFeatures && opts.places && map.queryRenderedFeatures(e.point, { layers: ["place-dot"] }).length) return;
+        opts.onCell(row, col);
+      });
+      map.on("error", function (e) { if (window.console && e && e.error) console.warn("map:", String(e.error).slice(0, 120)); });
+      // A background tab never renders, so the failure clock only runs while visible.
+      var failT = null;
+      function arm() {
+        clearTimeout(failT);
+        if (M.ready || document.visibilityState !== "visible") return;
+        failT = setTimeout(function () {
+          if (!M.ready) { M.failed = true; M.state("failed", "The map could not load", "Everything beside it is still correct. The background map comes from another service, and refreshing usually fixes it."); }
+        }, 15000);
+      }
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState !== "visible" || M.ready) return;
+        M.failed = false; M.state("loading", "Loading the map", "The figures beside it are ready already."); arm();
+      });
+      arm();
+      if (window.ResizeObserver) {
+        var lw = 0, lh = 0, rt = null;
+        new ResizeObserver(function (en) {
+          if (!M.ready) return;
+          var r = en[0].contentRect, w = Math.round(r.width), h = Math.round(r.height);
+          if (w === lw && h === lh) return; lw = w; lh = h;
+          clearTimeout(rt); rt = setTimeout(function () { map.resize(); M.fit(true); }, 120);
+        }).observe($(containerId));
+      }
+    };
+    return M;
   }
 
   // ------------------------------------------------------------- plain words
-  // One printable character per cell, spanning the range a three-way choice can occupy.
   function confAt(i) {
     var g = FC.confExact && FC.confExact[String(FCYEAR)];
     if (!g) return null;
@@ -933,223 +1079,140 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
     if (!(ch >= 33 && ch <= 122)) return null;
     return FC.confLo + (ch - 33) / 89 * (FC.confHi - FC.confLo);
   }
-
-  // The Territory lies entirely south and east, so the hemisphere letters are fixed.
-  function fmtLat(v) { return Math.abs(v).toFixed(2) + "\u00b0S"; }
-  function fmtLon(v) { return v.toFixed(2) + "\u00b0E"; }
-
   function confWords(c) {
-    if (c >= 0.8) return "very confident";
-    if (c >= 0.65) return "fairly confident";
-    if (c >= 0.5) return "leaning this way";
-    return "close to a coin toss";
+    if (c >= 0.8) return "very confident"; if (c >= 0.65) return "fairly confident";
+    if (c >= 0.5) return "leaning this way"; return "close to a coin toss";
   }
   function fact(host, k, v) {
-    var r = document.createElement("div"); r.className = "fact";
-    var a = document.createElement("span"); a.className = "k"; a.textContent = k;
-    var b = document.createElement("span"); b.className = "v"; b.textContent = v;
-    r.appendChild(a); r.appendChild(b); host.appendChild(r);
+    var r = H("div", "fact", null, host); H("span", "k", k, r); H("span", "v", v, r);
   }
-
-  function drawStripInto(host, hist) {
+  function drawStrip(host, hist) {
     host.textContent = "";
     for (var i = 0; i < hist.length; i++) {
-      var ch = hist[i], b = document.createElement("i");
-      b.style.background = (ch === ".") ? "rgba(24,42,64,.09)" : "var(--" + CLS[+ch] + ")";
+      var ch = hist[i], b = H("i", null, null, host);
+      b.style.background = (ch === ".") ? "var(--line)" : "var(--" + CLS[+ch] + ")";
       b.title = YEARS[i] + ": " + (ch === "." ? "no data" : PLAIN[CLS[+ch]]);
-      host.appendChild(b);
     }
   }
-
-  function drawStrip(host, hist, endYear) {
-    drawStripInto(host, hist);
-    $("v-strip-end").textContent = endYear;
+  function setChip(cls) { var d = $("v-dot"); d.style.background = "var(--" + cls + ")"; d.style.color = "var(--" + cls + ")"; }
+  function setConf(c, label) {
+    $("v-conf-label").textContent = label;
+    $("v-conf-bar").style.width = (c === null ? 0 : c * 100) + "%";
   }
-
-  // The record map used to accept clicks and do nothing visible with them, because the
-  // panel it updated belonged to the other view.
-  function selectCellRecord(row, col) {
-    var i = row * G.cols + col, ys = String(YEARS[recIdx]);
-    var obs = D.observed[ys][i], pred = D.predicted[ys] ? D.predicted[ys][i] : null;
-    if (obs === G.outside) return;
-
-    pinned = true;
-    recPick = [row, col];
-    markPick(W + (col + 0.5) * G.cell, N - (row + 0.5) * G.cell);
-    $("rec-cell-empty").hidden = true;
-    $("rec-cell-body").hidden = false;
-    $("rec-cell-title").textContent = "This square in " + YEARS[recIdx];
-    $("rec-cell-coord").textContent =
-      fmtLat(N - row * G.cell) + "   " + fmtLon(W + col * G.cell);
-
-    var hist = YEARS.map(function (y) { return D.observed[String(y)][i]; }).join("");
-    var burns = 0, lates = 0, last = null;
-    for (var k = 0; k < hist.length; k++) {
-      if (hist[k] === "1" || hist[k] === "2") { burns++; last = YEARS[k]; }
-      if (hist[k] === "2") lates++;
-    }
-
-    var f = $("rec-cell-facts"); f.textContent = "";
-    fact(f, "What happened", PLAIN[CLS[+obs]]);
-    if (pred !== null && pred >= "0" && pred <= "2") {
-      fact(f, "What the model said", PLAIN[CLS[+pred]]);
-      fact(f, "Right or wrong", pred === obs ? "Right" : "Wrong");
-    } else {
-      fact(f, "What the model said", "this year was not a test");
-    }
-    fact(f, "Burned in", burns + " of the last " + YEARS.length + " years");
-    fact(f, "Fires after July", String(lates));
-    fact(f, "Last burned", last ? String(last) : "not since 2000");
-
-    drawStripInto($("rec-cell-strip"), hist);
-    $("rec-cell-end").textContent = YEARS[YEARS.length - 1];
-  }
-
-  function territorySummary() {
-    var s = FC.share, h = FC.long_run_share;
-    var burnt = s.early + s.late, hb = h.early + h.late;
-    $("v-place").textContent = "Northern Territory";
-    $("v-season").textContent = SEASON.note;
-    $("v-dot").style.background = burnt > hb ? "var(--late)" : "var(--unburnt)";
-    $("v-headline").innerHTML =
-      "We expect <b>" + burnt.toFixed(0) + "% of the Territory to burn in " + FCYEAR +
-      "</b>. Across the last 26 years the average was " + hb.toFixed(0) + "%, so this is " +
-      (burnt > hb ? "a heavier year than usual" : "a lighter year than usual") + ". " +
-      (SEASON.phase === "late"
-        ? "Most of what is left to burn will burn after July."
-        : SEASON.phase === "early"
-          ? "The cool burning window is open now."
-          : "The season opens in May.");
-    var f = $("v-facts"); f.textContent = "";
-    fact(f, "Expected to burn before August", s.early.toFixed(0) + "% of the Territory");
-    fact(f, "Expected to burn after July", s.late.toFixed(0) + "% of the Territory");
-    fact(f, "Busiest month on record", MONTHS[busiestMonth()]);
-    fact(f, "Places tracked", String(PLACES.length));
-    $("v-conf-label").textContent = "On average the model is " +
-      (FC.mean_confidence * 100).toFixed(0) + "% sure of each square it places.";
-    $("v-conf-bar").style.width = (FC.mean_confidence * 100) + "%";
-    $("v-strip-wrap").hidden = true;
-    $("map-note").textContent = "Click any square, or any named town, to see that place.";
-    markPick(null, null);
-    if (mapReady) map.getSource("pick").setData({ type: "FeatureCollection", features: [] });
-  }
-
   function busiestMonth() {
     var best = 1, bv = -1;
-    for (var m = 1; m <= 12; m++) { if (D.months[String(m)] > bv) { bv = D.months[String(m)]; best = m; } }
+    for (var m = 1; m <= 12; m++) if (D.months[String(m)] > bv) { bv = D.months[String(m)]; best = m; }
     return best;
   }
 
-  function choosePlace(i) {
-    var p = PLACES[i];
-    $("v-place").textContent = p.name;
-    $("v-strip-wrap").hidden = false;
+  // ------------------------------------------------------------------ outlook
+  var OM = makeMap("map-outlook", "ms-outlook", {
+    places: true,
+    initial: function () { return FC.grid && FC.grid[String(FCYEAR)]; },
+    onPlace: function (n) {
+      var i = PLACES.findIndex(function (p) { return p.name === n; });
+      if (i >= 0) { $("place").value = String(i); choosePlace(i); }
+    },
+    onCell: function (r, c) { $("place").value = ""; selectCell(r, c, null); }
+  });
 
-    var cls = p.forecast || "unburnt";
-    $("v-dot").style.background = "var(--" + cls + ")";
-    var month = cls === "early" ? p.usual_month_early : cls === "late" ? p.usual_month_late : 0;
-    var when = month ? " Going on past years, the most likely month is <b>" + MONTHS[month] + "</b>." : "";
-
+  function territorySummary() {
+    $("v-place").textContent = "Northern Territory";
     $("v-season").textContent = SEASON.note;
-    $("v-headline").innerHTML = headlineFor(p.name, cls, month, p.summary);
-
+    setChip(burntFc > burntAvg ? "late" : "unburnt");
+    $("v-headline").innerHTML = "We expect <b>" + burntFc.toFixed(0) + "% of the Territory to burn in " + FCYEAR +
+      "</b>, against a " + YEARS.length + "-year average of " + burntAvg.toFixed(0) + "%. " +
+      (SEASON.phase === "late" ? "Most of what is left to burn will burn after July." :
+       SEASON.phase === "early" ? "The cool burning window is open now." : "The season opens in May.");
     var f = $("v-facts"); f.textContent = "";
-    fact(f, "Burned in", p.times_burnt + " of the last " + p.years_on_record + " years");
-    fact(f, "Fires after July", String(p.times_late));
-    fact(f, "Last burned", p.last_burnt ? String(p.last_burnt) : "not since 2000");
-    if (p.usual_month) fact(f, "Usual month", MONTHS[p.usual_month]);
-    fact(f, FCYEAR + " outlook", PLAIN[cls]);
-
-    var c = p.confidence || 0;
-    $("v-conf-label").textContent = "The model is " + confWords(c) + " about this, " +
-      (c * 100).toFixed(0) + " out of 100.";
-    $("v-conf-bar").style.width = (c * 100) + "%";
-
-    drawStrip($("v-strip"), p.history, YEARS[YEARS.length - 1]);
-    $("map-note").textContent = mapReady
-      ? p.name + " is circled on the map."
-      : "The map has not loaded, but the figures for " + p.name + " are correct.";
-
-    pinned = true;
-    markPick(p.lon, p.lat);
-    if (mapReady) {
-      var opts = { center: [p.lon, p.lat], zoom: 6.8 };
-      if (REDUCED) map.jumpTo(opts); else map.flyTo(Object.assign({ speed: 1.1, curve: 1.3 }, opts));
-    }
+    fact(f, "Expected to burn before August", share.early.toFixed(0) + "% of the Territory");
+    fact(f, "Expected to burn after July", share.late.toFixed(0) + "% of the Territory");
+    fact(f, "Busiest month on record", MONTHS[busiestMonth()]);
+    fact(f, "Towns and communities tracked", String(PLACES.length));
+    setConf(FC.mean_confidence, "On average the model is " + (FC.mean_confidence * 100).toFixed(0) + "% sure of each square it places.");
+    $("v-strip-wrap").hidden = true;
+    $("map-note").textContent = "Click any square or town.";
+    OM.mark(null, null);
   }
 
-  // What a forecast means depends on the date. Before August, a call of "early" is a
-  // prediction; after it, the window has closed and nobody can check it yet, because this
-  // year's satellite maps are not published until the season ends.
   function headlineFor(name, cls, month, tail) {
-    var when = month ? " Going on past years, the likeliest month is <b>" + MONTHS[month] +
-      "</b>." : "";
+    var when = month ? " Going on past years, the likeliest month is <b>" + MONTHS[month] + "</b>." : "";
     var who = name ? "<b>" + name + "</b>" : "this square";
     tail = tail ? " " + tail : "";
-
     if (cls === "unburnt") {
       if (SEASON.phase === "late")
-        return "We did not expect " + who + " to burn this year, and about " +
-          SEASON.weeksLeft + " weeks of the season are left to run." + tail;
+        return "We did not expect " + who + " to burn this year, and about " + SEASON.weeksLeft + " weeks of the season are left." + tail;
       return "We do not expect " + who + " to burn in " + FCYEAR + "." + tail;
     }
     if (cls === "early") {
       if (SEASON.phase === "late")
         return "We expected fire around " + who + " <b>before the end of July</b>." + when +
-          " That window has closed. This year's satellite maps are not published yet, so " +
-          "nobody can say yet whether it burned." + tail;
+          " That window has closed, and this year's satellite maps are not out yet, so nobody can say yet whether it burnt." + tail;
       if (SEASON.phase === "wet")
-        return "When the season opens in May, we expect fire around " + who +
-          " <b>before the end of July</b>." + when + tail;
-      return "We expect fire around " + who + " <b>before the end of July</b>, and that " +
-        "window is open now." + when + tail;
+        return "When the season opens in May, we expect fire around " + who + " <b>before the end of July</b>." + when + tail;
+      return "We expect fire around " + who + " <b>before the end of July</b>, and that window is open now." + when + tail;
     }
     if (SEASON.phase === "late")
-      return "We expect fire around " + who + " <b>after July</b>, and that window is open " +
-        "now with about " + SEASON.weeksLeft + " weeks to go." + when + tail;
+      return "We expect fire around " + who + " <b>after July</b>, and that window is open now with about " + SEASON.weeksLeft + " weeks to go." + when + tail;
     if (SEASON.phase === "early")
-      return "We expect fire around " + who + " <b>after July</b>, once the country dries " +
-        "out further." + when + tail;
-    return "When the season opens, we expect fire around " + who + " <b>after July</b>." +
-      when + tail;
+      return "We expect fire around " + who + " <b>after July</b>, once the country dries out further." + when + tail;
+    return "When the season opens, we expect fire around " + who + " <b>after July</b>." + when + tail;
   }
 
-  function selectCell(row, col, name) {
-    var i = row * G.cols + col;
-    var hist = YEARS.map(function (y) { return D.observed[String(y)][i]; }).join("");
+  function choosePlace(i) {
+    var p = PLACES[i], cls = p.forecast || "unburnt";
+    var month = cls === "early" ? p.usual_month_early : cls === "late" ? p.usual_month_late : 0;
+    $("v-place").textContent = p.name;
+    $("v-season").textContent = SEASON.note;
+    setChip(cls);
+    $("v-headline").innerHTML = headlineFor(p.name, cls, month, p.summary);
+    var f = $("v-facts"); f.textContent = "";
+    fact(f, "Burnt in", p.times_burnt + " of the last " + p.years_on_record + " years");
+    fact(f, "Fires after July", String(p.times_late));
+    fact(f, "Last burnt", p.last_burnt ? String(p.last_burnt) : "not since 2000");
+    if (p.usual_month) fact(f, "Usual month", MONTHS[p.usual_month]);
+    fact(f, FCYEAR + " outlook", PLAIN[cls]);
+    var c = p.confidence || 0;
+    setConf(c, "The model is " + confWords(c) + " about this, " + (c * 100).toFixed(0) + " out of 100.");
+    $("v-strip-wrap").hidden = false;
+    drawStrip($("v-strip"), p.history); $("v-strip-end").textContent = YEARS[YEARS.length - 1];
+    $("map-note").textContent = OM.ready ? p.name + " is circled on the map." : "The map has not loaded, but the figures for " + p.name + " are correct.";
+    OM.pinned = true; OM.mark(p.lon, p.lat);
+    if (OM.ready) {
+      var o = { center: [p.lon, p.lat], zoom: 6.8 };
+      if (REDUCED) OM.map.jumpTo(o); else OM.map.flyTo(Object.assign({ speed: 1.1, curve: 1.3 }, o));
+    }
+  }
+
+  function cellHistory(i) { return YEARS.map(function (y) { return D.observed[String(y)][i]; }).join(""); }
+  function tally(hist) {
     var burns = 0, lates = 0, last = null;
     for (var k = 0; k < hist.length; k++) {
       if (hist[k] === "1" || hist[k] === "2") { burns++; last = YEARS[k]; }
       if (hist[k] === "2") lates++;
     }
+    return { burns: burns, lates: lates, last: last };
+  }
+
+  function selectCell(row, col, name) {
+    var i = row * G.cols + col, hist = cellHistory(i), t = tally(hist);
     var fch = FC.grid && FC.grid[String(FCYEAR)] ? FC.grid[String(FCYEAR)][i] : ".";
     var cls = (fch >= "0" && fch <= "2") ? CLS[+fch] : "unburnt";
-
-    $("v-place").textContent = name ||
-      (fmtLat(N - row * G.cell) + " " + fmtLon(W + col * G.cell));
-    $("v-dot").style.background = "var(--" + cls + ")";
-    $("v-strip-wrap").hidden = false;
+    $("v-place").textContent = name || (fmtLat(N - row * G.cell) + " " + fmtLon(W + col * G.cell));
+    setChip(cls);
     $("v-season").textContent = SEASON.note;
     $("v-headline").innerHTML = headlineFor(name, cls, 0, "");
-
     var f = $("v-facts"); f.textContent = "";
-    fact(f, "Burned in", burns + " of the last " + YEARS.length + " years");
-    fact(f, "Fires after July", String(lates));
-    fact(f, "Last burned", last ? String(last) : "not since 2000");
+    fact(f, "Burnt in", t.burns + " of the last " + YEARS.length + " years");
+    fact(f, "Fires after July", String(t.lates));
+    fact(f, "Last burnt", t.last ? String(t.last) : "not since 2000");
     fact(f, FCYEAR + " outlook", PLAIN[cls]);
     var cc = confAt(i);
-    if (cc === null) {
-      $("v-conf-label").textContent = "No forecast for this square.";
-      $("v-conf-bar").style.width = "0%";
-    } else {
-      $("v-conf-label").textContent = "The model is " + confWords(cc) + " about this, " +
-        (cc * 100).toFixed(0) + " out of 100.";
-      $("v-conf-bar").style.width = (cc * 100) + "%";
-    }
-    drawStrip($("v-strip"), hist, YEARS[YEARS.length - 1]);
+    setConf(cc, cc === null ? "No forecast for this square." : "The model is " + confWords(cc) + " about this, " + (cc * 100).toFixed(0) + " out of 100.");
+    $("v-strip-wrap").hidden = false;
+    drawStrip($("v-strip"), hist); $("v-strip-end").textContent = YEARS[YEARS.length - 1];
     $("map-note").textContent = "Showing one 5 km square.";
-    pinned = true;
-    markPick(W + (col + 0.5) * G.cell, N - (row + 0.5) * G.cell);
+    OM.pinned = true; OM.mark(W + (col + 0.5) * G.cell, N - (row + 0.5) * G.cell);
   }
 
   var sel = $("place");
@@ -1157,393 +1220,523 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--stroke);color
   sel.firstChild.disabled = true;
   PLACES.forEach(function (p, i) { sel.appendChild(new Option(p.name, String(i))); });
   sel.addEventListener("change", function () { if (sel.value !== "") choosePlace(+sel.value); });
+  $("cta-place").addEventListener("click", function () { setTimeout(function () { sel.focus({ preventScroll: true }); }, 700); });
+
   $("locate").addEventListener("click", function () {
     var btn = $("locate");
-    if (!navigator.geolocation) {
-      $("map-note").textContent = "This browser will not share a location.";
-      return;
-    }
-    btn.textContent = "Finding you"; btn.disabled = true;
+    if (!navigator.geolocation) { $("map-note").textContent = "This browser will not share a location."; return; }
+    btn.disabled = true; btn.lastChild.textContent = "Finding you";
     navigator.geolocation.getCurrentPosition(function (pos) {
-      btn.textContent = "Where I am"; btn.disabled = false;
+      btn.disabled = false; btn.lastChild.textContent = "Where I am";
       var lon = pos.coords.longitude, lat = pos.coords.latitude;
       var col = Math.floor((lon - W) / G.cell), row = Math.floor((N - lat) / G.cell);
-      var out = col < 0 || row < 0 || col >= G.cols || row >= G.rows ||
-                D.observed[String(YEARS[0])][row * G.cols + col] === G.outside;
-      if (out) {
-        // Outside the Territory the model has nothing to say, and saying something anyway
-        // would be worse than admitting it.
-        $("map-note").textContent = "You are outside the Northern Territory, so there is " +
-          "no forecast for where you are. Pick a town from the list instead.";
-        pinned = false; territorySummary(); fitAll();
-        return;
+      if (outside(row, col)) {
+        $("map-note").textContent = "You are outside the Northern Territory, so there is no forecast for where you are. Pick a town instead.";
+        OM.pinned = false; territorySummary(); OM.fit(); return;
       }
-      sel.value = "";
-      selectCell(row, col, "Where you are");
-      map.flyTo({ center: [lon, lat], zoom: 7.2, speed: 1.1 });
+      sel.value = ""; selectCell(row, col, "Where you are");
+      if (OM.ready) OM.map.flyTo({ center: [lon, lat], zoom: 7.2, speed: 1.1 });
       $("map-note").textContent = "Showing the 5 km square you are standing in.";
     }, function () {
-      btn.textContent = "Where I am"; btn.disabled = false;
+      btn.disabled = false; btn.lastChild.textContent = "Where I am";
       $("map-note").textContent = "Location was not shared, so nothing has changed.";
     }, { timeout: 12000, maximumAge: 300000 });
   });
+  $("whole").addEventListener("click", function () { sel.value = ""; OM.pinned = false; territorySummary(); OM.fit(); });
 
-  $("whole").addEventListener("click", function () {
-    sel.value = ""; pinned = false; territorySummary(); fitAll();
-  });
-
-  // Written from figures the export computes, never typed. Two hand-written claims here
-  // were already wrong: the wet season is the second wettest, not the third, and 2020 was
-  // the lightest fire year but not the driest wet season, which was 2019.
+  // The reasons, drawn. Every figure comes from the export, none is typed.
   var F = D.facts || null;
-  function ordinal(k) {
-    var names = ["", "highest", "second highest", "third highest", "fourth highest",
-                 "fifth highest"];
-    return names[k] || (k + "th highest");
-  }
-  function whyText() {
-    if (!F) return "";
+  function ordinal(k) { return ["", "highest", "second highest", "third highest", "fourth highest", "fifth highest"][k] || (k + "th highest"); }
+  (function why() {
+    if (!F) return;
+    $("why-rain-v").textContent = (F.wetPct >= 0 ? "+" : "") + F.wetPct + "% on average";
+    var mx = Math.max(F.wetRain, F.wetClim) * 1.08;
+    var rr = $("why-rain"), rb = $("why-rain-base");
+    rr.title = F.year + " wet season"; rb.title = "2005 to 2019 average";
+    $("why-ndvi-v").textContent = F.ndviRank === 1 ? "greenest of " + F.ndviOf : ordinal(F.ndviRank) + " of " + F.ndviOf;
+    $("why-ndvi-l").textContent = "April greenness since " + F.ndviFrom;
+    $("why-rain-l1").textContent = F.wetRain + " mm, " + (F.year - 1) + " to " + F.year;
+    $("why-rain-l2").lastChild.textContent = F.wetClim + " mm, 2005 to 2019 average";
+    var rank = $("why-rank"), ser = F.ndviSeries || {}, yrs = Object.keys(ser).sort();
+    var lo = Math.min.apply(null, yrs.map(function (y) { return ser[y]; })), hi = Math.max.apply(null, yrs.map(function (y) { return ser[y]; }));
+    yrs.forEach(function (y) {
+      var i = H("i", +y === F.year ? "me" : "", null, rank);
+      i.style.setProperty("--h", (18 + (ser[y] - lo) / ((hi - lo) || 1) * 82) + "%");
+      i.title = y + ": " + ser[y].toFixed(3);
+    });
+    rank.style.gridTemplateColumns = "repeat(" + yrs.length + ",1fr)";
+    watch(rr.closest(".panel"), function () {
+      rr.style.width = (F.wetRain / mx * 100) + "%"; rb.style.width = (F.wetClim / mx * 100) + "%";
+    });
     var grass = F.ndviRank === 1
-      ? "There is more grass standing in the Territory than in any year since " +
-        F.ndviFrom + ". Satellites measure how green the ground is, and this April read " +
-        F.ndvi.toFixed(2) + ", the highest April on record."
-      : "Satellites measure how green the ground is. This April read " + F.ndvi.toFixed(2) +
-        ", the " + ordinal(F.ndviRank) + " April of the " + F.ndviOf + " on record.";
-
-    var rain = " That grass is the fuel. The wet season behind it delivered " +
-      F.wetRain + " mm, " + Math.abs(F.wetPct) + " per cent " +
+      ? "Satellites read this April's greenness at " + F.ndvi.toFixed(2) + ", the highest of any April since the record begins in " + F.ndviFrom + "."
+      : "Satellites read this April's greenness at " + F.ndvi.toFixed(2) + ", the " + ordinal(F.ndviRank) + " of " + F.ndviOf + ".";
+    $("v-why").textContent = grass + " The wet season delivered " + F.wetRain + " mm, " + Math.abs(F.wetPct) + "% " +
       (F.wetPct >= 0 ? "above" : "below") + " the 2005 to 2019 average and the " +
-      (F.wetRank === 1 ? "wettest" : ordinal(F.wetRank).replace("highest", "wettest")) +
-      " in " + F.wetOf + " years.";
-
-    var link = " Wetter wet seasons are followed by bigger fire years right through the " +
-      "record. The wettest of all, " + F.wettestYear + " at " + F.wettestRain + " mm, was " +
-      "followed by " + F.wettestBurnt.toFixed(0) + " per cent of the Territory burning, " +
-      "the most in " + F.wetOf + " years.";
-
-    return grass + rain + link;
-  }
-  $("v-why").textContent = whyText();
-
-  $("v-caveat").textContent =
-    "Nobody can check this forecast yet. The satellite record for " + FCYEAR + " is not " +
-    "published, so these are predictions, not results. Everything under How good is it was " +
-    "measured on years the model had never seen.";
-  $("v-inputs").textContent =
-    "Fire history for every year up to " + YEARS[YEARS.length - 1] + ", and rainfall, " +
-    "temperature and humidity from the wet season that ended on 30 April. " +
+      (F.wetRank === 1 ? "wettest" : ordinal(F.wetRank).replace("highest", "wettest")) + " in " + F.wetOf +
+      " years. More rain grows more grass, and grass is the fuel. The wettest season on record, " + F.wettestYear +
+      ", was followed by " + F.wettestBurnt.toFixed(0) + "% of the Territory burning.";
+  })();
+  $("v-caveat").textContent = "Nobody can check this forecast yet. The satellite record for " + FCYEAR +
+    " is not published, so these are predictions, not results. Every score under How good is it was measured on years the model had never seen.";
+  $("v-inputs").textContent = "Fire history for every year up to " + YEARS[YEARS.length - 1] +
+    ", rainfall, temperature and humidity from the wet season that ended on 30 April, and satellite greenness for the same months. " +
     D.nCells.toLocaleString() + " squares, each 0.05 degrees across, about five kilometres.";
 
-  // ------------------------------------------------------------- the record
-  var recSlot = $("mapslot-record"), mapWrap = $("mapwrap");
-  var recSlider = $("rec-year"), recTimer = null;
-  recSlider.max = YEARS.length - 1; recSlider.value = recIdx;
+  // ----------------------------------------------------------------- calendar
+  (function calendar() {
+    var mo = D.months, early = 0, late = 0;
+    for (var m = 1; m <= 12; m++) { if (m >= 5 && m <= 7) early += mo[String(m)]; if (m >= 8 && m <= 11) late += mo[String(m)]; }
+    $("cal-lede").textContent = "Most burning falls into two windows. May to July holds " + early.toFixed(0) +
+      "% of it, August to November holds " + late.toFixed(0) + "%, and " + MONTHS[busiestMonth()] + " is the busiest month of all.";
+    $("k-early").innerHTML = early.toFixed(0) + "%<small>May to July</small>";
+    $("k-late").innerHTML = late.toFixed(0) + "%<small>August to November</small>";
+
+    var svg = $("clock"), max = 0;
+    for (m = 1; m <= 12; m++) max = Math.max(max, mo[String(m)]);
+    var r0 = 70, r1 = 200;
+    S("circle", { cx: 0, cy: 0, r: r1, fill: "none", stroke: "var(--line)", "stroke-dasharray": "2 5" }, svg);
+    S("circle", { cx: 0, cy: 0, r: r0 + (r1 - r0) / 2, fill: "none", stroke: "var(--line)", "stroke-dasharray": "2 5" }, svg);
+    var read = $("clock-read");
+    function phaseOf(m) { return m >= 5 && m <= 7 ? "early dry season" : m >= 8 && m <= 11 ? "late dry season" : "wet season"; }
+    function readOut(m) {
+      read.innerHTML = "<b style='color:var(--ink)'>" + MONTHS[m] + "</b>: " + mo[String(m)].toFixed(1) +
+        "% of all burnt squares, in the " + phaseOf(m) + ".";
+    }
+    var wedges = [];
+    for (m = 1; m <= 12; m++) {
+      var a0 = (m - 1) / 12 * Math.PI * 2 - Math.PI / 2 + .02, a1 = m / 12 * Math.PI * 2 - Math.PI / 2 - .02;
+      var rr = r0 + (r1 - r0) * Math.sqrt(mo[String(m)] / max);
+      // the label rule, not the weather: anything before August counts as early
+      var col = m >= LATE_FROM ? "var(--late)" : "var(--early)";
+      var d = "M" + (r0 * Math.cos(a0)) + " " + (r0 * Math.sin(a0)) + " L" + (rr * Math.cos(a0)) + " " + (rr * Math.sin(a0)) +
+        " A" + rr + " " + rr + " 0 0 1 " + (rr * Math.cos(a1)) + " " + (rr * Math.sin(a1)) +
+        " L" + (r0 * Math.cos(a1)) + " " + (r0 * Math.sin(a1)) + " A" + r0 + " " + r0 + " 0 0 0 " + (r0 * Math.cos(a0)) + " " + (r0 * Math.sin(a0)) + " Z";
+      var w = S("path", { d: d, fill: col, "class": "wedge", tabindex: 0, role: "button",
+                          "aria-label": MONTHS[m] + ", " + mo[String(m)].toFixed(1) + " per cent" }, svg);
+      w.style.transformOrigin = "0 0"; w.style.transform = REDUCED ? "none" : "scale(.2)";
+      w.style.transition = "transform 1s cubic-bezier(.16,1,.3,1) " + (m * 45) + "ms, opacity .25s";
+      (function (mm, ww) {
+        function on() { wedges.forEach(function (x) { x.classList.remove("hot"); }); ww.classList.add("hot"); readOut(mm); }
+        ww.addEventListener("mouseenter", on); ww.addEventListener("focus", on); ww.addEventListener("click", on);
+      })(m, w);
+      wedges.push(w);
+      var am = (m - .5) / 12 * Math.PI * 2 - Math.PI / 2;
+      var t = S("text", { x: (r1 + 14) * Math.cos(am), y: (r1 + 14) * Math.sin(am) + 4, "text-anchor": "middle",
+                          "font-size": 12.5, "font-family": "var(--mono)", fill: "var(--muted)" }, svg);
+      t.textContent = MONTHS[m].slice(0, 3);
+    }
+    // 31 July divider and the hand for today
+    var cut = 7 / 12 * Math.PI * 2 - Math.PI / 2;
+    S("line", { x1: (r0 - 6) * Math.cos(cut), y1: (r0 - 6) * Math.sin(cut), x2: (r1 + 2) * Math.cos(cut), y2: (r1 + 2) * Math.sin(cut),
+                stroke: "var(--ink)", "stroke-width": 1.5, "stroke-dasharray": "4 4" }, svg);
+    var now = new Date(), frac = (now.getMonth() + (now.getDate() - 1) / 31) / 12;
+    var hand = S("g", { "class": "hand" }, svg);
+    S("line", { x1: 0, y1: 0, x2: 0, y2: -(r0 - 10), stroke: "var(--accent)", "stroke-width": 3, "stroke-linecap": "round" }, hand);
+    S("circle", { cx: 0, cy: 0, r: 6, fill: "var(--accent)" }, hand);
+    $("clock-today").textContent = "The blue hand marks today, in the " + phaseOf(now.getMonth() + 1) + ". The dashed line is 31 July.";
+    hand.style.transform = "rotate(0deg)";
+    watch(svg.parentNode, function () {
+      wedges.forEach(function (w) { w.style.transform = "scale(1)"; });
+      hand.style.transform = "rotate(" + (frac * 360) + "deg)";
+    });
+    readOut(busiestMonth());
+
+    // two small illustrations: low creeping flames, and flames that reach the canopy
+    function art(id, late) {
+      var s = $(id);
+      S("rect", { x: 0, y: 0, width: 400, height: 170, fill: late ? "var(--sky-low)" : "var(--sky-top)", opacity: late ? .55 : 1 }, s);
+      S("path", { d: "M0 120 C80 112 150 118 230 112 C300 106 350 116 400 110 L400 170 L0 170 Z", fill: "var(--ridge-mid)", opacity: .5 }, s);
+      S("rect", { x: 0, y: 140, width: 400, height: 30, fill: "var(--ground)" }, s);
+      var tg = S("g", { fill: "var(--tree)" }, s);
+      S("path", { d: "M300 142 C298 110 304 90 300 64", stroke: "var(--tree)", "stroke-width": 4, fill: "none" }, tg);
+      [[-22, 60, 24], [18, 64, 20], [-2, 48, 26]].forEach(function (b) { S("ellipse", { cx: 300 + b[0], cy: b[1], rx: b[2], ry: b[2] * .55 }, tg); });
+      for (var i = 0; i < 40; i++) {
+        var x = 6 + i * 10, h = 18 + (i * 37 % 13);
+        S("path", { d: "M" + (x - 1.5) + " 142 Q" + x + " " + (142 - h * .6) + " " + (x + 2) + " " + (142 - h) + " Q" + (x + 1) + " " + (142 - h * .5) + " " + (x + 2) + " 142 Z", fill: "var(--straw)" }, s);
+      }
+      var n = late ? 14 : 9, base = late ? 142 : 142;
+      for (var k = 0; k < n; k++) {
+        var fx = (late ? 40 : 70) + k * (late ? 24 : 26), fh = late ? 46 + (k * 29 % 40) : 14 + (k * 7 % 8);
+        if (late && fx > 270 && fx < 330) fh += 46;     // the crown fire climbs the tree
+        var f = S("path", { d: "M" + fx + " " + base + " c-" + (fh * .28) + " -" + (fh * .3) + " -" + (fh * .2) + " -" + (fh * .7) + " 0 -" + fh +
+                              " c" + (fh * .1) + " " + (fh * .3) + " " + (fh * .34) + " " + (fh * .36) + " " + (fh * .22) + " " + (fh * .7) + " c-" + (fh * .04) + " " + (fh * .14) + " -" + (fh * .1) + " " + (fh * .22) + " -" + (fh * .22) + " " + (fh * .3) + " z",
+                            fill: late ? "var(--late)" : "var(--early)", opacity: late ? .92 : .85, "class": "flame" }, s);
+        f.style.setProperty("--dl", (k * .13 % .9) + "s"); f.style.setProperty("--d", (.5 + (k % 4) * .12) + "s");
+      }
+      if (late) for (var q = 0; q < 4; q++) {
+        var c = S("circle", { cx: 120 + q * 60, cy: 110, r: 18, fill: "var(--smoke)", "class": "smoke" }, s);
+        c.style.setProperty("--dl", (q * 1.6) + "s");
+      }
+    }
+    art("art-early", false); art("art-late", true);
+  })();
+
+  // ------------------------------------------------------------------- record
+  var recIdx = YEARS.length - 1, recLayer = "observed", recPick = null, recTimer = null, playMonth = 0;
+  var RM = makeMap("map-record", "ms-record", {
+    places: false,
+    initial: function () { return D.observed[String(YEARS[recIdx])]; },
+    onCell: function (r, c) { selectCellRecord(r, c); },
+    onReady: function () { drawRecord(); }
+  });
+  watch($("map-record"), function () { RM.start(); });
+
+  (function scrubber() {
+    var host = $("scrub");
+    YEARS.forEach(function (y, i) {
+      var a = D.annual[String(y)];
+      var b = H("button", HELD.indexOf(y) > -1 ? "test" : "", null, host);
+      b.type = "button"; b.dataset.y = y;
+      b.setAttribute("aria-label", y + ": " + a.early.toFixed(0) + "% early, " + a.late.toFixed(0) + "% late");
+      b.title = y + ": " + (a.early + a.late).toFixed(0) + "% burnt";
+      var l = H("span", "l", null, b), e = H("span", "e", null, b);
+      l.style.height = (a.late * 1.35) + "%"; e.style.height = (a.early * 1.35) + "%";
+      b.addEventListener("click", function () { stopPlay(); recIdx = i; drawRecord(); if (recPick) selectCellRecord(recPick[0], recPick[1]); });
+    });
+    host.addEventListener("keydown", function (ev) {
+      if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
+      ev.preventDefault(); stopPlay();
+      recIdx = Math.max(0, Math.min(YEARS.length - 1, recIdx + (ev.key === "ArrowRight" ? 1 : -1)));
+      drawRecord(); host.children[recIdx].focus();
+    });
+  })();
 
   function drawRecordPanel() {
-    var ys = String(YEARS[recIdx]);
-    $("rec-y").textContent = YEARS[recIdx];
-    var held = D.predicted[ys];
-    $("rec-role").textContent = held
-      ? "The model never saw this year while learning, so its guesses here are a fair test."
-      : (YEARS[recIdx] >= D.split.val[0] && YEARS[recIdx] <= D.split.val[D.split.val.length - 1])
-        ? "This year was used to decide when to stop training."
-        : (YEARS[recIdx] >= D.split.train[0] ? "The model learned from this year."
-           : "This year is before the modelling window.");
+    var y = YEARS[recIdx], ys = String(y);
+    $("rec-y").textContent = y;
+    $("rec-role").textContent = D.predicted[ys]
+      ? "A test year. The model never saw it while learning, so its guesses here are a fair check."
+      : (y >= D.split.val[0] && y <= D.split.val[D.split.val.length - 1]) ? "Used to tune the model and decide when to stop training."
+      : (y >= D.split.train[0] ? "One of the years the model learned from." : "Before the modelling window, kept as fire history.");
     var a = D.annual[ys], f = $("rec-facts"); f.textContent = "";
-    fact(f, "Burned before August", a.early.toFixed(1) + "% of the Territory");
-    fact(f, "Burned after July", a.late.toFixed(1) + "% of the Territory");
+    fact(f, "Burnt before August", a.early.toFixed(1) + "% of the Territory");
+    fact(f, "Burnt after July", a.late.toFixed(1) + "% of the Territory");
     fact(f, "No fire", a.unburnt.toFixed(1) + "% of the Territory");
     var acc = D.accuracyByYear[ys];
-    fact(f, "Model correct", acc ? acc.toFixed(1) + "% of squares" : "not a tested year");
-    $("rec-split").textContent =
-      "Trained on " + D.split.train[0] + " to " + D.split.train[D.split.train.length - 1] +
-      ", tuned on " + D.split.val[0] + " to " + D.split.val[D.split.val.length - 1] +
-      ", tested on " + HELD[0] + " to " + HELD[HELD.length - 1] + ".";
+    fact(f, "Model correct", acc ? acc.toFixed(1) + "% of squares" : "not a test year");
+    $("rec-split").textContent = "Trained on " + D.split.train[0] + " to " + D.split.train[D.split.train.length - 1] +
+      ", tuned on " + D.split.val[0] + " to " + D.split.val[D.split.val.length - 1] + ", tested once on " + HELD[0] + " to " + HELD[HELD.length - 1] + ".";
+    Array.prototype.forEach.call($("scrub").children, function (b, i) { b.setAttribute("aria-current", String(i === recIdx)); });
   }
-
   function drawRecord() {
     var ys = String(YEARS[recIdx]);
-    var held = D.predicted[ys];
     $("rec-label").textContent = YEARS[recIdx];
     drawRecordPanel();
-    currentLayer = $("rec-layer").value;
-    if (currentLayer === "predicted" && !held) {
-      // Keep the reader's choice and explain the gap, rather than silently undoing it.
-      if (mapReady && !mapFailed) setMapState("nomodel");
-      if (mapReady) map.setPaintProperty("fire", "raster-opacity", 0);
+    if (recLayer === "predicted" && !D.predicted[ys]) {
+      if (RM.ready && !RM.failed) RM.state("nomodel", "No model answer for " + YEARS[recIdx],
+        "The model learned from this year, so its answer here would prove nothing. Pick one of the test years, " + HELD[0] + " to " + HELD[HELD.length - 1] + ", marked in blue.");
+      RM.show(null);
     } else {
-      if (!mapFailed) setMapState(null);
-      refreshGrid();
+      if (RM.ready && !RM.failed) RM.state(null);
+      RM.show(recLayer === "predicted" ? D.predicted[ys] : D.observed[ys]);
     }
   }
-  recSlider.addEventListener("input", function () {
-    recIdx = +recSlider.value; stopPlay(); drawRecord();
-    if (recPick) selectCellRecord(recPick[0], recPick[1]);
+  Array.prototype.forEach.call(document.querySelectorAll("[data-layer]"), function (b) {
+    b.addEventListener("click", function () {
+      recLayer = b.dataset.layer; stopPlay();
+      Array.prototype.forEach.call(document.querySelectorAll("[data-layer]"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      drawRecord(); if (recPick) selectCellRecord(recPick[0], recPick[1]);
+    });
   });
-  $("rec-layer").addEventListener("change", drawRecord);
-  var playMonth = 0;
+  function playIcon(on) {
+    $("rec-play").innerHTML = on ? "<i class='ph-fill ph-pause'></i>" : "<i class='ph-fill ph-play'></i>";
+    $("rec-play").setAttribute("aria-label", on ? "Pause" : "Play the season");
+  }
   function stopPlay() {
     if (!recTimer) return;
-    clearInterval(recTimer); recTimer = null; playMonth = 0;
-    $("rec-play").textContent = "Play the season";
-    drawRecord();                        // back to the whole year
+    clearInterval(recTimer); recTimer = null; playMonth = 0; playIcon(false); drawRecord();
   }
-
   $("rec-play").addEventListener("click", function () {
     if (recTimer) { stopPlay(); return; }
-    $("rec-play").textContent = "Pause";
-
-    // A forecast has no month in it, so only the observed record can run by month. On the
-    // model layer the player still steps a year at a time.
-    var byMonth = ($("rec-layer").value === "observed") && !!D.monthGrid;
+    if (!RM.map) RM.start();
+    playIcon(true);
+    // Only the observed record has months in it; the model layer steps a year at a time.
+    var byMonth = recLayer === "observed" && !!D.monthGrid;
     playMonth = 0;
-
     recTimer = setInterval(function () {
-      if (!byMonth) {
-        recIdx = (recIdx + 1) % YEARS.length;
-        recSlider.value = recIdx; drawRecord();
-        return;
-      }
+      if (!byMonth) { recIdx = (recIdx + 1) % YEARS.length; drawRecord(); return; }
       playMonth += 1;
-      if (playMonth > 12) {
-        playMonth = 1;
-        recIdx = (recIdx + 1) % YEARS.length;
-        recSlider.value = recIdx;
-        drawRecordPanel();               // the figures follow the year, not the month
-      }
+      if (playMonth > 12) { playMonth = 1; recIdx = (recIdx + 1) % YEARS.length; drawRecordPanel(); }
       $("rec-label").textContent = MONTHS[playMonth].slice(0, 3) + " " + YEARS[recIdx];
-      paintMonth(recIdx, playMonth);
-    }, byMonth ? 140 : 780);
+      var mg = D.monthGrid[String(YEARS[recIdx])];
+      if (mg && RM.ready) { paintUpToMonth(RM.canvas, mg, playMonth); RM.push(); }
+    }, byMonth ? 150 : 800);
   });
 
-  // ------------------------------------------------------------------ views
-  function setView(v) {
-    currentView = v;
-    Array.prototype.forEach.call(document.querySelectorAll("nav.tabs button"), function (t) {
-      t.setAttribute("aria-selected", String(t.dataset.view === v));
-    });
-    Array.prototype.forEach.call(document.querySelectorAll(".view"), function (s) {
-      s.classList.toggle("on", s.id === "v-" + v);
-    });
-    if (v === "record") { recSlot.appendChild(mapWrap); currentLayer = $("rec-layer").value; drawRecord(); }
-    else if (v === "outlook") { $("v-outlook").querySelector(".split > div").insertBefore(
-        mapWrap, $("v-outlook").querySelector(".legend")); currentLayer = "forecast"; refreshGrid(); }
-    else stopPlay();
-    if (map) setTimeout(function () { map.resize(); fitAll(true); }, 70);
-    window.scrollTo({ top: 0, behavior: "instant" });
+  function selectCellRecord(row, col) {
+    var i = row * G.cols + col, ys = String(YEARS[recIdx]);
+    var obs = D.observed[ys][i], pred = D.predicted[ys] ? D.predicted[ys][i] : null;
+    if (obs === G.outside) return;
+    recPick = [row, col]; RM.pinned = true;
+    RM.mark(W + (col + 0.5) * G.cell, N - (row + 0.5) * G.cell);
+    $("rec-cell-empty").hidden = true; $("rec-cell-body").hidden = false;
+    $("rec-cell-title").textContent = "This square in " + YEARS[recIdx];
+    $("rec-cell-coord").textContent = fmtLat(N - row * G.cell) + "   " + fmtLon(W + col * G.cell);
+    var hist = cellHistory(i), t = tally(hist), f = $("rec-cell-facts"); f.textContent = "";
+    fact(f, "What happened", PLAIN[CLS[+obs]]);
+    if (pred !== null && pred >= "0" && pred <= "2") {
+      fact(f, "What the model said", PLAIN[CLS[+pred]]);
+      fact(f, "Right or wrong", pred === obs ? "Right" : "Wrong");
+    } else fact(f, "What the model said", "not a test year");
+    fact(f, "Burnt in", t.burns + " of " + YEARS.length + " years");
+    fact(f, "Fires after July", String(t.lates));
+    fact(f, "Last burnt", t.last ? String(t.last) : "not since 2000");
+    drawStrip($("rec-cell-strip"), hist); $("rec-cell-end").textContent = YEARS[YEARS.length - 1];
   }
-  Array.prototype.forEach.call(document.querySelectorAll("nav.tabs button"), function (t) {
-    t.addEventListener("click", function () { setView(t.dataset.view); });
-  });
 
+  // ----------------------------------------------------------------- patterns
+  var R = D.recurrence;
+  (function patterns() {
+    var rb = R.reburn.all;
+    $("pt-reburn-answer").textContent = "Yes, and soon. In a typical year " + rb.base.toFixed(0) +
+      "% of the Territory burns, but " + rb.curve[0].toFixed(0) + "% of the places that burnt last year burn again, and waiting longer does not lower that.";
+    // line chart: share burning again k years later, against the base rate
+    var host = $("pt-reburn"), w = 560, h = 190, padL = 34, padB = 26;
+    var svg = S("svg", { viewBox: "0 0 " + w + " " + h, role: "img", "aria-label": "Chance of burning again by years since a fire" }, host);
+    var ys = function (v) { return h - padB - v / 70 * (h - padB - 10); };
+    var xs = function (k) { return padL + k / (rb.curve.length - 1) * (w - padL - 10); };
+    [0, 20, 40, 60].forEach(function (v) {
+      S("line", { x1: padL, x2: w - 10, y1: ys(v), y2: ys(v), stroke: "var(--line)" }, svg);
+      var t = S("text", { x: padL - 8, y: ys(v) + 4, "text-anchor": "end", "font-size": 11, fill: "var(--dim)", "font-family": "var(--mono)" }, svg); t.textContent = v;
+    });
+    S("line", { x1: padL, x2: w - 10, y1: ys(rb.base), y2: ys(rb.base), stroke: "var(--muted)", "stroke-dasharray": "5 5" }, svg);
+    var bt = S("text", { x: w - 12, y: ys(rb.base) + 16, "text-anchor": "end", "font-size": 12, fill: "var(--muted)" }, svg);
+    bt.textContent = "any square, any year: " + rb.base.toFixed(0) + "%";
+    var dA = "M" + xs(0) + " " + ys(0), dL = "";
+    rb.curve.forEach(function (v, k) { dA += " L" + xs(k) + " " + ys(v); dL += (k ? " L" : "M") + xs(k) + " " + ys(v); });
+    dA += " L" + xs(rb.curve.length - 1) + " " + ys(0) + " Z";
+    S("path", { d: dA, fill: "var(--early)", opacity: .12 }, svg);
+    var ln = S("path", { d: dL, fill: "none", stroke: "var(--early)", "stroke-width": 3, "stroke-linejoin": "round", "class": "ln" }, svg);
+    rb.curve.forEach(function (v, k) {
+      var c = S("circle", { cx: xs(k), cy: ys(v), r: 4, fill: "var(--surface)", stroke: "var(--early)", "stroke-width": 2 }, svg);
+      var ttl = S("title", {}, c); ttl.textContent = (k + 1) + " years later: " + v.toFixed(1) + "%";
+      var t = S("text", { x: xs(k), y: h - 6, "text-anchor": "middle", "font-size": 11, fill: "var(--dim)", "font-family": "var(--mono)" }, svg); t.textContent = k + 1;
+    });
+    var xl = S("text", { x: w - 10, y: h - 6, "text-anchor": "end", "font-size": 11, fill: "var(--dim)" }, svg);
+    xl.textContent = "";
+    ln.style.setProperty("--len", Math.ceil(ln.getTotalLength ? ln.getTotalLength() : 900));
+    watch(host);
+
+    var T = R.transition, m = $("pt-trans");
+    $("pt-trans-answer").textContent = "After a fire late in the season, " + T.late.unburnt.toFixed(0) +
+      "% of places do not burn at all the next year. The fire used up the grass.";
+    H("div", "h", "", m);
+    CLS.forEach(function (c) { H("div", "h", "next year: " + PLAIN[c], m); });
+    CLS.forEach(function (frm) {
+      H("div", "s", PLAIN[frm], m);
+      CLS.forEach(function (to) {
+        var v = T[frm][to], cell = H("div", "c", v.toFixed(0) + "%", m);
+        cell.style.background = "color-mix(in srgb, var(--" + to + ") " + Math.max(8, Math.min(85, v)).toFixed(0) + "%, var(--surface))";
+        if (v > 55) cell.style.color = "#fff";
+        cell.title = "Of places with " + PLAIN[frm] + " this year, " + v.toFixed(1) + "% had " + PLAIN[to] + " the next.";
+      });
+    });
+
+    var big = R.same_season.share_of_burnt_cells;
+    $("pt-twice-big").textContent = big.toFixed(0) + "%";
+    $("pt-twice-answer").textContent = "of the places that burn in a year burn twice, once before August and again after July, once the country has dried out.";
+    var gh = R.interval.histogram, keys = Object.keys(gh).slice(0, 6), tot = sum(Object.keys(gh).map(function (k) { return gh[k]; }));
+    var gaps = $("pt-gaps"), bars = [];
+    keys.forEach(function (k) {
+      var row = H("div", "mb", null, gaps); H("span", "n", k + (k === "1" ? " year" : " years"), row);
+      var t = H("span", "t", null, row), i = H("i", null, null, t); i.style.background = "var(--late)";
+      H("span", "v num", (gh[k] / tot * 100).toFixed(0) + "%", row);
+      bars.push([i, gh[k] / tot * 100 / 60 * 100]);
+    });
+    watch(gaps, function () { bars.forEach(function (b) { b[0].style.width = Math.min(100, b[1]) + "%"; }); });
+
+    var SUPP = R.suppression, regions = Object.keys(SUPP).filter(function (k) { return k !== "all"; });
+    var top = SUPP[regions[0]];
+    $("pt-supp-answer").textContent = "In the Top End, yes. Country burnt early has a fire after July " + top.after_early.toFixed(0) +
+      "% of the time the next year, against " + top.after_unburnt.toFixed(0) + "% for country left alone.";
+    var pairs = $("pt-supp"), cols = [];
+    [["Whole Territory", SUPP.all]].concat(regions.map(function (r) { return [r.split(" (")[0], SUPP[r]]; })).forEach(function (g) {
+      var grp = H("div", "grp", null, pairs), c = H("div", "cols", null, grp);
+      var a = H("div", null, null, c), b = H("div", null, null, c);
+      a.style.background = "var(--early)"; b.style.background = "var(--unburnt)";
+      H("span", "num", g[1].after_early.toFixed(0) + "%", a); H("span", "num", g[1].after_unburnt.toFixed(0) + "%", b);
+      H("div", "lab", g[0], grp);
+      cols.push([a, g[1].after_early], [b, g[1].after_unburnt]);
+    });
+    watch(pairs, function () { cols.forEach(function (c) { c[0].style.height = (c[1] / 45 * 100) + "%"; }); });
+    $("pt-supp-note").textContent = "Add the whole Territory together and early burning looks worse, " + SUPP.all.after_early.toFixed(0) +
+      "% against " + SUPP.all.after_unburnt.toFixed(0) + "%. That total misleads: early burning happens in the north, where fire is common anyway, " +
+      "while the country left alone is mostly desert. Comparing like with like reverses it. These are observed patterns, not an experiment.";
+  })();
+
+  // ------------------------------------------------------------------ quality
+  (function quality() {
+    var NICE = { "gradient boosting": "Gradient boosting", "LSTM": "LSTM", "multilayer ANN": "Multilayer ANN",
+                 "random forest": "Random forest", "decision tree": "Decision tree", "naive bayes": "Naive Bayes",
+                 "same as last year": "Same as last year", "majority class": "Always unburnt" };
+    var balanced = D.models.filter(function (m) { return m.model.indexOf("(balanced)") > -1; });
+    var bases = D.models.filter(function (m) { return m.model === "same as last year" || m.model === "majority class"; });
+    var best = balanced.reduce(function (a, b) { return b.f1_macro > a.f1_macro ? b : a; });
+    var lastYear = bases.filter(function (m) { return m.model === "same as last year"; })[0];
+    var major = bases.filter(function (m) { return m.model === "majority class"; })[0];
+
+    var accs = Object.keys(D.accuracyByYear).map(function (k) { return D.accuracyByYear[k]; });
+    var meanAcc = sum(accs) / accs.length;
+    var big = $("q-acc-big");
+    big.textContent = "0%";
+    watch(big.closest(".panel"), function () {
+      if (REDUCED) { big.textContent = meanAcc.toFixed(0) + "%"; return; }
+      var t0 = performance.now();
+      (function tick(t) {
+        var k = Math.min(1, (t - t0) / 1200), e = 1 - Math.pow(1 - k, 3);
+        big.textContent = (meanAcc * e).toFixed(0) + "%";
+        if (k < 1) requestAnimationFrame(tick);
+      })(t0);
+    });
+    $("q-acc-answer").textContent = "About " + meanAcc.toFixed(0) + " squares in every 100 placed correctly. Guessing the commonest answer gets " +
+      (major.accuracy * 100).toFixed(0) + ", and copying last year gets " + (lastYear.accuracy * 100).toFixed(0) + ".";
+    var y3 = $("q-years");
+    Object.keys(D.accuracyByYear).forEach(function (y) {
+      var d = H("div", null, null, y3); H("b", null, D.accuracyByYear[y].toFixed(1) + "%", d); H("span", null, "correct in " + y, d);
+    });
+
+    // lollipop: balanced F1 filled, accuracy hollow
+    var rows = balanced.concat(bases).sort(function (a, b) { return b.f1_macro - a.f1_macro; });
+    $("q-models-h").textContent = balanced.length + " models, " + bases.length + " baselines";
+    $("q-models-lede").textContent = "Balanced F1 counts the three answers equally, so a model cannot score well by ignoring the rare late fires.";
+    var host = $("q-models"), w = 640, rh = 34, padL = 150, h = rows.length * rh + 30;
+    var svg = S("svg", { viewBox: "0 0 " + w + " " + h, role: "img", "aria-label": "Balanced F1 and accuracy for each model" }, host);
+    var xs = function (v) { return padL + v / .8 * (w - padL - 30); };
+    [0, .2, .4, .6, .8].forEach(function (v) {
+      S("line", { x1: xs(v), x2: xs(v), y1: 4, y2: h - 22, stroke: "var(--line)" }, svg);
+      var t = S("text", { x: xs(v), y: h - 6, "text-anchor": "middle", "font-size": 11, fill: "var(--dim)", "font-family": "var(--mono)" }, svg); t.textContent = v.toFixed(1);
+    });
+    var dots = [];
+    rows.forEach(function (m, i) {
+      var y = 16 + i * rh, isBase = bases.indexOf(m) > -1, nm = NICE[m.model.replace(" (balanced)", "")] || m.model;
+      var t = S("text", { x: padL - 14, y: y + 4, "text-anchor": "end", "font-size": 13.5, fill: isBase ? "var(--muted)" : "var(--ink)",
+                          "font-family": "var(--sans)", "font-weight": m === best ? 700 : 500 }, svg);
+      t.textContent = nm;
+      var l = S("line", { x1: xs(0), x2: xs(0), y1: y, y2: y, stroke: isBase ? "var(--unburnt)" : "var(--accent)", "stroke-width": 3, "stroke-linecap": "round" }, svg);
+      var a = S("circle", { cx: xs(m.accuracy), cy: y, r: 6, fill: "var(--surface)", stroke: "var(--muted)", "stroke-width": 2 }, svg);
+      S("title", {}, a).textContent = nm + " accuracy " + m.accuracy.toFixed(3);
+      var c = S("circle", { cx: xs(0), cy: y, r: 8, fill: isBase ? "var(--unburnt)" : "var(--accent)" }, svg);
+      S("title", {}, c).textContent = nm + " balanced F1 " + m.f1_macro.toFixed(3);
+      var v = S("text", { x: xs(m.f1_macro) + 0, y: y - 12, "text-anchor": "middle", "font-size": 11.5, fill: "var(--ink-2)", "font-family": "var(--mono)", opacity: 0 }, svg);
+      v.textContent = m.f1_macro.toFixed(2);
+      dots.push([l, c, v, m.f1_macro]);
+    });
+    watch(host, function () {
+      dots.forEach(function (d, i) {
+        var x = xs(d[3]);
+        if (REDUCED) { d[0].setAttribute("x2", x); d[1].setAttribute("cx", x); d[2].setAttribute("opacity", 1); return; }
+        var t0 = performance.now() + i * 70;
+        (function tick(t) {
+          var k = Math.max(0, Math.min(1, (t - t0) / 900)), e = 1 - Math.pow(1 - k, 3), xx = xs(d[3] * e);
+          d[0].setAttribute("x2", xx); d[1].setAttribute("cx", xx); d[2].setAttribute("opacity", k);
+          if (k < 1) requestAnimationFrame(tick);
+        })(performance.now());
+      });
+    });
+    var plainBest = D.models.filter(function (m) { return m.model === D.predModel; })[0];
+    $("q-models-note").textContent = "Without balancing, every model quietly stops calling fires after July. The " + D.predModel +
+      " scores " + plainBest.f1_per_class.late.toFixed(2) + " on that class unbalanced, against " + best.f1_per_class.late.toFixed(2) + " balanced.";
+
+    var lr = best.confusion[2], lt = sum(lr);
+    $("q-wrong-answer").textContent = "Its worst mistake is missing fires that come after July. It calls " + (lr[0] / lt * 100).toFixed(0) +
+      " of every 100 of them no fire at all, and those are the fires that do the damage.";
+    var cm = $("q-cm");
+    H("div", "h", "", cm); CLS.forEach(function (c) { H("div", "h", "said " + PLAIN[c], cm); });
+    best.confusion.forEach(function (r, i) {
+      var tt = sum(r); H("div", "s", PLAIN[CLS[i]], cm);
+      r.forEach(function (v, j) {
+        var p = tt ? v / tt * 100 : 0, c = H("div", "c", p.toFixed(0), cm);
+        c.style.background = "color-mix(in srgb, var(--" + CLS[j] + ") " + Math.max(6, Math.min(85, p)).toFixed(0) + "%, var(--surface))";
+        if (p > 55) c.style.color = "#fff";
+        c.title = v.toLocaleString() + " squares";
+      });
+    });
+
+    // walk-forward: every learner on its own line, so no fold is flattered by picking the best
+    if (D.walk && D.walk.folds && D.walk.folds.length) {
+      var byM = {};
+      D.walk.folds.forEach(function (f) {
+        Object.keys(f.models).forEach(function (k) {
+          if (k === "majority class") return;
+          var m = byM[k] = byM[k] || {}; (m[f.horizon] = m[f.horizon] || []).push(f.models[k].f1_macro);
+        });
+      });
+      var names = Object.keys(byM), hs = Object.keys(byM[names[0]]).map(Number).sort(function (a, b) { return a - b; });
+      var mean = function (a) { return sum(a) / a.length; };
+      var overall = {};
+      names.forEach(function (k) { var all = []; hs.forEach(function (hh) { all = all.concat(byM[k][hh]); }); overall[k] = mean(all); });
+      var learners = names.filter(function (k) { return k !== "same as last year"; }).sort(function (a, b) { return overall[b] - overall[a]; });
+      var top1 = learners[0];
+      $("q-walk-answer").textContent = "It holds up. The strongest learner here, the " + (NICE[top1] || top1) + ", averages " + overall[top1].toFixed(2) +
+        " across the " + D.walk.folds.length + " folds, against " + overall["same as last year"].toFixed(2) + " for copying last year, and barely fades from one year ahead to " +
+        hs[hs.length - 1] + " years ahead. Gradient boosting joined the project after this run.";
+      var wh = $("q-walk"), W2 = 980, H2 = 280, pl = 40, pb = 30;
+      var sv = S("svg", { viewBox: "0 0 " + W2 + " " + H2, role: "img", "aria-label": "Walk-forward macro F1 by forecast horizon" }, wh);
+      var lo = .45, hi = .7;
+      var yy = function (v) { return H2 - pb - (v - lo) / (hi - lo) * (H2 - pb - 12); };
+      var xx = function (hh) { return pl + (hh - hs[0]) / (hs[hs.length - 1] - hs[0]) * (W2 - pl - 20); };
+      [.5, .55, .6, .65, .7].forEach(function (v) {
+        S("line", { x1: pl, x2: W2 - 20, y1: yy(v), y2: yy(v), stroke: "var(--line)" }, sv);
+        var t = S("text", { x: pl - 8, y: yy(v) + 4, "text-anchor": "end", "font-size": 12, fill: "var(--dim)", "font-family": "var(--mono)" }, sv); t.textContent = v.toFixed(2);
+      });
+      hs.forEach(function (hh) {
+        var t = S("text", { x: xx(hh), y: H2 - 8, "text-anchor": "middle", "font-size": 12, fill: "var(--dim)", "font-family": "var(--mono)" }, sv);
+        t.textContent = hh + (hh === 1 ? " yr ahead" : "");
+      });
+      var colours = ["var(--late)", "#d9963b", "var(--early)", "var(--rain)", "#8a7f6b"];
+      var leg = $("q-walk-legend");
+      learners.concat(["same as last year"]).forEach(function (k, n) {
+        var base = k === "same as last year", col = base ? "var(--muted)" : colours[n % colours.length];
+        var d = ""; hs.forEach(function (hh, i) { d += (i ? " L" : "M") + xx(hh) + " " + yy(mean(byM[k][hh])); });
+        var at = { d: d, fill: "none", stroke: col, "stroke-width": base ? 2 : (k === top1 ? 3.2 : 2.2), "stroke-linejoin": "round" };
+        if (base) at["stroke-dasharray"] = "6 6"; else at["class"] = "ln";
+        var p = S("path", at, sv);
+        if (!base) p.style.setProperty("--len", 1300);
+        var lab = H("span", "key", null, leg); var sw = H("b", null, null, lab);
+        sw.style.cssText = "background:" + col + ";height:3px;width:16px;border-radius:2px";
+        lab.appendChild(document.createTextNode((NICE[k] || k) + " " + overall[k].toFixed(3)));
+      });
+      watch(wh);
+    } else { $("q-walk").closest(".panel").hidden = true; }
+
+    var FN = { wx_wet_vpd: "Wet-season dryness of the air", ndvi_wet_mean: "Wet-season greenness", wx_wet_rain: "Wet-season rain",
+               ndvi_apr: "April greenness", ndvi_wet_min: "Lowest wet-season greenness", ndvi_wet_max: "Peak greenness",
+               nbr_frac_burnt_prev: "Neighbours burnt last year", nbr_frac_late_prev: "Neighbours burnt late last year",
+               nbr_frac_early_prev: "Neighbours burnt early last year", lat: "Latitude", lon: "Longitude", elevation: "Elevation",
+               wx_wet_tmax: "Wet-season heat", wx_wet_radn: "Wet-season sunlight", wx_dry_vpd_prev: "Last dry season's dryness",
+               wx_wet_rain_anom: "Rain against normal", wx_wet_rain_ratio: "Rain as a share of normal", yrs_since_burnt: "Years since fire",
+               freq_25: "Fire frequency, 25 years", freq_20: "Fire frequency, 20 years", freq_10: "Fire frequency, 10 years",
+               late_freq_25: "Late-fire frequency, 25 years", prev_frac_burnt: "Burnt share last year", ndvi_greenup: "Green-up speed",
+               wx_apr_vpd: "April dryness", wx_dry_tmax_prev: "Last dry season's heat", wx_wet_rain_prev: "Previous wet season's rain" };
+    var grp = function (f) { return f.indexOf("ndvi") === 0 ? "var(--early)" : f.indexOf("wx_") === 0 ? "var(--rain)" :
+      (f === "lat" || f === "lon" || f === "elevation") ? "var(--unburnt)" : "var(--late)"; };
+    var imp = $("q-imp"), maxI = D.importance[0][1], ib = [];
+    D.importance.forEach(function (p) {
+      var row = H("div", "mb", null, imp); row.style.gridTemplateColumns = "190px minmax(0,1fr) 46px";
+      H("span", "n", FN[p[0]] || p[0], row).title = p[0];
+      var t = H("span", "t", null, row), i = H("i", null, null, t); i.style.background = grp(p[0]);
+      H("span", "v num", p[1].toFixed(3), row); ib.push([i, p[1] / maxI * 100]);
+    });
+    watch(imp, function () { ib.forEach(function (b) { b[0].style.width = b[1] + "%"; }); });
+
+    $("q-counts").textContent = D.nCells.toLocaleString() + " squares, " + D.nRows.toLocaleString() + " square-years, 2000 to " + YEARS[YEARS.length - 1];
+  })();
+
+  // ------------------------------------------------------------------- detail
   var dt = $("detail-toggle");
   function applyDetail() {
-    Array.prototype.forEach.call(document.querySelectorAll(".detail"), function (el) {
-      el.hidden = !dt.checked;
-    });
+    Array.prototype.forEach.call(document.querySelectorAll(".detail"), function (el) { el.hidden = !dt.checked; });
+    document.querySelector(".q-two").style.gridTemplateColumns = dt.checked ? "" : "minmax(0,1fr)";
     try { localStorage.setItem("pyrantis-detail", dt.checked ? "1" : "0"); } catch (e) {}
   }
   try { dt.checked = localStorage.getItem("pyrantis-detail") === "1"; } catch (e) {}
   dt.addEventListener("change", applyDetail);
   applyDetail();
 
-  // ----------------------------------------------------------------- charts
-  function bars(host, items, opts) {
-    opts = opts || {};
-    var scale = opts.scale || Math.max.apply(null, items.map(function (i) { return i.v; }));
-    host.textContent = "";
-    var list = document.createElement("div"); list.className = "barlist";
-    items.forEach(function (it, n) {
-      var r = document.createElement("div"); r.className = "barrow";
-      var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = it.k;
-      var tk = document.createElement("div"); tk.className = "tk";
-      var f = document.createElement("i");
-      f.style.width = Math.max(0, it.v / scale * 100) + "%";
-      if (it.colour) f.style.background = it.colour;
-      f.style.animationDelay = (n * 28) + "ms";
-      tk.appendChild(f);
-      var vl = document.createElement("div"); vl.className = "vl";
-      vl.textContent = opts.fmt ? opts.fmt(it.v) : it.v.toFixed(1) + "%";
-      r.appendChild(nm); r.appendChild(tk); r.appendChild(vl);
-      list.appendChild(r);
-    });
-    host.appendChild(list);
-    var ax = document.createElement("div"); ax.className = "axis";
-    var mk = "<span></span><span class='mk'>";
-    for (var i = 0; i <= 4; i++) {
-      mk += "<span>" + (opts.fmt ? opts.fmt(scale * i / 4) : (scale * i / 4).toFixed(0)) + "</span>";
-    }
-    ax.innerHTML = mk + "</span><span></span>";
-    host.appendChild(ax);
-  }
-
-  // Months
-  var bm = busiestMonth();
-  $("pt-month-answer").textContent =
-    "Most fires happen in " + MONTHS[bm] + ". The season runs from about May to November, " +
-    "and almost nothing burns in the wet from December to March.";
-  bars($("pt-months"), [1,2,3,4,5,6,7,8,9,10,11,12].map(function (m) {
-    return { k: MONTHS[m], v: D.months[String(m)],
-             colour: m >= 8 ? "var(--late)" : m >= 4 ? "var(--early)" : "var(--unburnt)" };
-  }), { scale: 20 });
-
-  var R = D.recurrence, rb = R.reburn.all;
-  $("pt-reburn-answer").textContent =
-    "Yes, and soon. In any year " + rb.base + "% of the Territory burns, but of the places " +
-    "that burned last year, " + rb.curve[0] + "% burn again this year.";
-  bars($("pt-reburn"), rb.curve.map(function (v, i) {
-    return { k: (i + 1) + (i ? " years later" : " year later"), v: v, colour: "var(--late)" };
-  }), { scale: 60 });
-
-  var T = R.transition;
-  $("pt-trans-answer").textContent =
-    "After a fire late in the season, " + T.late.unburnt.toFixed(0) + "% of places do not " +
-    "burn at all the next year. The fire used up the grass that would have fed the next one.";
-  var tb = $("pt-trans");
-  var head = "<tr><th></th><th colspan='3'>Next year</th></tr><tr><th class='side'>This year</th>";
-  CLS.forEach(function (c) { head += "<th>" + PLAIN[c] + "</th>"; });
-  head += "</tr>";
-  var body = "";
-  CLS.forEach(function (frm) {
-    body += "<tr><th class='side'>" + PLAIN[frm] + "</th>";
-    CLS.forEach(function (to) {
-      var v = T[frm][to], a = Math.max(.05, Math.min(.85, v / 100));
-      body += "<td style=\"background:color-mix(in srgb, var(--" + to + ") " +
-              (a * 100).toFixed(0) + "%, transparent)\">" + v.toFixed(0) + "</td>";
-    });
-    body += "</tr>";
-  });
-  tb.innerHTML = head + body;
-
-  $("pt-twice-answer").textContent =
-    "Yes. " + R.same_season.share_of_burnt_cells + "% of the places that burn in a year burn " +
-    "twice: once before August and again after July.";
-  var gh = R.interval.histogram, gtot = 0;
-  Object.keys(gh).forEach(function (k) { gtot += gh[k]; });
-  bars($("pt-gaps"), Object.keys(gh).slice(0, 6).map(function (k) {
-    return { k: k + (k === "1" ? " year" : " years"), v: gh[k] / gtot * 100, colour: "var(--unburnt)" };
-  }), { scale: 60 });
-
-  var SUPP = R.suppression;
-  var regions = Object.keys(SUPP).filter(function (k) { return k !== "all"; });
-  var top = SUPP[regions[0]];
-  $("pt-supp-answer").textContent =
-    "In the Top End, yes. Country burned early sees a fire after July " + top.after_early +
-    "% of the time the next year, against " + top.after_unburnt + "% for country left alone.";
-  var items = [{ k: "Whole Territory, burned early", v: SUPP.all.after_early, colour: "var(--early)" },
-               { k: "Whole Territory, left alone", v: SUPP.all.after_unburnt, colour: "var(--unburnt)" }];
-  regions.forEach(function (r) {
-    var short = r.split(" (")[0];
-    items.push({ k: short + ", burned early", v: SUPP[r].after_early, colour: "var(--early)" });
-    items.push({ k: short + ", left alone", v: SUPP[r].after_unburnt, colour: "var(--unburnt)" });
-  });
-  bars($("pt-supp"), items, { scale: 40 });
-  $("pt-supp-note").textContent =
-    "Add the whole Territory together and early burning looks worse, " + SUPP.all.after_early +
-    "% against " + SUPP.all.after_unburnt + "%. That total is misleading. Early burning happens " +
-    "in the north where fire is common anyway, while the country left alone is mostly desert " +
-    "that rarely burns. Comparing like with like reverses the answer. These are patterns we " +
-    "observed, not a controlled experiment.";
-
-  // --------------------------------------------------------------- quality
-  var balanced = D.models.filter(function (m) { return m.model.indexOf("(balanced)") > -1; });
-  var bases = D.models.filter(function (m) {
-    return m.model === "same as last year" || m.model === "majority class"; });
-  var best = balanced.reduce(function (a, b) { return b.f1_macro > a.f1_macro ? b : a; });
-
-  var accs = Object.keys(D.accuracyByYear).map(function (k) { return D.accuracyByYear[k]; });
-  var meanAcc = accs.reduce(function (a, b) { return a + b; }, 0) / accs.length;
-  $("q-acc-answer").textContent =
-    "It places about " + meanAcc.toFixed(0) + " squares in every 100 correctly, on years it " +
-    "had never seen.";
-  $("q-acc-note").textContent =
-    "Guessing the most common answer every time would get about " +
-    (D.models.filter(function (m) { return m.model === "majority class"; })[0].accuracy * 100).toFixed(0) +
-    " right, and copying last year would get about " +
-    (D.models.filter(function (m) { return m.model === "same as last year"; })[0].accuracy * 100).toFixed(0) +
-    ". Those are the bars worth beating.";
-  var qf = $("q-facts"); qf.textContent = "";
-  Object.keys(D.accuracyByYear).forEach(function (y) {
-    fact(qf, "Correct in " + y, D.accuracyByYear[y].toFixed(1) + "% of squares");
-  });
-
-  var lr = best.confusion[2], lt = lr.reduce(function (a, b) { return a + b; }, 0);
-  $("q-wrong-answer").textContent =
-    "Its worst mistake is missing fires that come after July. It calls " +
-    (lr[0] / lt * 100).toFixed(0) + " out of every 100 of them no fire at all, and those are " +
-    "the fires that do the damage.";
-  var cm = $("q-cm");
-  var ch = "<tr><th></th><th colspan='3'>What the model said</th></tr><tr><th class='side'>What happened</th>";
-  CLS.forEach(function (c) { ch += "<th>" + PLAIN[c] + "</th>"; });
-  ch += "</tr>";
-  var cb = "";
-  best.confusion.forEach(function (r, i) {
-    var tot = r.reduce(function (a, b) { return a + b; }, 0);
-    cb += "<tr><th class='side'>" + PLAIN[CLS[i]] + "</th>";
-    r.forEach(function (v, j) {
-      var p = tot ? v / tot * 100 : 0, a = Math.max(.05, Math.min(.85, p / 100));
-      cb += "<td style=\"background:color-mix(in srgb, var(--" + CLS[j] + ") " +
-            (a * 100).toFixed(0) + "%, transparent)\">" + p.toFixed(0) + "</td>";
-    });
-    cb += "</tr>";
-  });
-  cm.innerHTML = ch + cb;
-
-  bars($("q-models"), balanced.concat(bases)
-    .sort(function (a, b) { return b.f1_macro - a.f1_macro; })
-    .map(function (m) {
-      return { k: m.model.replace(" (balanced)", ""), v: m.f1_macro,
-               colour: bases.indexOf(m) > -1 ? "var(--unburnt)" : "var(--accent)" };
-    }), { scale: 0.8, fmt: function (v) { return v.toFixed(2); } });
-  $("q-models-lede").textContent =
-    "Balanced F1 treats all three answers as equally important, so a model cannot score well " +
-    "by ignoring the rare ones. Trained on " + D.split.train[0] + " to " +
-    D.split.train[D.split.train.length - 1] + ", tested once on " + HELD[0] + " to " +
-    HELD[HELD.length - 1] + ".";
-  var plainBest = D.models.filter(function (m) { return m.model === D.predModel; })[0];
-  $("q-models-note").textContent =
-    "Without balancing, every model quietly stops calling fires after July. The " +
-    D.predModel + " scores " + plainBest.f1_per_class.late.toFixed(2) + " on that class " +
-    "unbalanced against " + best.f1_per_class.late.toFixed(2) + " balanced.";
-
-  var maxImp = D.importance[0][1];
-  bars($("q-imp"), D.importance.map(function (p) {
-    return { k: p[0], v: p[1],
-             colour: p[0].indexOf("wx_") === 0 ? "var(--late)" : "var(--unburnt)" };
-  }), { scale: Math.ceil(maxImp * 100) / 100, fmt: function (v) { return v.toFixed(2); } });
-
-  if (D.walk && D.walk.folds && D.walk.folds.length) {
-    var byH = {};
-    D.walk.folds.forEach(function (f) {
-      var h = f.horizon;
-      var vals = Object.keys(f.models).filter(function (k) {
-        return k !== "same as last year" && k !== "majority class"; })
-        .map(function (k) { return f.models[k].f1_macro; });
-      (byH[h] = byH[h] || []).push(Math.max.apply(null, vals));
-    });
-    var hs = Object.keys(byH).map(Number).sort(function (a, b) { return a - b; });
-    var first = byH[hs[0]].reduce(function (a, b) { return a + b; }, 0) / byH[hs[0]].length;
-    var lastH = hs[hs.length - 1];
-    var lastV = byH[lastH].reduce(function (a, b) { return a + b; }, 0) / byH[lastH].length;
-    $("q-walk-answer").textContent =
-      "It holds up. Guessing one year ahead it scores " + first.toFixed(2) + ", and guessing " +
-      lastH + " years ahead it still scores " + lastV.toFixed(2) + ".";
-    bars($("q-walk"), hs.map(function (h) {
-      var v = byH[h].reduce(function (a, b) { return a + b; }, 0) / byH[h].length;
-      return { k: h + (h === 1 ? " year ahead" : " years ahead"), v: v, colour: "var(--accent)" };
-    }), { scale: 0.8, fmt: function (v) { return v.toFixed(2); } });
-    $("q-walk-note").textContent =
-      "Why it does not fade: the strongest clue is the wet season just gone, which is known " +
-      "by the end of April however old the fire history is. " + D.walk.folds.length +
-      " separate tests went into this.";
-  } else {
-    $("q-walk-wrap").hidden = true;
-  }
-
-  $("q-counts").textContent = D.nCells.toLocaleString() + " squares \u00b7 " +
-    D.nRows.toLocaleString() + " square-years \u00b7 2000 to " + YEARS[YEARS.length - 1];
-
+  Array.prototype.forEach.call(document.querySelectorAll(".reveal"), function (el) { watch(el); });
   territorySummary();
-  setView("outlook");
+  OM.start();
 })();
 </script>
+</html>

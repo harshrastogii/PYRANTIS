@@ -131,6 +131,9 @@ def main() -> None:
         "wettestBurnt": burnt_share[wettest],
         "biggestFireYear": int(max(burnt_share, key=burnt_share.get)),
         "biggestFireShare": max(burnt_share.values()),
+        # April greenness for every year, so the page can draw the real values rather than
+        # only quoting a rank.
+        "ndviSeries": {str(int(y)): round(float(v), 3) for y, v in apr.items()},
     }
     print(f"  facts: {fy} wet {facts['wetRain']}mm ({facts['wetPct']:+d}%), "
           f"rank {facts['wetRank']}/{facts['wetOf']}; greenness rank "

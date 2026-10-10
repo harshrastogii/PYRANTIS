@@ -1,0 +1,984 @@
+{
+ "rows_model": 966819,
+ "rows_labels": 1207570,
+ "cells": 46445,
+ "class_share_model": {
+  "unburnt": 69.0,
+  "early": 14.1,
+  "late": 16.9
+ },
+ "class_share_labels": {
+  "unburnt": 67.5,
+  "early": 14.0,
+  "late": 18.5
+ },
+ "rows_train": 690585,
+ "share_train": {
+  "unburnt": 69.6,
+  "early": 13.5,
+  "late": 16.9
+ },
+ "rows_val": 138117,
+ "share_val": {
+  "unburnt": 77.1,
+  "early": 14.5,
+  "late": 8.4
+ },
+ "rows_test": 138117,
+ "share_test": {
+  "unburnt": 57.8,
+  "early": 16.6,
+  "late": 25.5
+ },
+ "missing_values": 0,
+ "month_share": {
+  "1": 2.1,
+  "2": 1.2,
+  "3": 1.6,
+  "4": 5.2,
+  "5": 12.6,
+  "6": 10.7,
+  "7": 10.0,
+  "8": 8.9,
+  "9": 13.4,
+  "10": 16.2,
+  "11": 12.5,
+  "12": 5.8
+ },
+ "share_aug_nov": 51.0,
+ "share_may_jul": 33.2,
+ "year_corr_rain_late": 0.79,
+ "year_corr_rain_early": 0.09,
+ "year_share": {
+  "2000": {
+   "unburnt": 64.6,
+   "early": 8.9,
+   "late": 26.5
+  },
+  "2001": {
+   "unburnt": 45.1,
+   "early": 22.0,
+   "late": 32.9
+  },
+  "2002": {
+   "unburnt": 49.9,
+   "early": 22.1,
+   "late": 28.0
+  },
+  "2003": {
+   "unburnt": 80.7,
+   "early": 8.7,
+   "late": 10.6
+  },
+  "2004": {
+   "unburnt": 61.3,
+   "early": 8.2,
+   "late": 30.5
+  },
+  "2005": {
+   "unburnt": 82.8,
+   "early": 10.0,
+   "late": 7.2
+  },
+  "2006": {
+   "unburnt": 69.2,
+   "early": 6.4,
+   "late": 24.4
+  },
+  "2007": {
+   "unburnt": 64.4,
+   "early": 9.4,
+   "late": 26.2
+  },
+  "2008": {
+   "unburnt": 81.5,
+   "early": 10.2,
+   "late": 8.3
+  },
+  "2009": {
+   "unburnt": 73.6,
+   "early": 12.2,
+   "late": 14.3
+  },
+  "2010": {
+   "unburnt": 79.5,
+   "early": 11.0,
+   "late": 9.4
+  },
+  "2011": {
+   "unburnt": 34.3,
+   "early": 19.2,
+   "late": 46.5
+  },
+  "2012": {
+   "unburnt": 55.7,
+   "early": 19.4,
+   "late": 24.9
+  },
+  "2013": {
+   "unburnt": 79.4,
+   "early": 13.2,
+   "late": 7.4
+  },
+  "2014": {
+   "unburnt": 69.6,
+   "early": 11.5,
+   "late": 19.0
+  },
+  "2015": {
+   "unburnt": 64.7,
+   "early": 17.2,
+   "late": 18.1
+  },
+  "2016": {
+   "unburnt": 80.1,
+   "early": 13.4,
+   "late": 6.4
+  },
+  "2017": {
+   "unburnt": 63.3,
+   "early": 15.8,
+   "late": 20.9
+  },
+  "2018": {
+   "unburnt": 69.2,
+   "early": 18.4,
+   "late": 12.4
+  },
+  "2019": {
+   "unburnt": 79.4,
+   "early": 13.2,
+   "late": 7.4
+  },
+  "2020": {
+   "unburnt": 84.1,
+   "early": 12.2,
+   "late": 3.7
+  },
+  "2021": {
+   "unburnt": 74.8,
+   "early": 13.4,
+   "late": 11.8
+  },
+  "2022": {
+   "unburnt": 72.8,
+   "early": 17.7,
+   "late": 9.4
+  },
+  "2023": {
+   "unburnt": 49.5,
+   "early": 13.4,
+   "late": 37.1
+  },
+  "2024": {
+   "unburnt": 65.3,
+   "early": 15.1,
+   "late": 19.6
+  },
+  "2025": {
+   "unburnt": 59.6,
+   "early": 21.0,
+   "late": 19.4
+  }
+ },
+ "year_rain": {
+  "2005": 336.0,
+  "2006": 718.0,
+  "2007": 525.0,
+  "2008": 441.0,
+  "2009": 580.0,
+  "2010": 631.0,
+  "2011": 881.0,
+  "2012": 549.0,
+  "2013": 376.0,
+  "2014": 615.0,
+  "2015": 494.0,
+  "2016": 458.0,
+  "2017": 691.0,
+  "2018": 479.0,
+  "2019": 294.0,
+  "2020": 369.0,
+  "2021": 568.0,
+  "2022": 435.0,
+  "2023": 731.0,
+  "2024": 781.0,
+  "2025": 473.0
+ },
+ "top_end_mean_freq": 82.9,
+ "south_mean_freq": 12.4,
+ "south_late_share": 73.7,
+ "top_late_share": 36.2,
+ "cells_never_burnt_pct": 4.6,
+ "bands": {
+  "23\u201326\u00b0 S": {
+   "unburnt": 93.0,
+   "early": 1.5,
+   "late": 5.5,
+   "rain": 177.0,
+   "ndvi": 0.21
+  },
+  "20\u201323\u00b0 S": {
+   "unburnt": 85.7,
+   "early": 3.3,
+   "late": 10.9,
+   "rain": 286.0,
+   "ndvi": 0.24
+  },
+  "17\u201320\u00b0 S": {
+   "unburnt": 73.2,
+   "early": 6.0,
+   "late": 20.9,
+   "rain": 519.0,
+   "ndvi": 0.31
+  },
+  "14\u201317\u00b0 S": {
+   "unburnt": 45.3,
+   "early": 27.1,
+   "late": 27.6,
+   "rain": 890.0,
+   "ndvi": 0.44
+  },
+  "11\u201314\u00b0 S": {
+   "unburnt": 16.5,
+   "early": 57.0,
+   "late": 26.5,
+   "rain": 1300.0,
+   "ndvi": 0.55
+  }
+ },
+ "interaction": {
+  "driest_q": {
+   "1": 17.4,
+   "2": 12.0,
+   "3": 13.3,
+   "4": 7.4,
+   "5": 5.5,
+   "6": 3.1,
+   "7": 3.1,
+   "8": 2.4
+  },
+  "wettest_q": {
+   "1": 29.2,
+   "2": 36.4,
+   "3": 38.0,
+   "4": 43.5,
+   "5": 39.9,
+   "6": 50.0,
+   "7": 31.9,
+   "8": 30.4
+  },
+  "anom_edges_mm": [
+   -805.0,
+   -154.0,
+   -54.0,
+   32.0,
+   162.0,
+   1381.0
+  ]
+ },
+ "ysb_mix": {
+  "1": {
+   "unburnt": 46.1,
+   "early": 32.2,
+   "late": 21.7
+  },
+  "2": {
+   "unburnt": 63.5,
+   "early": 14.0,
+   "late": 22.6
+  },
+  "3": {
+   "unburnt": 74.4,
+   "early": 7.5,
+   "late": 18.1
+  },
+  "4": {
+   "unburnt": 79.5,
+   "early": 5.1,
+   "late": 15.4
+  },
+  "5": {
+   "unburnt": 80.4,
+   "early": 4.1,
+   "late": 15.5
+  },
+  "6": {
+   "unburnt": 81.7,
+   "early": 3.1,
+   "late": 15.2
+  },
+  "7": {
+   "unburnt": 90.7,
+   "early": 2.7,
+   "late": 6.7
+  },
+  "8": {
+   "unburnt": 89.2,
+   "early": 2.8,
+   "late": 8.0
+  },
+  "9": {
+   "unburnt": 82.4,
+   "early": 2.6,
+   "late": 15.0
+  },
+  "10": {
+   "unburnt": 88.3,
+   "early": 2.5,
+   "late": 9.3
+  }
+ },
+ "skew": {
+  "wx_wet_rain": 1.11,
+  "wx_apr_rain": 3.82,
+  "yrs_since_burnt": 1.75,
+  "wx_wet_vpd": -0.35
+ },
+ "skew_log_wet_rain": -0.66,
+ "skew_log_apr_rain": 0.44,
+ "corr_top": [
+  [
+   "Fire freq. 10 yr",
+   "Fire freq. 25 yr",
+   0.98
+  ],
+  [
+   "Wet greenness",
+   "April greenness",
+   0.96
+  ],
+  [
+   "Wet rain",
+   "Wet VPD",
+   -0.9
+  ],
+  [
+   "Fire freq. 3 yr",
+   "Fire freq. 10 yr",
+   0.88
+  ],
+  [
+   "Wet VPD",
+   "April greenness",
+   -0.87
+  ],
+  [
+   "Wet VPD",
+   "Wet greenness",
+   -0.86
+  ],
+  [
+   "Fire freq. 3 yr",
+   "Fire freq. 25 yr",
+   0.86
+  ],
+  [
+   "Wet greenness",
+   "Latitude",
+   0.85
+  ],
+  [
+   "Wet rain",
+   "April greenness",
+   0.85
+  ],
+  [
+   "Wet rain",
+   "Wet greenness",
+   0.85
+  ]
+ ],
+ "corr_wet_rain_vpd": -0.9,
+ "corr_lat_greenness": 0.85,
+ "corr_anom_rain": 0.45,
+ "kmeans": {
+  "k_range": [
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "inertia": [
+   67273.0,
+   39549.0,
+   30196.0,
+   25793.0,
+   21966.0,
+   19117.0,
+   17509.0,
+   16003.0
+  ],
+  "silhouette": [
+   0.535,
+   0.514,
+   0.462,
+   0.447,
+   0.403,
+   0.41,
+   0.402,
+   0.34
+  ],
+  "davies_bouldin": [
+   0.878,
+   0.783,
+   0.905,
+   0.948,
+   0.984,
+   0.951,
+   1.011,
+   1.021
+  ],
+  "k": 3,
+  "silhouette_k": 0.514,
+  "db_k": 0.783,
+  "profiles": {
+   "Arid south: rarely burns": {
+    "cells": 26323,
+    "freq": 13.0,
+    "early_freq": 3.7,
+    "late_freq": 9.4,
+    "rain": 287.0,
+    "lat": -22.1
+   },
+   "Interior savanna: burns late": {
+    "cells": 13230,
+    "freq": 46.2,
+    "early_freq": 11.3,
+    "late_freq": 34.9,
+    "rain": 737.0,
+    "lat": -16.7
+   },
+   "Top End: burns most years, mostly early": {
+    "cells": 6486,
+    "freq": 84.9,
+    "early_freq": 62.0,
+    "late_freq": 22.9,
+    "rain": 1194.0,
+    "lat": -13.8
+   }
+  }
+ },
+ "metrics": {
+  "Gradient boosting": {
+   "accuracy": 0.725,
+   "precision": 0.679,
+   "recall": 0.69,
+   "f1": 0.684,
+   "f1_class": {
+    "unburnt": 0.816,
+    "early": 0.684,
+    "late": 0.553
+   },
+   "precision_class": {
+    "unburnt": 0.83,
+    "early": 0.666,
+    "late": 0.542
+   },
+   "recall_class": {
+    "unburnt": 0.802,
+    "early": 0.702,
+    "late": 0.564
+   },
+   "confusion": [
+    [
+     64089,
+     3186,
+     12615
+    ],
+    [
+     2605,
+     16115,
+     4222
+    ],
+    [
+     10478,
+     4895,
+     19912
+    ]
+   ]
+  },
+  "LSTM": {
+   "accuracy": 0.692,
+   "precision": 0.679,
+   "recall": 0.687,
+   "f1": 0.673,
+   "f1_class": {
+    "unburnt": 0.772,
+    "early": 0.687,
+    "late": 0.561
+   },
+   "precision_class": {
+    "unburnt": 0.862,
+    "early": 0.7,
+    "late": 0.474
+   },
+   "recall_class": {
+    "unburnt": 0.699,
+    "early": 0.674,
+    "late": 0.688
+   },
+   "confusion": [
+    [
+     55832,
+     2441,
+     21617
+    ],
+    [
+     2148,
+     15453,
+     5341
+    ],
+    [
+     6819,
+     4175,
+     24291
+    ]
+   ]
+  },
+  "Multilayer ANN": {
+   "accuracy": 0.678,
+   "precision": 0.67,
+   "recall": 0.695,
+   "f1": 0.667,
+   "f1_class": {
+    "unburnt": 0.752,
+    "early": 0.693,
+    "late": 0.556
+   },
+   "precision_class": {
+    "unburnt": 0.889,
+    "early": 0.662,
+    "late": 0.459
+   },
+   "recall_class": {
+    "unburnt": 0.652,
+    "early": 0.727,
+    "late": 0.706
+   },
+   "confusion": [
+    [
+     52118,
+     3276,
+     24496
+    ],
+    [
+     1372,
+     16680,
+     4890
+    ],
+    [
+     5145,
+     5239,
+     24901
+    ]
+   ]
+  },
+  "Random forest": {
+   "accuracy": 0.727,
+   "precision": 0.688,
+   "recall": 0.651,
+   "f1": 0.66,
+   "f1_class": {
+    "unburnt": 0.824,
+    "early": 0.687,
+    "late": 0.468
+   },
+   "precision_class": {
+    "unburnt": 0.765,
+    "early": 0.699,
+    "late": 0.599
+   },
+   "recall_class": {
+    "unburnt": 0.894,
+    "early": 0.676,
+    "late": 0.384
+   },
+   "confusion": [
+    [
+     71394,
+     2495,
+     6001
+    ],
+    [
+     4358,
+     15503,
+     3081
+    ],
+    [
+     17574,
+     4172,
+     13539
+    ]
+   ]
+  },
+  "Decision tree": {
+   "accuracy": 0.628,
+   "precision": 0.598,
+   "recall": 0.632,
+   "f1": 0.604,
+   "f1_class": {
+    "unburnt": 0.719,
+    "early": 0.597,
+    "late": 0.495
+   },
+   "precision_class": {
+    "unburnt": 0.831,
+    "early": 0.532,
+    "late": 0.43
+   },
+   "recall_class": {
+    "unburnt": 0.633,
+    "early": 0.68,
+    "late": 0.584
+   },
+   "confusion": [
+    [
+     50556,
+     6832,
+     22502
+    ],
+    [
+     2504,
+     15612,
+     4826
+    ],
+    [
+     7758,
+     6926,
+     20601
+    ]
+   ]
+  },
+  "Naive Bayes": {
+   "accuracy": 0.644,
+   "precision": 0.592,
+   "recall": 0.616,
+   "f1": 0.602,
+   "f1_class": {
+    "unburnt": 0.746,
+    "early": 0.661,
+    "late": 0.398
+   },
+   "precision_class": {
+    "unburnt": 0.76,
+    "early": 0.607,
+    "late": 0.409
+   },
+   "recall_class": {
+    "unburnt": 0.734,
+    "early": 0.725,
+    "late": 0.389
+   },
+   "confusion": [
+    [
+     58611,
+     4142,
+     17137
+    ],
+    [
+     3613,
+     16636,
+     2693
+    ],
+    [
+     14933,
+     6641,
+     13711
+    ]
+   ]
+  },
+  "Same as last year": {
+   "accuracy": 0.567,
+   "precision": 0.511,
+   "recall": 0.504,
+   "f1": 0.506,
+   "f1_class": {
+    "unburnt": 0.692,
+    "early": 0.586,
+    "late": 0.241
+   },
+   "precision_class": {
+    "unburnt": 0.667,
+    "early": 0.606,
+    "late": 0.259
+   },
+   "recall_class": {
+    "unburnt": 0.719,
+    "early": 0.567,
+    "late": 0.225
+   },
+   "confusion": [
+    [
+     57424,
+     3579,
+     18887
+    ],
+    [
+     6129,
+     13000,
+     3813
+    ],
+    [
+     22481,
+     4861,
+     7943
+    ]
+   ]
+  },
+  "Always unburnt": {
+   "accuracy": 0.578,
+   "precision": 0.193,
+   "recall": 0.333,
+   "f1": 0.244,
+   "f1_class": {
+    "unburnt": 0.733,
+    "early": 0.0,
+    "late": 0.0
+   },
+   "precision_class": {
+    "unburnt": 0.578,
+    "early": 0.0,
+    "late": 0.0
+   },
+   "recall_class": {
+    "unburnt": 1.0,
+    "early": 0.0,
+    "late": 0.0
+   },
+   "confusion": [
+    [
+     79890,
+     0,
+     0
+    ],
+    [
+     22942,
+     0,
+     0
+    ],
+    [
+     35285,
+     0,
+     0
+    ]
+   ]
+  }
+ },
+ "unweighted": {
+  "gradient boosting": {
+   "f1": 0.644,
+   "accuracy": 0.724,
+   "f1_late": 0.42,
+   "recall_late": 0.321
+  },
+  "random forest": {
+   "f1": 0.592,
+   "accuracy": 0.705,
+   "f1_late": 0.273,
+   "recall_late": 0.174
+  },
+  "multilayer ANN": {
+   "f1": 0.654,
+   "accuracy": 0.722,
+   "f1_late": 0.449,
+   "recall_late": 0.373
+  },
+  "LSTM": {
+   "f1": 0.672,
+   "accuracy": 0.738,
+   "f1_late": 0.491,
+   "recall_late": 0.414
+  },
+  "decision tree": {
+   "f1": 0.566,
+   "accuracy": 0.656,
+   "f1_late": 0.308,
+   "recall_late": 0.243
+  },
+  "naive bayes": {
+   "f1": 0.6,
+   "accuracy": 0.648,
+   "f1_late": 0.386,
+   "recall_late": 0.365
+  }
+ },
+ "walk": {
+  "folds": 66,
+  "features": 36,
+  "baseline": {
+   "mean": 0.539,
+   "sd": 0.045
+  },
+  "models": {
+   "LSTM": {
+    "mean": 0.625,
+    "sd": 0.043,
+    "min": 0.506,
+    "max": 0.688,
+    "wins": 64
+   },
+   "multilayer ANN": {
+    "mean": 0.618,
+    "sd": 0.042,
+    "min": 0.525,
+    "max": 0.679,
+    "wins": 64
+   },
+   "random forest": {
+    "mean": 0.611,
+    "sd": 0.045,
+    "min": 0.542,
+    "max": 0.689,
+    "wins": 65
+   },
+   "naive bayes": {
+    "mean": 0.594,
+    "sd": 0.033,
+    "min": 0.549,
+    "max": 0.681,
+    "wins": 66
+   },
+   "decision tree": {
+    "mean": 0.573,
+    "sd": 0.035,
+    "min": 0.484,
+    "max": 0.667,
+    "wins": 50
+   }
+  },
+  "by_horizon": {
+   "LSTM": {
+    "1": 0.617,
+    "2": 0.619,
+    "3": 0.627,
+    "4": 0.637,
+    "5": 0.636,
+    "6": 0.643,
+    "7": 0.631,
+    "8": 0.616,
+    "9": 0.593,
+    "10": 0.598,
+    "11": 0.604
+   },
+   "multilayer ANN": {
+    "1": 0.616,
+    "2": 0.621,
+    "3": 0.624,
+    "4": 0.632,
+    "5": 0.642,
+    "6": 0.631,
+    "7": 0.618,
+    "8": 0.59,
+    "9": 0.584,
+    "10": 0.562,
+    "11": 0.538
+   },
+   "random forest": {
+    "1": 0.609,
+    "2": 0.617,
+    "3": 0.615,
+    "4": 0.618,
+    "5": 0.619,
+    "6": 0.618,
+    "7": 0.608,
+    "8": 0.585,
+    "9": 0.597,
+    "10": 0.594,
+    "11": 0.543
+   },
+   "naive bayes": {
+    "1": 0.59,
+    "2": 0.593,
+    "3": 0.597,
+    "4": 0.599,
+    "5": 0.598,
+    "6": 0.604,
+    "7": 0.599,
+    "8": 0.58,
+    "9": 0.581,
+    "10": 0.587,
+    "11": 0.565
+   },
+   "decision tree": {
+    "1": 0.577,
+    "2": 0.577,
+    "3": 0.567,
+    "4": 0.575,
+    "5": 0.574,
+    "6": 0.595,
+    "7": 0.57,
+    "8": 0.554,
+    "9": 0.567,
+    "10": 0.559,
+    "11": 0.538
+   },
+   "same as last year": {
+    "1": 0.537,
+    "2": 0.537,
+    "3": 0.541,
+    "4": 0.544,
+    "5": 0.549,
+    "6": 0.552,
+    "7": 0.542,
+    "8": 0.526,
+    "9": 0.506,
+    "10": 0.523,
+    "11": 0.525
+   }
+  }
+ },
+ "perm_gb_top": [
+  [
+   "ndvi_wet_mean",
+   0.0363
+  ],
+  [
+   "ndvi_apr",
+   0.0284
+  ],
+  [
+   "lat",
+   0.0218
+  ],
+  [
+   "wx_wet_rain",
+   0.0174
+  ],
+  [
+   "lon",
+   0.0172
+  ],
+  [
+   "wx_wet_vpd",
+   0.0166
+  ],
+  [
+   "freq_20",
+   0.0165
+  ],
+  [
+   "nbr_frac_early_prev",
+   0.0164
+  ],
+  [
+   "ndvi_apr_anom",
+   0.0148
+  ],
+  [
+   "wx_wet_rain_prev",
+   0.0122
+  ],
+  [
+   "elevation",
+   0.0097
+  ],
+  [
+   "ndvi_greenup",
+   0.0091
+  ]
+ ]
+}
