@@ -1702,18 +1702,19 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
 
     var FN = { wx_wet_vpd: "Wet-season dryness of the air", ndvi_wet_mean: "Wet-season greenness", wx_wet_rain: "Wet-season rain",
                ndvi_apr: "April greenness", ndvi_wet_min: "Lowest wet-season greenness", ndvi_wet_max: "Peak greenness",
-               nbr_frac_burnt_prev: "Neighbours burnt last year", nbr_frac_late_prev: "Neighbours burnt late last year",
-               nbr_frac_early_prev: "Neighbours burnt early last year", lat: "Latitude", lon: "Longitude", elevation: "Elevation",
+               nbr_frac_burnt_prev: "Neighbours burnt last year", nbr_frac_late_prev: "Neighbours burnt late",
+               nbr_frac_early_prev: "Neighbours burnt early", lat: "Latitude", lon: "Longitude", elevation: "Elevation",
                wx_wet_tmax: "Wet-season heat", wx_wet_radn: "Wet-season sunlight", wx_dry_vpd_prev: "Last dry season's dryness",
                wx_wet_rain_anom: "Rain against normal", wx_wet_rain_ratio: "Rain as a share of normal", yrs_since_burnt: "Years since fire",
                freq_25: "Fire frequency, 25 years", freq_20: "Fire frequency, 20 years", freq_10: "Fire frequency, 10 years",
                late_freq_25: "Late-fire frequency, 25 years", prev_frac_burnt: "Burnt share last year", ndvi_greenup: "Green-up speed",
-               wx_apr_vpd: "April dryness", wx_dry_tmax_prev: "Last dry season's heat", wx_wet_rain_prev: "Previous wet season's rain" };
+               wx_apr_vpd: "April dryness", wx_dry_rain_prev: "Last dry season's rain", wx_apr_rain: "April rain",
+               wx_days_since_rain: "Days since rain", late_freq_10: "Late-fire frequency, 10 years", prev_burnt: "Burnt last year", wx_dry_tmax_prev: "Last dry season's heat", wx_wet_rain_prev: "Previous wet season's rain" };
     var grp = function (f) { return f.indexOf("ndvi") === 0 ? "var(--early)" : f.indexOf("wx_") === 0 ? "var(--rain)" :
       (f === "lat" || f === "lon" || f === "elevation") ? "var(--unburnt)" : "var(--late)"; };
     var imp = $("q-imp"), maxI = D.importance[0][1], ib = [];
     D.importance.forEach(function (p) {
-      var row = H("div", "mb", null, imp); row.style.gridTemplateColumns = "190px minmax(0,1fr) 46px";
+      var row = H("div", "mb", null, imp); row.style.gridTemplateColumns = "200px minmax(0,1fr) 46px";
       H("span", "n", FN[p[0]] || p[0], row).title = p[0];
       var t = H("span", "t", null, row), i = H("i", null, null, t); i.style.background = grp(p[0]);
       H("span", "v num", p[1].toFixed(3), row); ib.push([i, p[1] / maxI * 100]);
