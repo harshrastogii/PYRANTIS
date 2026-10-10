@@ -439,7 +439,7 @@ def cover(doc) -> None:
 
 def contribution_page(doc, counts: dict, segments: dict) -> None:
     doc.add_paragraph("Who did what", style="Front Heading")
-    p = doc.add_paragraph("The work was divided by mutual agreement at a group meeting. Harsh Rastogi, as project lead, took half the report. Saira Zafar and Tharushi Wimalachandra took a quarter each. Each member wrote their own part, and all three reviewed the others' parts before submission. The word counts cover body text only. Headings, captions, tables, code, the cover, this page and the references are not included.")
+    p = doc.add_paragraph("The work was divided by mutual agreement. Harsh Rastogi, as project lead, took half the report. Saira Zafar and Tharushi Wimalachandra took a quarter each. Each member wrote their own part, and all three reviewed the others' parts before submission. The word counts cover body text only. Headings, captions, tables, code, the cover, this page and the references are not included.")
     t = doc.add_table(rows=1 + len(segments) + 1, cols=3)
     t.alignment = WD_TABLE_ALIGNMENT.CENTER
     table_borders(t); set_cell_margins(t, 70, 70, 90, 90)
