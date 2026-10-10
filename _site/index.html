@@ -4,7 +4,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Pyrantis Fire Outlook</title>
 <meta name="description" content="Where the Northern Territory is expected to burn this year, and when: a forecast from 26 years of satellite fire mapping, with the record and the evidence behind it.">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#fbfaf6">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -14,7 +15,7 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,500..700;1,8..60,500..700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.6.0/maplibre-gl.js"></script>
 <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
@@ -22,42 +23,26 @@
 
 <style>
 /* ------------------------------------------------------------------ tokens
-   One interface accent (the slate blue of the logo's bowl) and three data colours that
-   nothing else uses, so a selected control is never mistaken for burnt country.
-   Radius rule: panels 18px, controls and chips fully round. */
+   Light only. Warm off-white paper in two tones for page and bands, slate ink, one
+   deep-teal accent for anything you can press or that marks a selection, and three data
+   colours used for the fire classes and nothing else.
+   Shape rule: 4px corners on frames, fields and buttons; data markers stay round. */
 :root{
-  --bg:#f2f4f1; --bg-2:#e8ece7; --surface:#fbfcfa; --surface-2:#f4f6f3;
-  --ink:#16201c; --ink-2:#2c3833; --muted:#53615b; --dim:#7a8781;
-  --line:rgba(22,32,28,.11); --line-2:rgba(22,32,28,.2);
-  --unburnt:#a9b3ad; --early:#1e8a67; --late:#d04a1d; --straw:#c9b07a;
-  --accent:#245f80; --accent-2:#3b7fa3; --accent-ink:#ffffff; --accent-soft:rgba(36,95,128,.12);
-  --rain:#2f6690;
-  --shadow:0 1px 1px rgba(22,40,32,.05), 0 14px 36px -18px rgba(22,40,32,.32);
-  --shadow-sm:0 1px 2px rgba(22,40,32,.07), 0 4px 12px -8px rgba(22,40,32,.25);
-  --r:18px; --r-sm:12px;
-  --ease:cubic-bezier(.16,1,.3,1);
-  --display:"Bricolage Grotesque","Geist",system-ui,sans-serif;
-  --sans:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  /* hero scene */
-  --sky-top:#cfe0e6; --sky-mid:#eadfcf; --sky-low:#f3d7b6; --sun:#f6b46a;
-  --ridge-far:#9fb3b1; --ridge-mid:#7f958d; --ground:#b7a172; --ground-2:#a28c5c;
-  --tree:#41574b; --mound:#a8693f; --smoke:rgba(90,90,90,.18);
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#0e1412; --bg-2:#121a17; --surface:#151d1a; --surface-2:#1a2420;
-    --ink:#e7ece9; --ink-2:#cbd4cf; --muted:#9ba8a2; --dim:#76837d;
-    --line:rgba(231,236,233,.1); --line-2:rgba(231,236,233,.2);
-    --unburnt:#56645e; --early:#37b088; --late:#ff6b35; --straw:#8f7c52;
-    --accent:#7ab8d8; --accent-2:#9acbe4; --accent-ink:#0e1412; --accent-soft:rgba(122,184,216,.14);
-    --rain:#6ea6d4;
-    --shadow:0 1px 1px rgba(0,0,0,.3), 0 18px 40px -20px rgba(0,0,0,.7);
-    --shadow-sm:0 1px 2px rgba(0,0,0,.35), 0 4px 12px -8px rgba(0,0,0,.6);
-    --sky-top:#0d1b24; --sky-mid:#1d2630; --sky-low:#4a2c22; --sun:#e87a3c;
-    --ridge-far:#24323a; --ridge-mid:#1b2724; --ground:#3a3324; --ground-2:#2c271b;
-    --tree:#0f1a16; --mound:#5b3420; --smoke:rgba(200,200,200,.1);
-  }
+  --bg:#f6f4ee; --band:#eeebe3; --paper:#fbfaf6; --paper-2:#f2f0ea;
+  --surface:var(--paper); --surface-2:var(--paper-2);     /* names the chart code uses */
+  --ink:#17252a; --ink-2:#2c3b40; --muted:#56656b; --dim:#7b878b;
+  --rule:#d8d3c8; --rule-2:#bdb7ab; --line:#d8d3c8; --line-2:#bdb7ab;
+  --unburnt:#b3b8b1; --early:#2f7d4e; --late:#c4461a; --straw:#c3ab74;
+  --accent:#0d5c63; --accent-2:#13737b; --accent-ink:#ffffff; --accent-soft:rgba(13,92,99,.09);
+  --rain:#3a6c99;
+  --r:4px;
+  --serif:"Source Serif 4","Iowan Old Style",Georgia,serif;
+  --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* hero scene: a dry-season afternoon, not a sunset poster */
+  --sky-top:#dfe7e6; --sky-mid:#ebeae2; --sky-low:#efe5d3; --sun:#e6c48c;
+  --ridge-far:#b7c0b4; --ridge-mid:#98a597; --ground:#c9b788; --ground-2:#b8a575;
+  --tree:#4b5c4c; --mound:#a8693f; --smoke:transparent;
 }
 
 *{box-sizing:border-box}
@@ -65,327 +50,312 @@
 /* The sticky-header offset sits on the jump targets, not on the whole document: as
    scroll-padding it made Chrome treat the header's own controls as hidden behind it, so
    focusing "Show the numbers" scrolled the page up by about 460 px on every click. */
-html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
-section[id], main[id]{scroll-margin-top:84px}
-body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 var(--sans);
-  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; overflow-x:hidden}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%; color-scheme:light}
+section[id], main[id]{scroll-margin-top:62px}   /* the header is 63px; its rule meets the section rule */
+body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 var(--sans); -webkit-font-smoothing:antialiased; overflow-x:hidden}
 ::selection{background:var(--accent-soft)}
-:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:6px}
-h1,h2,h3{margin:0; font-family:var(--display); font-weight:700; letter-spacing:-.025em; line-height:1.08; text-wrap:balance}
-h2{font-size:clamp(28px,3.4vw,42px)}
-h3{font-size:19px; letter-spacing:-.015em; line-height:1.25}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+h1,h2,h3{margin:0; font-family:var(--serif); font-weight:600; letter-spacing:-.01em; line-height:1.15; text-wrap:balance; color:var(--ink)}
+h2{font-size:clamp(28px,3vw,38px)}
+h3{font-size:19px; line-height:1.3}
 p{margin:0}
-.num{font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-.01em}
+a{color:var(--accent)}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
 .muted{color:var(--muted)} .dim{color:var(--dim)}
-.lede{color:var(--muted); max-width:62ch; font-size:17px; line-height:1.6}
+.lede{color:var(--muted); max-width:64ch; font-size:17px}
 .small{font-size:14px}
-.wrap{max-width:1320px; margin:0 auto; padding:0 28px}
-section.block{padding:clamp(64px,8vw,112px) 0 0}
-.head{margin-bottom:32px; max-width:760px}
-.head .lede{margin-top:14px}
+.wrap{max-width:1280px; margin:0 auto; padding:0 32px}
+section.block{padding:72px 0 80px; border-top:1px solid var(--rule)}
+section.block:nth-of-type(odd){background:var(--band)}
+.head{margin-bottom:30px; max-width:780px}
+.head .lede{margin-top:12px}
 
 /* --------------------------------------------------------------------- nav */
-.nav{position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter:blur(14px) saturate(1.3); -webkit-backdrop-filter:blur(14px) saturate(1.3);
-  border-bottom:1px solid transparent; transition:border-color .3s var(--ease)}
-.nav.scrolled{border-bottom-color:var(--line)}
-.nav-in{max-width:1320px; margin:0 auto; padding:12px 28px; display:flex; align-items:center; gap:28px; height:68px}
-/* The mark is a cropped copy of the same artwork, with its transparent margin removed,
-   so the wordmark can sit on the P's foot without negative-margin guesswork. The word is
-   a little shorter than the mark, so the P still leads. */
+.nav{position:sticky; top:0; z-index:40; background:var(--paper); border-bottom:1px solid var(--rule)}
+.nav-in{max-width:1280px; margin:0 auto; padding:0 32px; display:flex; align-items:center; gap:32px; height:62px}
+/* The mark is a cropped copy of the logo artwork; the wordmark sits on the P's foot. */
 .brand{display:flex; align-items:flex-end; gap:1px; text-decoration:none; flex:none}
-.brand img{height:34px; width:auto; display:block; filter:drop-shadow(0 2px 5px rgba(20,40,40,.18))}
-.brand span{font-family:var(--display); font-weight:800; font-size:23px; line-height:1; letter-spacing:-.035em;
-  padding-bottom:1px; color:var(--accent);
-  background:linear-gradient(178deg, #4a90b4 5%, #245f80 45%, #17333f 92%);
+.brand img{height:32px; width:auto; display:block}
+.brand span{font-family:var(--sans); font-weight:700; font-size:21px; line-height:1; letter-spacing:-.03em;
+  padding-bottom:1px; color:#245f80;
+  background:linear-gradient(178deg, #3f86ab 5%, #245f80 45%, #17333f 92%);
   -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent}
-@media (prefers-color-scheme:dark){.brand span{background:linear-gradient(178deg,#a5d4ec 5%,#6fb0d3 50%,#3f86ad 95%);
-  -webkit-background-clip:text; background-clip:text}}
-.links{display:flex; gap:2px; margin:0 auto 0 0; overflow-x:auto; scrollbar-width:none}
+.links{display:flex; gap:26px; margin:0 auto 0 0; overflow-x:auto; scrollbar-width:none; align-self:stretch}
 .links::-webkit-scrollbar{display:none}
-.links a{color:var(--muted); text-decoration:none; font-size:14.5px; font-weight:500; padding:8px 13px;
-  border-radius:999px; white-space:nowrap; transition:color .2s var(--ease), background .2s var(--ease)}
-.links a:hover{color:var(--ink); background:var(--surface-2)}
-.links a.on{color:var(--ink); background:var(--surface); box-shadow:var(--shadow-sm)}
+.links a{color:var(--muted); text-decoration:none; font-size:14.5px; font-weight:500; white-space:nowrap;
+  display:flex; align-items:center; border-bottom:2px solid transparent; margin-bottom:-1px}
+.links a:hover{color:var(--ink)}
+.links a.on{color:var(--ink); border-bottom-color:var(--accent)}
 .switch{display:flex; align-items:center; gap:9px; font-size:14px; color:var(--muted); cursor:pointer; user-select:none; flex:none}
 .switch input{position:absolute; opacity:0; width:0; height:0}
-.switch .track{width:38px; height:22px; border-radius:99px; background:var(--line-2); position:relative; transition:background .2s var(--ease)}
-.switch .track::after{content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%;
-  background:var(--surface); box-shadow:var(--shadow-sm); transition:transform .25s var(--ease)}
+.switch .track{width:34px; height:20px; border-radius:99px; background:var(--rule-2); position:relative; transition:background .15s}
+.switch .track::after{content:""; position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:#fff; transition:transform .15s}
 .switch input:checked + .track{background:var(--accent)}
-.switch input:checked + .track::after{transform:translateX(16px)}
+.switch input:checked + .track::after{transform:translateX(14px)}
 .switch input:focus-visible + .track{outline:2px solid var(--accent); outline-offset:2px}
 
 /* -------------------------------------------------------------------- hero */
-.hero{padding:clamp(28px,4vw,56px) 0 0}
-.hero-grid{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,6fr); gap:clamp(28px,4vw,64px); align-items:center}
-.eyebrow{font-size:13px; font-weight:600; color:var(--accent); letter-spacing:.02em; margin-bottom:18px; display:flex; align-items:center; gap:8px}
-.hero h1{font-size:clamp(40px,5.4vw,72px); line-height:1.02; letter-spacing:-.04em}
-.hero h1 em{font-style:normal; color:var(--late)}
-.hero .sub{font-size:19px; color:var(--muted); margin-top:22px; max-width:30em; line-height:1.55}
-.ctas{display:flex; gap:12px; margin-top:30px; flex-wrap:wrap}
-.btn{display:inline-flex; align-items:center; gap:9px; font:600 15px/1 var(--sans); color:var(--ink);
-  background:var(--surface); border:1px solid var(--line-2); border-radius:999px; padding:13px 20px;
-  cursor:pointer; text-decoration:none; white-space:nowrap;
-  transition:transform .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease)}
-.btn:hover{border-color:var(--ink-2); box-shadow:var(--shadow-sm)}
-.btn:active{transform:translateY(1px) scale(.985)}
-.btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink)}
-.btn.primary:hover{background:var(--ink-2)}
-.btn.sm{padding:10px 15px; font-size:14px}
-.btn i{font-size:18px}
+.hero{padding:52px 0 64px}
+.hero-grid{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,6fr); gap:56px; align-items:start}
+.eyebrow{font-size:13.5px; font-weight:600; color:var(--accent); margin-bottom:16px}
+.hero h1{font-size:clamp(38px,4.4vw,58px); line-height:1.06; letter-spacing:-.02em}
+.hero h1 em{font-style:italic; color:var(--late); padding-right:.04em}
+.hero .sub{font-size:18px; color:var(--muted); margin-top:20px; max-width:34em; line-height:1.55}
+.figures{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:30px; border-top:1px solid var(--ink); border-bottom:1px solid var(--rule)}
+.figures div{padding:14px 16px 14px 0}
+.figures div + div{padding-left:16px; border-left:1px solid var(--rule)}
+.figures b{display:block; font:500 30px/1.1 var(--mono); letter-spacing:-.02em}
+.figures span{display:block; font-size:13px; color:var(--muted); margin-top:4px; line-height:1.4}
+.ctas{display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; align-items:center}
+.btn{display:inline-flex; align-items:center; gap:8px; font:600 14.5px/1 var(--sans); color:var(--ink);
+  background:var(--paper); border:1px solid var(--rule-2); border-radius:var(--r); padding:11px 16px;
+  cursor:pointer; text-decoration:none; white-space:nowrap; transition:border-color .15s, background .15s}
+.btn:hover{border-color:var(--ink-2); background:#fff}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent-2); border-color:var(--accent-2)}
+.btn.sm{padding:9px 13px; font-size:14px}
+.btn i{font-size:17px}
 .btn[disabled]{opacity:.6; cursor:progress}
 
-.scene{position:relative; border-radius:var(--r); overflow:hidden; background:var(--sky-top);
-  box-shadow:var(--shadow); border:1px solid var(--line); aspect-ratio:16/10.4}
+.scene{position:relative; border:1px solid var(--rule-2); border-radius:var(--r); overflow:hidden; background:var(--sky-top); aspect-ratio:16/10.4}
 .scene svg{display:block; width:100%; height:100%}
-.scene-bar{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:14px}
-.seg{display:inline-flex; background:var(--surface-2); border:1px solid var(--line); border-radius:999px; padding:3px}
-.seg button{border:0; background:transparent; font:600 13.5px/1 var(--sans); color:var(--muted); padding:9px 14px;
-  border-radius:999px; cursor:pointer; transition:background .2s var(--ease), color .2s var(--ease)}
-.seg button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:var(--shadow-sm)}
+.scene-bar{display:flex; align-items:flex-start; justify-content:space-between; gap:12px 18px; flex-wrap:wrap; margin-top:12px}
+.seg{display:inline-flex; border:1px solid var(--rule-2); border-radius:var(--r); overflow:hidden; background:var(--paper)}
+.seg button{border:0; background:transparent; font:500 13.5px/1 var(--sans); color:var(--muted); padding:9px 13px; cursor:pointer}
+.seg button + button{border-left:1px solid var(--rule-2)}
+.seg button[aria-pressed="true"]{background:var(--ink); color:#fff}
 .keys{display:flex; gap:16px; flex-wrap:wrap; align-items:center}
 .key{display:inline-flex; align-items:center; gap:7px; font-size:13.5px; color:var(--muted)}
-.key b{width:11px; height:11px; border-radius:3px; display:inline-block}
-.scene-note{font-size:13.5px; color:var(--muted)}
-.scene-note strong{color:var(--ink); font-weight:600}
+.key b{width:12px; height:12px; border-radius:2px; display:inline-block}
+.scene-note{font-size:13.5px; color:var(--muted); max-width:38ch}
+.scene-note strong{font-weight:600}
 
-/* blades and flame motion: the grass sways from its root, flames flicker at the tip */
+/* blades grow once on load; nothing loops */
 .blade{transform-box:fill-box; transform-origin:50% 100%}
-.sway .blade{animation:sway var(--d,4.2s) ease-in-out var(--dl,0s) infinite alternate}
-@keyframes sway{from{transform:rotate(-2.4deg)}to{transform:rotate(2.6deg)}}
-.grow .blade{animation:grow .9s var(--ease) var(--dl,0s) both}
+.grow .blade{animation:grow .8s cubic-bezier(.16,1,.3,1) var(--dl,0s) both}
 @keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-.flame{transform-box:fill-box; transform-origin:50% 100%; animation:flick var(--d,.9s) ease-in-out var(--dl,0s) infinite alternate}
-@keyframes flick{0%{transform:scale(.86,.92); opacity:.85}100%{transform:scale(1.06,1.14); opacity:1}}
-.smoke{animation:rise 9s linear var(--dl,0s) infinite}
-@keyframes rise{0%{transform:translate(0,0) scale(.6); opacity:0}15%{opacity:1}100%{transform:translate(var(--dx,30px),-150px) scale(1.7); opacity:0}}
-.sunglow{animation:glow 6s ease-in-out infinite alternate}
-@keyframes glow{from{opacity:.55}to{opacity:.9}}
+.smoke,.sunglow{display:none}
 
-/* ------------------------------------------------------------------ panels */
-.panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
-.pad{padding:24px}
-.split{display:grid; gap:22px; grid-template-columns:minmax(0,1fr) minmax(330px,410px); align-items:start}
-/* The outlook's right column runs much taller than the map, so its last two panels move
-   under the map on wide screens. The flexible second row takes any leftover height, which
-   keeps the map row exactly as tall as the map. */
+/* ------------------------------------------------------------------ panels
+   Panels are flat frames. Sidebars beside the maps drop the frame altogether and read as
+   a ruled column, the way a figure's notes sit beside it in a report. */
+.panel{background:var(--paper); border:1px solid var(--rule); border-radius:var(--r)}
+.pad{padding:22px}
+.split{display:grid; gap:36px; grid-template-columns:minmax(0,1fr) minmax(320px,380px); align-items:start}
+/* The outlook's right column runs taller than the map, so its last two panels move under
+   the map on wide screens. The flexible second row keeps the map row as tall as the map. */
 .split.three{grid-template-rows:auto 1fr}
 .split.three > .side{grid-column:2; grid-row:1 / span 2}
 .split.three > .under{grid-column:1; grid-row:2}
-.stack{display:flex; flex-direction:column; gap:18px}
+.stack{display:flex; flex-direction:column; gap:28px}
+.split .stack > .panel{background:transparent; border:0; border-top:2px solid var(--ink); border-radius:0; padding:16px 0 0}
+.split .stack > .panel.detail{border-top-width:1px; border-top-color:var(--rule-2)}
 
-.controls{display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:14px}
-.field{display:flex; flex-direction:column; gap:6px}
-.field label{font-size:13px; font-weight:600; color:var(--muted)}
-select{font:500 15px/1.2 var(--sans); color:var(--ink); background:var(--surface); border:1px solid var(--line-2);
-  border-radius:999px; padding:12px 40px 12px 16px; min-width:240px; cursor:pointer; appearance:none; -webkit-appearance:none;
-  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%237a8781' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 16px center}
+.controls{display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:12px}
+.field{display:flex; flex-direction:column; gap:5px}
+.field label{font-size:12.5px; font-weight:600; color:var(--muted); letter-spacing:.01em}
+select{font:500 15px/1.2 var(--sans); color:var(--ink); background:var(--paper); border:1px solid var(--rule-2);
+  border-radius:var(--r); padding:10px 38px 10px 12px; min-width:240px; cursor:pointer; appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%2356656b' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 13px center}
 select:hover{border-color:var(--ink-2)}
 
-.mapwrap{position:relative; border-radius:var(--r); overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); background:var(--surface-2)}
-.map{width:100%; height:min(68vh,620px); min-height:380px}
-.map-state{position:absolute; inset:0; z-index:3; display:grid; place-items:center; text-align:center; padding:24px;
-  background:color-mix(in srgb, var(--surface-2) 92%, transparent); backdrop-filter:blur(3px)}
+.mapwrap{position:relative; border:1px solid var(--rule-2); border-radius:var(--r); overflow:hidden; background:#e9ebe8}
+.map{width:100%; height:min(72vh,660px); min-height:400px}
+.map-state{position:absolute; inset:0; z-index:3; display:grid; place-items:center; text-align:center; padding:24px; background:rgba(242,240,234,.94)}
 .map-state p{max-width:36ch; font-size:14px; color:var(--muted)}
-.map-state strong{display:block; color:var(--ink); font-size:16px; margin-bottom:6px; font-family:var(--display)}
-/* a skeleton of the Territory's outline stands in while tiles load */
-.skeleton{width:130px; height:150px; margin:0 auto 14px; border-radius:12px;
-  background:linear-gradient(100deg, var(--line) 30%, var(--line-2) 50%, var(--line) 70%); background-size:300% 100%;
-  animation:shimmer 1.6s linear infinite; clip-path:polygon(0 18%,20% 6%,48% 0,70% 4%,86% 12%,100% 30%,100% 100%,0 100%)}
-@keyframes shimmer{from{background-position:100% 0}to{background-position:-100% 0}}
-.maplibregl-ctrl-group{border-radius:12px!important; box-shadow:var(--shadow-sm)!important; overflow:hidden}
+.map-state strong{display:block; color:var(--ink); font-size:17px; margin-bottom:6px; font-family:var(--serif)}
+.skeleton{display:block; width:120px; height:138px; margin:0 auto 14px; background:var(--rule);
+  clip-path:polygon(0 18%,20% 6%,48% 0,70% 4%,86% 12%,100% 30%,100% 100%,0 100%)}
+.maplibregl-ctrl-group{border-radius:var(--r)!important; box-shadow:none!important; border:1px solid var(--rule-2)}
 .maplibregl-ctrl-attrib{font-size:10px}
 .maplibregl-ctrl-bottom-left{margin:0 0 6px 8px}
-.maplibregl-ctrl-scale{background:color-mix(in srgb, var(--surface) 85%, transparent); border:1px solid var(--line);
-  border-radius:999px; color:var(--muted); font:500 10px/1.5 var(--mono); padding:2px 9px}
-.map-foot{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:12px; align-items:center}
+.maplibregl-ctrl-scale{background:rgba(251,250,246,.9); border:1px solid var(--rule-2); border-top:0; color:var(--ink-2); font:500 10px/1.5 var(--mono); padding:1px 7px}
+.map-foot{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:10px; align-items:center}
 
-.verdict{display:flex; gap:14px; align-items:flex-start}
-.chip{width:14px; height:14px; border-radius:50%; flex:none; margin-top:9px; box-shadow:0 0 0 5px color-mix(in srgb, currentColor 18%, transparent)}
-.verdict h3{font-size:27px; letter-spacing:-.03em; line-height:1.15}
-.season{font-size:14px; color:var(--muted); margin-top:5px}
-.headline{font-size:17.5px; line-height:1.55; margin-top:14px; color:var(--ink-2)}
+.verdict{display:flex; gap:12px; align-items:flex-start}
+.chip{width:13px; height:13px; border-radius:50%; flex:none; margin-top:9px}
+.verdict h3{font-size:28px; line-height:1.15}
+.season{font-size:13.5px; color:var(--muted); margin-top:5px}
+.headline{font-size:17px; line-height:1.55; margin-top:14px; color:var(--ink-2)}
 .headline b{color:var(--ink)}
-.facts{margin-top:14px}
-.fact{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:11px 0; border-top:1px solid var(--line); font-size:14.5px}
-.fact .k{color:var(--muted)} .fact .v{font-weight:600; text-align:right}
-.conf{margin-top:16px}
-.conf .row{display:flex; justify-content:space-between; font-size:13.5px; color:var(--muted)}
-.gauge{position:relative; height:8px; margin-top:9px; border-radius:99px; overflow:hidden; background:var(--line)}
-.gauge i{position:absolute; inset:0 auto 0 0; width:0; border-radius:99px; background:var(--accent); transition:width .7s var(--ease)}
-.strip{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:2px; margin-top:10px}
-.strip i{height:26px; border-radius:3px; transition:transform .2s var(--ease)}
-.strip i:hover{transform:scaleY(1.2)}
-.striplab{display:flex; justify-content:space-between; font:500 11px var(--mono); color:var(--dim); margin-top:6px}
+.facts{margin-top:14px; border-bottom:1px solid var(--rule)}
+.fact{display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:9px 0; border-top:1px solid var(--rule); font-size:14.5px}
+.fact .k{color:var(--muted)} .fact .v{font-weight:600; text-align:right; font-variant-numeric:tabular-nums}
+.conf{margin-top:14px}
+.conf .row{font-size:13.5px; color:var(--muted)}
+.gauge{position:relative; height:6px; margin-top:8px; background:var(--rule)}
+.gauge i{position:absolute; inset:0 auto 0 0; width:0; background:var(--accent); transition:width .3s}
+.strip{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:1px; margin-top:8px}
+.strip i{height:22px}
+.striplab{display:flex; justify-content:space-between; font:500 11px var(--mono); color:var(--dim); margin-top:5px}
 
-/* the "why" panel draws its two reasons rather than only stating them */
-.why-rows{display:flex; flex-direction:column; gap:16px; margin-top:16px}
-.why-row .lab{display:flex; justify-content:space-between; font-size:13.5px; color:var(--muted); margin-bottom:7px}
+.why-rows{display:flex; flex-direction:column; gap:18px; margin-top:14px}
+.why-row .lab{display:flex; justify-content:space-between; gap:10px; font-size:13.5px; color:var(--muted); margin-bottom:7px}
 .why-row .lab b{color:var(--ink); font-weight:600}
-.pair{display:flex; flex-direction:column; gap:5px}
-.pair div{height:12px; border-radius:99px; background:var(--rain); transform-origin:left; width:0; transition:width 1s var(--ease)}
-.pair div.base{background:var(--line-2)}
-.rank{display:grid; grid-template-columns:repeat(26,1fr); gap:2px; align-items:end; height:36px}
-.rank i{border-radius:2px; background:var(--line-2); height:var(--h); transition:background .3s}
+.pair{display:flex; flex-direction:column; gap:4px}
+.pair div{height:10px; background:var(--rain); width:0}
+.pair div.base{background:var(--rule-2)}
+.rank{display:grid; gap:1px; align-items:end; height:40px; border-bottom:1px solid var(--rule-2)}
+.rank i{background:var(--rule-2); height:var(--h)}
 .rank i.me{background:var(--early)}
 
-.note{display:flex; gap:11px; padding:14px 16px; border-radius:var(--r-sm); font-size:14px; line-height:1.55;
-  background:color-mix(in srgb, var(--late) 9%, var(--surface)); border:1px solid color-mix(in srgb, var(--late) 25%, transparent); color:var(--ink-2)}
-.note i{font-size:19px; color:var(--late); flex:none; margin-top:1px}
+.note{display:flex; gap:11px; padding:14px 16px; font-size:14px; line-height:1.55; background:var(--paper-2); border:1px solid var(--rule); border-radius:var(--r); color:var(--ink-2)}
+.note i{font-size:18px; color:var(--accent); flex:none; margin-top:2px}
 
 /* --------------------------------------------------------------- calendar */
-.cal{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:28px; align-items:stretch}
-.clock{display:flex; flex-direction:column; align-items:center; justify-content:center; padding:26px}
-.clock svg{width:100%; max-width:430px; height:auto; overflow:visible}
-.wedge{cursor:pointer; transition:opacity .25s var(--ease)}
-.clock svg:hover .wedge{opacity:.45} .clock svg .wedge.hot{opacity:1}
-.clock .hand{transform-origin:0 0; transition:transform 1.4s var(--ease)}
-.kinds{display:grid; grid-template-columns:1fr 1fr; gap:18px}
-.kind{overflow:hidden; display:flex; flex-direction:column}
-.kind .art{height:170px; background:var(--sky-top); border-bottom:1px solid var(--line)}
+.cal{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:40px; align-items:start}
+.clock{display:flex; flex-direction:column; align-items:center; padding:24px}
+.clock svg{width:100%; max-width:420px; height:auto; overflow:visible}
+.wedge{cursor:pointer}
+.clock svg:hover .wedge{opacity:.5} .clock svg .wedge.hot{opacity:1}
+.kinds{display:grid; grid-template-columns:1fr 1fr; gap:28px}
+.kind{background:transparent; border:0; border-radius:0}
+.kind .art{height:170px; border:1px solid var(--rule-2); border-radius:var(--r); overflow:hidden; background:var(--sky-top)}
 .kind .art svg{display:block; width:100%; height:100%}
-.kind .body{padding:20px 22px 22px}
-.kind .big{font-family:var(--display); font-size:46px; font-weight:700; letter-spacing:-.04em; line-height:1}
-.kind .big small{font-size:16px; font-weight:600; letter-spacing:0; color:var(--muted); margin-left:6px}
-.kind p{color:var(--muted); font-size:15px; margin-top:10px}
-.kind h3{margin-top:4px}
+.kind .body{padding:16px 0 0}
+.kind .big{font-family:var(--mono); font-size:38px; font-weight:500; letter-spacing:-.03em; line-height:1}
+.kind .big small{font-family:var(--sans); font-size:14px; font-weight:500; letter-spacing:0; color:var(--muted); margin-left:8px}
+.kind p{color:var(--muted); font-size:15px; margin-top:8px}
+.kind h3{margin-top:10px}
 
 /* ----------------------------------------------------------------- record */
 .rec-top{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:12px}
-.yearnum{font:600 40px/1 var(--display); letter-spacing:-.04em; min-width:4.6ch}
-.scrub{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:3px; height:74px; align-items:end;
-  margin-bottom:14px; padding:8px 8px 0; border-radius:var(--r-sm); background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow-sm)}
-.scrub button{all:unset; cursor:pointer; height:100%; display:flex; flex-direction:column; justify-content:flex-end; position:relative; border-radius:3px 3px 0 0}
-.scrub button span{display:block; width:100%; transition:opacity .2s}
+.yearnum{font:500 34px/1 var(--mono); letter-spacing:-.03em; min-width:4.6ch}
+.scrub{display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:2px; height:72px; align-items:end;
+  margin-bottom:12px; padding:8px 0 0; border-bottom:1px solid var(--ink)}
+.scrub button{all:unset; cursor:pointer; height:100%; display:flex; flex-direction:column; justify-content:flex-end; position:relative}
+.scrub button span{display:block; width:100%}
 .scrub button .e{background:var(--early)} .scrub button .l{background:var(--late)}
-.scrub button::after{content:attr(data-y); position:absolute; left:50%; bottom:-20px; transform:translateX(-50%); font:500 10px var(--mono); color:var(--dim); opacity:0}
+.scrub button::after{content:attr(data-y); position:absolute; left:50%; bottom:-19px; transform:translateX(-50%); font:500 10.5px var(--mono); color:var(--dim); opacity:0}
 .scrub button:nth-child(5n+1)::after{opacity:1}
 .scrub button[aria-current="true"]{outline:2px solid var(--ink); outline-offset:2px}
-.scrub button.test::before{content:""; position:absolute; top:-6px; left:20%; right:20%; height:3px; border-radius:2px; background:var(--accent)}
-.scrub:hover button span{opacity:.55} .scrub button:hover span, .scrub button[aria-current="true"] span{opacity:1}
+.scrub button.test::before{content:""; position:absolute; top:-7px; left:15%; right:15%; height:3px; background:var(--accent)}
+.scrub:hover button span{opacity:.6} .scrub button:hover span, .scrub button[aria-current="true"] span{opacity:1}
 .scrub-wrap{padding-bottom:20px}
-.icon-btn{width:46px; height:46px; border-radius:50%; display:grid; place-items:center; border:1px solid var(--line-2);
-  background:var(--ink); color:var(--bg); cursor:pointer; font-size:20px; transition:transform .2s var(--ease)}
-.icon-btn:active{transform:scale(.94)}
+.icon-btn{width:42px; height:42px; border-radius:50%; display:grid; place-items:center; border:0; background:var(--accent); color:#fff; cursor:pointer; font-size:18px}
+.icon-btn:hover{background:var(--accent-2)}
 .empty{display:flex; gap:12px; align-items:flex-start; color:var(--muted); font-size:14.5px; margin-top:10px}
-.empty i{font-size:26px; color:var(--accent)}
+.empty i{font-size:24px; color:var(--accent)}
 
-/* ----------------------------------------------------------------- bento */
-.bento{display:grid; gap:20px}
-.bento .row{display:grid; gap:20px}
+/* --------------------------------------------------------------- patterns
+   Four figures on a ruled grid rather than four floating cards. */
+.bento{display:grid; gap:0; border-top:2px solid var(--ink)}
+.bento .row{display:grid; gap:0}
 .bento .r1{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
-.bento .r2{grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
-.tile{padding:26px; display:flex; flex-direction:column}
-.tile .ans{font-size:17px; font-weight:500; color:var(--ink-2); margin-top:10px; line-height:1.5}
+.bento .r2{grid-template-columns:minmax(0,2fr) minmax(0,3fr); border-top:1px solid var(--rule-2)}
+.tile{padding:26px 28px 28px 0; display:flex; flex-direction:column; background:transparent; border:0; border-radius:0}
+.bento .row > .tile + .tile{padding-left:28px; padding-right:0; border-left:1px solid var(--rule-2)}
+.tile .ans{font-size:16.5px; color:var(--ink-2); margin-top:8px; line-height:1.5}
 .tile .chart{margin-top:auto; padding-top:20px}
-.tile.ember{background:color-mix(in srgb, var(--late) 10%, var(--surface)); border-color:color-mix(in srgb, var(--late) 22%, transparent)}
-.tile.leaf{background:color-mix(in srgb, var(--early) 8%, var(--surface)); border-color:color-mix(in srgb, var(--early) 20%, transparent)}
-.giant{font-family:var(--display); font-weight:700; font-size:clamp(64px,8vw,104px); letter-spacing:-.05em; line-height:.9; color:var(--late)}
-.mtx{display:grid; grid-template-columns:auto repeat(3,1fr); gap:5px; font-size:13px}
+.giant{font-family:var(--mono); font-weight:500; font-size:clamp(56px,6.5vw,84px); letter-spacing:-.04em; line-height:.95; color:var(--late)}
+.mtx{display:grid; grid-template-columns:auto repeat(3,1fr); gap:3px; font-size:13px}
 .mtx .h{color:var(--muted); font-weight:600; text-align:center; padding:4px 2px; line-height:1.25}
 .mtx .s{color:var(--muted); font-weight:600; text-align:right; padding-right:8px; align-self:center; line-height:1.25}
-.mtx .c{border-radius:10px; padding:16px 4px; text-align:center; font:600 15px var(--mono); color:var(--ink)}
-.minibars{display:flex; flex-direction:column; gap:9px}
+.mtx .c{padding:15px 4px; text-align:center; font:500 15px var(--mono); color:var(--ink)}
+.minibars{display:flex; flex-direction:column; gap:7px}
 .mb{display:grid; grid-template-columns:118px minmax(0,1fr) 46px; gap:10px; align-items:center; font-size:13.5px}
 .mb .n{color:var(--muted); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-.mb .t{height:14px; border-radius:99px; overflow:hidden}
-.mb .t i{display:block; height:100%; border-radius:99px; width:0; transition:width .9s var(--ease)}
+.mb .t{height:12px}
+.mb .t i{display:block; height:100%; width:0}
 .mb .v{font:500 13px var(--mono); text-align:right}
-.pairs{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; align-items:end}
+.pairs{display:grid; grid-template-columns:repeat(4,1fr); gap:18px; align-items:end; padding-top:24px}
 .pairs .grp{display:flex; flex-direction:column; gap:8px}
-.pairs .cols{display:flex; gap:6px; align-items:flex-end; height:150px}
-.pairs .cols div{flex:1; border-radius:8px 8px 3px 3px; position:relative; height:0; transition:height 1s var(--ease)}
-.pairs .cols div span{position:absolute; top:-21px; left:0; right:0; text-align:center; font:600 12.5px var(--mono); color:var(--ink)}
+.pairs .cols{display:flex; gap:4px; align-items:flex-end; height:150px; border-bottom:1px solid var(--ink)}
+.pairs .cols div{flex:1; position:relative; height:0}
+.pairs .cols div span{position:absolute; top:-20px; left:0; right:0; text-align:center; font:500 12.5px var(--mono); color:var(--ink)}
 .pairs .lab{font-size:13px; color:var(--muted); text-align:center; line-height:1.3}
 
 /* --------------------------------------------------------------- quality */
 .q-top{display:grid; grid-template-columns:minmax(0,4fr) minmax(0,7fr); gap:20px}
-.stat{padding:28px}
+.stat{padding:26px}
 .stat .giant{color:var(--ink)}
-.stat .vs{display:flex; gap:22px; margin-top:22px; flex-wrap:wrap}
-.stat .vs div{display:flex; flex-direction:column}
-.stat .vs b{font:600 24px var(--mono); letter-spacing:-.02em}
-.stat .vs span{font-size:13px; color:var(--muted)}
-.years3{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:24px}
-.years3 div{padding:12px; border-radius:var(--r-sm); background:var(--surface-2); border:1px solid var(--line)}
-.years3 b{display:block; font:600 20px var(--mono)} .years3 span{font-size:12.5px; color:var(--muted)}
+.years3{display:grid; grid-template-columns:repeat(3,1fr); margin-top:22px; border-top:1px solid var(--rule)}
+.years3 div{padding:12px 10px 0 0}
+.years3 div + div{padding-left:12px; border-left:1px solid var(--rule)}
+.years3 b{display:block; font:500 19px var(--mono)} .years3 span{font-size:12.5px; color:var(--muted)}
 .lolli svg, .walk svg{width:100%; height:auto; display:block; overflow:visible}
 .legend-row{display:flex; gap:16px; flex-wrap:wrap; margin-top:12px}
-.rules{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:28px; padding:30px}
-.rule{display:flex; gap:16px; padding:16px 0; border-top:1px solid var(--line)}
+.rules{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:32px; padding:28px}
+.rule{display:flex; gap:16px; padding:16px 0; border-top:1px solid var(--rule)}
 .rule:first-child{border-top:0; padding-top:0}
-.rule i{font-size:26px; color:var(--accent); flex:none; margin-top:2px}
-.rule h3{font-size:17px}
+.rule i{font-size:24px; color:var(--accent); flex:none; margin-top:2px}
+.rule h3{font-size:18px}
 .rule p{color:var(--muted); font-size:15px; margin-top:4px}
 .q-two{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px}
-.cm{display:grid; grid-template-columns:auto repeat(3,1fr); gap:5px; font-size:13px; margin-top:18px}
+.cm{display:grid; grid-template-columns:auto repeat(3,1fr); gap:3px; font-size:13px; margin-top:18px}
 .cm .h,.cm .s{color:var(--muted); font-weight:600; line-height:1.25}
 .cm .h{text-align:center; padding:4px} .cm .s{text-align:right; padding-right:8px; align-self:center}
-.cm .c{border-radius:10px; padding:15px 4px; text-align:center; font:600 15px var(--mono)}
-.imp{display:flex; flex-direction:column; gap:8px; margin-top:18px}
+.cm .c{padding:14px 4px; text-align:center; font:500 15px var(--mono)}
+.imp{display:flex; flex-direction:column; gap:7px; margin-top:18px}
 
 /* ------------------------------------------------------------------ footer */
-footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); padding:44px 0 56px; color:var(--muted); font-size:14px}
-.foot{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,3fr) minmax(0,2fr); gap:36px}
-.foot img{height:54px; width:auto}
-.foot h4{margin:0 0 10px; font:600 13px var(--sans); color:var(--ink)}
-.foot a{color:var(--ink-2); text-decoration-color:var(--line-2); text-underline-offset:3px}
+footer{background:var(--ink); color:#c9d2d0; padding:48px 0 56px; font-size:14px}
+.foot{display:grid; grid-template-columns:minmax(0,2fr) minmax(0,3fr) minmax(0,2fr); gap:40px}
+.foot .mark{display:inline-flex; align-items:center; justify-content:center; background:var(--paper); border-radius:var(--r); padding:8px 10px}
+.foot img{height:42px; width:auto; display:block}
+.foot h4{margin:0 0 10px; font:600 13px var(--sans); color:#fff; letter-spacing:.02em}
+.foot a{color:#fff; text-underline-offset:3px; text-decoration-color:rgba(255,255,255,.4)}
 .foot p+p{margin-top:8px}
 
-/* ----------------------------------------------------------------- reveal */
-.reveal{opacity:0; transform:translateY(22px); transition:opacity .8s var(--ease), transform .8s var(--ease)}
-.reveal.in{opacity:1; transform:none}
-.words span{display:inline-block; opacity:0; transform:translateY(.4em); animation:word .9s var(--ease) both}
-@keyframes word{to{opacity:1; transform:none}}
-.draw path.ln{stroke-dasharray:var(--len); stroke-dashoffset:var(--len); transition:stroke-dashoffset 1.6s var(--ease)}
-.draw.in path.ln{stroke-dashoffset:0}
+/* Large figures are set in the text face with fixed-width digits: the mono face spaces a
+   decimal point and a per cent sign as wide as a digit, which reads as "14 . 5 %". */
+.figures b,.giant,.kind .big,.yearnum,.years3 b,#rec-y{font-family:var(--sans); font-weight:600; letter-spacing:-.025em; font-variant-numeric:tabular-nums lining-nums}
+.giant{font-weight:600}
+
+/* the reveal hooks stay for the scripts; nothing fades or slides */
+.reveal,.reveal.in{opacity:1; transform:none}
 
 /* ---------------------------------------------------------------- handheld
-   Under 900px everything stacks into one column; the nav keeps the mark and the
-   switch on one line and lets the section links scroll sideways underneath. */
+   Under 1060px the side columns drop under their maps; under 900px the nav keeps the mark
+   and the switch on one line and lets the section links scroll sideways underneath. */
 @media (max-width:1060px){
   .split,.cal,.q-top,.q-two,.rules,.bento .r1,.bento .r2{grid-template-columns:minmax(0,1fr)}
   .split.three{grid-template-rows:none}
   .split.three > .side,.split.three > .under{grid-column:auto; grid-row:auto}
+  .bento .row > .tile + .tile{padding-left:0; border-left:0; border-top:1px solid var(--rule-2)}
+  .tile{padding-right:0}
   .foot{grid-template-columns:1fr 1fr}
 }
 @media (max-width:900px){
-  .hero-grid{grid-template-columns:minmax(0,1fr)}
-  .nav-in{height:auto; flex-wrap:wrap; gap:6px 14px; padding:10px 18px}
-  .links{order:3; width:100%; margin:0 -6px}
+  .hero-grid{grid-template-columns:minmax(0,1fr); gap:36px}
+  .nav-in{height:auto; flex-wrap:wrap; gap:0 14px; padding:10px 18px 0}
+  .links{order:3; width:100%; gap:22px; height:40px}
   .switch{margin-left:auto}
-  section[id], main[id]{scroll-margin-top:110px}
+  section[id], main[id]{scroll-margin-top:82px}
 }
 @media (max-width:640px){
   body{font-size:15.5px}
   .wrap{padding:0 16px}
-  .nav-in{padding:9px 16px}
-  .brand img{height:30px} .brand span{font-size:20px}
+  .nav-in{padding:9px 16px 0}
+  section[id], main[id]{scroll-margin-top:77px}
+  .brand img{height:28px} .brand span{font-size:19px}
   .switch span:last-child{display:none}
-  .hero h1{font-size:40px}
-  .hero .sub{font-size:17px}
+  .hero{padding:32px 0 44px}
+  .hero h1{font-size:38px}
+  .hero .sub{font-size:16.5px}
+  .figures b{font-size:24px}
+  .figures div + div{padding-left:10px}
   .ctas .btn{flex:1 1 auto; justify-content:center}
-  .pad{padding:18px} .tile{padding:20px} .stat{padding:22px} .rules{padding:22px}
-  .map{height:min(54vh,430px); min-height:300px}
+  section.block{padding:52px 0 60px}
+  .pad{padding:18px} .stat{padding:20px} .rules{padding:20px}
+  .map{height:min(56vh,440px); min-height:300px}
   select{min-width:0; width:100%}
   .controls .field{flex:1 1 100%}
   .controls .btn{flex:1 1 calc(50% - 5px); justify-content:center}
   .kinds{grid-template-columns:minmax(0,1fr)}
-  .pairs{grid-template-columns:repeat(2,1fr)}
+  .pairs{grid-template-columns:repeat(2,1fr); row-gap:36px}
   .foot{grid-template-columns:minmax(0,1fr)}
   .mb{grid-template-columns:92px minmax(0,1fr) 42px}
-  .verdict h3{font-size:23px}
-  .scrub{height:60px}
+  .verdict h3{font-size:24px}
+  .scrub{height:58px}
   .maplibregl-ctrl-group button{width:40px; height:40px}
 }
 @media (pointer:coarse){ .maplibregl-ctrl-group button{width:40px; height:40px} }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important; transition:none!important}
-  .reveal,.words span{opacity:1; transform:none}
-  .draw path.ln{stroke-dashoffset:0}
 }
 </style>
 
@@ -413,8 +383,13 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
     <div class="wrap hero-grid">
       <div>
         <p class="eyebrow"><i class="ph ph-fire"></i>Northern Territory fire outlook</p>
-        <h1 id="hero-h1" class="words"></h1>
+        <h1 id="hero-h1"></h1>
         <p class="sub" id="hero-sub"></p>
+        <div class="figures" aria-label="The forecast in three numbers">
+          <div><b class="num" id="kf-burn"></b><span id="kf-burn-l"></span></div>
+          <div><b class="num" id="kf-early" style="color:var(--early)"></b><span>expected to burn before August</span></div>
+          <div><b class="num" id="kf-late" style="color:var(--late)"></b><span>expected to burn after July</span></div>
+        </div>
         <div class="ctas">
           <a class="btn primary" href="#outlook" id="cta-place"><i class="ph ph-map-pin"></i>Find your place</a>
           <a class="btn" href="#record"><i class="ph ph-clock-counter-clockwise"></i>See the record</a>
@@ -611,7 +586,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
       </div>
       <div class="bento">
         <div class="row r1">
-          <article class="panel tile leaf reveal">
+          <article class="panel tile reveal">
             <h3>If a place burns, will it burn again?</h3>
             <p class="ans" id="pt-reburn-answer"></p>
             <div class="chart draw" id="pt-reburn"></div>
@@ -623,7 +598,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
           </article>
         </div>
         <div class="row r2">
-          <article class="panel tile ember reveal">
+          <article class="panel tile reveal">
             <h3>Can one place burn twice in a year?</h3>
             <p class="giant num" id="pt-twice-big" style="margin-top:18px"></p>
             <p class="ans" id="pt-twice-answer"></p>
@@ -717,7 +692,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
 <footer>
   <div class="wrap foot">
     <div>
-      <img src="assets/pyrantis-mark.png" alt="Pyrantis" width="42" height="54">
+      <span class="mark"><img src="assets/pyrantis-mark.png" alt="Pyrantis" width="33" height="42"></span>
       <p style="margin-top:14px">Built by Harsh Rastogi, Saira Zafar and Tharushi Wimalachandra for PRT565 at Charles Darwin University.</p>
       <p class="num" id="q-counts" style="font-size:12.5px"></p>
     </div>
@@ -744,7 +719,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
   var PLACES = D.places || [];
   var $ = function (id) { return document.getElementById(id); };
   var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var DARK = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  var DARK = false;                      // the portal is light only
   var NS = "http://www.w3.org/2000/svg";
   function S(tag, attrs, parent) {
     var e = document.createElementNS(NS, tag);
@@ -829,14 +804,13 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
 
   // --------------------------------------------------------------------- hero
   (function hero() {
-    var words = ("Where the Territory burns in " + FCYEAR + ", and when.").split(" ");
     var h1 = $("hero-h1");
-    words.forEach(function (w, i) {
-      var s = H("span", null, null, h1);
-      if (w.indexOf("when") === 0) { var em = H("em", null, w, s); } else s.textContent = w;
-      s.style.animationDelay = (REDUCED ? 0 : 60 + i * 55) + "ms";
-      h1.appendChild(document.createTextNode(" "));
-    });
+    h1.appendChild(document.createTextNode("Where the Territory burns in " + FCYEAR + ", and "));
+    H("em", null, "when", h1); h1.appendChild(document.createTextNode("."));
+    $("kf-burn").textContent = burntFc.toFixed(0) + "%";
+    $("kf-burn-l").textContent = "expected to burn in " + FCYEAR + ", against a " + YEARS.length + "-year average of " + burntAvg.toFixed(0) + "%";
+    $("kf-early").textContent = share.early.toFixed(1) + "%";
+    $("kf-late").textContent = share.late.toFixed(1) + "%";
     $("hero-sub").textContent =
       "Trained on " + YEARS.length + " years of satellite fire scars, the model expects " +
       burntFc.toFixed(0) + "% of the Territory to burn, " +
@@ -910,7 +884,6 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
       fl.style.setProperty("--dl", (rnd() * .8) + "s"); fl.style.setProperty("--d", (.6 + rnd() * .5) + "s");
       blades.push({ g: g, p: p, f: fl });
     }
-    if (!REDUCED) setTimeout(function () { field.setAttribute("class", "sway"); }, 1900);
   })();
 
   function paintBlades(mix) {
@@ -1331,8 +1304,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
         " L" + (r0 * Math.cos(a1)) + " " + (r0 * Math.sin(a1)) + " A" + r0 + " " + r0 + " 0 0 0 " + (r0 * Math.cos(a0)) + " " + (r0 * Math.sin(a0)) + " Z";
       var w = S("path", { d: d, fill: col, "class": "wedge", tabindex: 0, role: "button",
                           "aria-label": MONTHS[m] + ", " + mo[String(m)].toFixed(1) + " per cent" }, svg);
-      w.style.transformOrigin = "0 0"; w.style.transform = REDUCED ? "none" : "scale(.2)";
-      w.style.transition = "transform 1s cubic-bezier(.16,1,.3,1) " + (m * 45) + "ms, opacity .25s";
+      w.style.transition = "opacity .15s";
       (function (mm, ww) {
         function on() { wedges.forEach(function (x) { x.classList.remove("hot"); }); ww.classList.add("hot"); readOut(mm); }
         ww.addEventListener("mouseenter", on); ww.addEventListener("focus", on); ww.addEventListener("click", on);
@@ -1352,11 +1324,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
     S("line", { x1: 0, y1: 0, x2: 0, y2: -(r0 - 10), stroke: "var(--accent)", "stroke-width": 3, "stroke-linecap": "round" }, hand);
     S("circle", { cx: 0, cy: 0, r: 6, fill: "var(--accent)" }, hand);
     $("clock-today").textContent = "The blue hand marks today, in the " + phaseOf(now.getMonth() + 1) + ". The dashed line is 31 July.";
-    hand.style.transform = "rotate(0deg)";
-    watch(svg.parentNode, function () {
-      wedges.forEach(function (w) { w.style.transform = "scale(1)"; });
-      hand.style.transform = "rotate(" + (frac * 360) + "deg)";
-    });
+    hand.setAttribute("transform", "rotate(" + (frac * 360) + ")");
     readOut(busiestMonth());
 
     // two small illustrations: low creeping flames, and flames that reach the canopy
@@ -1374,8 +1342,8 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
       }
       var n = late ? 14 : 9, base = late ? 142 : 142;
       for (var k = 0; k < n; k++) {
-        var fx = (late ? 40 : 70) + k * (late ? 24 : 26), fh = late ? 46 + (k * 29 % 40) : 14 + (k * 7 % 8);
-        if (late && fx > 270 && fx < 330) fh += 46;     // the crown fire climbs the tree
+        var fx = (late ? 40 : 70) + k * (late ? 24 : 26), fh = late ? 30 + (k * 29 % 26) : 14 + (k * 7 % 8);
+        if (late && fx > 270 && fx < 330) fh += 34;     // the crown fire climbs the tree
         var f = S("path", { d: "M" + fx + " " + base + " c-" + (fh * .28) + " -" + (fh * .3) + " -" + (fh * .2) + " -" + (fh * .7) + " 0 -" + fh +
                               " c" + (fh * .1) + " " + (fh * .3) + " " + (fh * .34) + " " + (fh * .36) + " " + (fh * .22) + " " + (fh * .7) + " c-" + (fh * .04) + " " + (fh * .14) + " -" + (fh * .1) + " " + (fh * .22) + " -" + (fh * .22) + " " + (fh * .3) + " z",
                             fill: late ? "var(--late)" : "var(--early)", opacity: late ? .92 : .85, "class": "flame" }, s);
@@ -1545,7 +1513,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
       CLS.forEach(function (to) {
         var v = T[frm][to], cell = H("div", "c", v.toFixed(0) + "%", m);
         cell.style.background = "color-mix(in srgb, var(--" + to + ") " + Math.max(8, Math.min(85, v)).toFixed(0) + "%, var(--surface))";
-        if (v > 55) cell.style.color = "#fff";
+        if (v > 55 && to !== "unburnt") cell.style.color = "#fff";   // dark text on the pale grey
         cell.title = "Of places with " + PLAIN[frm] + " this year, " + v.toFixed(1) + "% had " + PLAIN[to] + " the next.";
       });
     });
@@ -1595,17 +1563,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
 
     var accs = Object.keys(D.accuracyByYear).map(function (k) { return D.accuracyByYear[k]; });
     var meanAcc = sum(accs) / accs.length;
-    var big = $("q-acc-big");
-    big.textContent = "0%";
-    watch(big.closest(".panel"), function () {
-      if (REDUCED) { big.textContent = meanAcc.toFixed(0) + "%"; return; }
-      var t0 = performance.now();
-      (function tick(t) {
-        var k = Math.min(1, (t - t0) / 1200), e = 1 - Math.pow(1 - k, 3);
-        big.textContent = (meanAcc * e).toFixed(0) + "%";
-        if (k < 1) requestAnimationFrame(tick);
-      })(t0);
-    });
+    $("q-acc-big").textContent = meanAcc.toFixed(0) + "%";
     $("q-acc-answer").textContent = "About " + meanAcc.toFixed(0) + " squares in every 100 placed correctly. Guessing the commonest answer gets " +
       (major.accuracy * 100).toFixed(0) + ", and copying last year gets " + (lastYear.accuracy * 100).toFixed(0) + ".";
     var y3 = $("q-years");
@@ -1639,17 +1597,9 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
       v.textContent = m.f1_macro.toFixed(2);
       dots.push([l, c, v, m.f1_macro]);
     });
-    watch(host, function () {
-      dots.forEach(function (d, i) {
-        var x = xs(d[3]);
-        if (REDUCED) { d[0].setAttribute("x2", x); d[1].setAttribute("cx", x); d[2].setAttribute("opacity", 1); return; }
-        var t0 = performance.now() + i * 70;
-        (function tick(t) {
-          var k = Math.max(0, Math.min(1, (t - t0) / 900)), e = 1 - Math.pow(1 - k, 3), xx = xs(d[3] * e);
-          d[0].setAttribute("x2", xx); d[1].setAttribute("cx", xx); d[2].setAttribute("opacity", k);
-          if (k < 1) requestAnimationFrame(tick);
-        })(performance.now());
-      });
+    dots.forEach(function (d) {
+      var x = xs(d[3]);
+      d[0].setAttribute("x2", x); d[1].setAttribute("cx", x); d[2].setAttribute("opacity", 1);
     });
     var plainBest = D.models.filter(function (m) { return m.model === D.predModel; })[0];
     $("q-models-note").textContent = "Without balancing, every model quietly stops calling fires after July. The " + D.predModel +
@@ -1665,7 +1615,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
       r.forEach(function (v, j) {
         var p = tt ? v / tt * 100 : 0, c = H("div", "c", p.toFixed(0), cm);
         c.style.background = "color-mix(in srgb, var(--" + CLS[j] + ") " + Math.max(6, Math.min(85, p)).toFixed(0) + "%, var(--surface))";
-        if (p > 55) c.style.color = "#fff";
+        if (p > 55 && CLS[j] !== "unburnt") c.style.color = "#fff";
         c.title = v.toLocaleString() + " squares";
       });
     });
