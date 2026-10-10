@@ -20,7 +20,7 @@ In an average year about a third of the Northern Territory burns. Across 2000 to
 
 Timing decides what a fire does. Up to the end of July the grass still holds some moisture, nights are cool and the wind is light. Fires in that window are patchy, slow and often lit on purpose. After July the grass has cured, humidity drops and the south-easterlies pick up, so the same ignition burns hotter, spreads further and kills canopy, fences and stock (Russell-Smith et al., 2007). Savanna burning across northern Australia is built on this difference. Ranger groups and pastoralists burn early to break up the fuel before the late season arrives, and savanna carbon projects are paid for shifting fire from late to early (Russell-Smith et al., 2013). North Australian Fire Information (NAFI) publishes a separate late-season fire layer on the same 31 July boundary.
 
-We set the task up as supervised multi-class classification, the first type of learning covered in Week 1. For every square about five kilometres across, and for every year, the model predicts one of three labels:
+We set the task up as supervised multi-class classification, the first type of learning covered in Week 1 of the unit (Karim, 2026). For every square about five kilometres across, and for every year, the model predicts one of three labels:
 
 - unburnt: no fire was mapped in the square that year;
 - early: the square burnt, and most of the burning was on or before 31 July;
@@ -72,7 +72,7 @@ Figure 2 combines three variables: year, season and rainfall. The late share swi
 
 # 4. Dataset analysis, feature selection, transformation, preprocessing and engineering
 
-Section 3 described the target. This section analyses the inputs, following the order of the Week 6 practical: single features, then pairs, then several at once. Below each chart is what we learned from it that the raw table did not show.
+Section 3 described the target. This section analyses the inputs, following the order of the Week 6 practical (Karim, 2026): single features, then pairs, then several at once. Below each chart is what we learned from it that the raw table did not show.
 
 ## 4.1 Where it burns
 
@@ -198,7 +198,7 @@ Tuning changed little. Gradient boosting scored 0.684 on the test years with bot
 
 ## 6.1 The confusion matrix
 
-Every measure we report comes from the confusion matrix (Week 5), whose rows are what happened and whose columns are what the model predicted. For one class, say late fire, a true positive (TP) is a late fire called late. A false positive (FP) is a square called late that did not burn late, a false alarm. A false negative (FN) is a late fire called something else, a missed fire. A true negative (TN) is everything else. With three classes, each class takes its turn as the positive one.
+Every measure we report comes from the confusion matrix (Karim, 2026, Week 5), whose rows are what happened and whose columns are what the model predicted. For one class, say late fire, a true positive (TP) is a late fire called late. A false positive (FP) is a square called late that did not burn late, a false alarm. A false negative (FN) is a late fire called something else, a missed fire. A true negative (TN) is everything else. With three classes, each class takes its turn as the positive one.
 
 !code c06_scoring | Figure 14. The scoring function used for every model, from train_models.py. | 15.5
 
