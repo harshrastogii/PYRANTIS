@@ -62,7 +62,11 @@
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html{scroll-behavior:smooth; scroll-padding-top:84px; -webkit-text-size-adjust:100%}
+/* The sticky-header offset sits on the jump targets, not on the whole document: as
+   scroll-padding it made Chrome treat the header's own controls as hidden behind it, so
+   focusing "Show the numbers" scrolled the page up by about 460 px on every click. */
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
+section[id], main[id]{scroll-margin-top:84px}
 body{margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 var(--sans);
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; overflow-x:hidden}
 ::selection{background:var(--accent-soft)}
@@ -163,6 +167,12 @@ section.block{padding:clamp(64px,8vw,112px) 0 0}
 .panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
 .pad{padding:24px}
 .split{display:grid; gap:22px; grid-template-columns:minmax(0,1fr) minmax(330px,410px); align-items:start}
+/* The outlook's right column runs much taller than the map, so its last two panels move
+   under the map on wide screens. The flexible second row takes any leftover height, which
+   keeps the map row exactly as tall as the map. */
+.split.three{grid-template-rows:auto 1fr}
+.split.three > .side{grid-column:2; grid-row:1 / span 2}
+.split.three > .under{grid-column:1; grid-row:2}
 .stack{display:flex; flex-direction:column; gap:18px}
 
 .controls{display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; margin-bottom:14px}
@@ -337,6 +347,8 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
    switch on one line and lets the section links scroll sideways underneath. */
 @media (max-width:1060px){
   .split,.cal,.q-top,.q-two,.rules,.bento .r1,.bento .r2{grid-template-columns:minmax(0,1fr)}
+  .split.three{grid-template-rows:none}
+  .split.three > .side,.split.three > .under{grid-column:auto; grid-row:auto}
   .foot{grid-template-columns:1fr 1fr}
 }
 @media (max-width:900px){
@@ -344,7 +356,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
   .nav-in{height:auto; flex-wrap:wrap; gap:6px 14px; padding:10px 18px}
   .links{order:3; width:100%; margin:0 -6px}
   .switch{margin-left:auto}
-  html{scroll-padding-top:110px}
+  section[id], main[id]{scroll-margin-top:110px}
 }
 @media (max-width:640px){
   body{font-size:15.5px}
@@ -428,7 +440,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
         <h2>Pick a place</h2>
         <p class="lede">Choose a town, use your location, or click any five-kilometre square on the map to see what the model expects there this year.</p>
       </div>
-      <div class="split">
+      <div class="split three">
         <div class="reveal">
           <div class="controls">
             <div class="field"><label for="place">Town or community</label><select id="place"></select></div>
@@ -448,7 +460,7 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
           </div>
         </div>
 
-        <div class="stack reveal">
+        <div class="stack side reveal">
           <div class="panel pad" aria-live="polite">
             <div class="verdict">
               <span class="chip" id="v-dot"></span>
@@ -485,7 +497,9 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
             </div>
             <p class="small muted" style="margin-top:16px" id="v-why"></p>
           </div>
+        </div>
 
+        <div class="stack under reveal">
           <div class="note"><i class="ph ph-info"></i><span id="v-caveat"></span></div>
 
           <div class="panel pad detail">
@@ -880,14 +894,17 @@ footer{margin-top:clamp(72px,9vw,120px); border-top:1px solid var(--line); paddi
     S("rect", { x: 0, y: 470, width: 800, height: 50, fill: "var(--ground-2)" }, svg);
 
     var field = S("g", { "class": REDUCED ? "" : "grow" }, svg);
+    // Edge to edge and rooted just below the frame, so the field fills the bottom of the
+    // picture instead of stopping short of both sides above a bare strip of ground.
+    var ROOT = 524;
     for (var i = 0; i < 100; i++) {
-      var x = 18 + i * 7.64 + (rnd() - .5) * 4, h = 70 + rnd() * 78, lean = (rnd() - .5) * 26;
+      var x = -2 + i * 8.08 + (rnd() - .5) * 4, h = 124 + rnd() * 78, lean = (rnd() - .5) * 26;
       var g = S("g", { "class": "blade" }, field);
       g.style.setProperty("--dl", (REDUCED ? 0 : 0.25 + i * 0.012) + "s");
       g.style.setProperty("--d", (3.4 + rnd() * 2.2) + "s");
-      var p = S("path", { d: "M" + (x - 2) + " 470 Q" + (x + lean * .3) + " " + (470 - h * .55) + " " + (x + lean) + " " + (470 - h) + " Q" + (x + lean * .3 + 1.6) + " " + (470 - h * .5) + " " + (x + 2.2) + " 470 Z",
+      var p = S("path", { d: "M" + (x - 2.2) + " " + ROOT + " Q" + (x + lean * .3) + " " + (ROOT - h * .55) + " " + (x + lean) + " " + (ROOT - h) + " Q" + (x + lean * .3 + 1.6) + " " + (ROOT - h * .5) + " " + (x + 2.4) + " " + ROOT + " Z",
                           fill: "var(--straw)" }, g);
-      var fs = .5 + rnd() * .5, fx = x + lean * .55, fy = 470 - h * .55;
+      var fs = .5 + rnd() * .5, fx = x + lean * .55, fy = ROOT - h * .55;
       var fl = S("path", { d: "M" + fx + " " + fy + " c" + (-6 * fs) + " " + (-5 * fs) + " " + (-5 * fs) + " " + (-14 * fs) + " 0 " + (-22 * fs) + " c" + (2 * fs) + " " + (7 * fs) + " " + (8 * fs) + " " + (9 * fs) + " " + (5 * fs) + " " + (16 * fs) + " c" + (-1 * fs) + " " + (3 * fs) + " " + (-3 * fs) + " " + (5 * fs) + " " + (-5 * fs) + " " + (6 * fs) + " z",
                            fill: "#ffb347", opacity: 0, "class": "flame" }, g);
       fl.style.setProperty("--dl", (rnd() * .8) + "s"); fl.style.setProperty("--d", (.6 + rnd() * .5) + "s");
